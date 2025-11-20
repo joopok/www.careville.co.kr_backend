@@ -190,7 +190,7 @@
 	</delete>
 	
 	<select id="getSignIn" parameterType="hashMap" resultType="linkedhashMapCamel">
-		SELECT 
+		SELECT
 				MNGR_SEQ
 				,MNGR_ID
 				,MNGR_PW
@@ -201,7 +201,7 @@
 		FROM	TB_MANAGER
 		WHERE	1 = 1
 				AND MNGR_ID = #{mngrId}
-				AND MNGR_STTUS = 'Y'
+				AND MNGR_STTUS = 'A'
 	</select>
 	
 </mapper>
