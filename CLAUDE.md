@@ -946,4 +946,3 @@ curl -H "Origin: https://example.com" \
 - API 호출 시 Context Path 확인 필수 (ROOT.war vs cleaning.war)
 - CORS 설정으로 인한 API 호출 실패 시 CorsConfig.java 확인
 - 프론트엔드 환경변수로 API_BASE 관리하여 개발/운영 환경 자동 전환
-- ***REMOVED*** adfff

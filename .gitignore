@@ -59,3 +59,23 @@ build/
 ### VS Code ###
 .vscode/
 /target/*
+
+# Sensitive Files and Credentials
+.env
+.env.local
+.env.*.local
+.env.production.local
+*.key
+*.pem
+credentials.json
+secrets.json
+.aws/
+.ssh/
+
+# Application Secrets
+application-secret.yml
+application-secret.yaml
+application-secret.properties
+
+# IDE Secrets
+.idea/inspectionProfiles/
