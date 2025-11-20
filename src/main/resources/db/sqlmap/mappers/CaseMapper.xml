@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.CaseMapper">
+
+	<select id="getCaseCnt" parameterType="hashMap" resultType="int" >
+		SELECT 	COUNT(*) 
+		FROM 	TB_CASE
+		WHERE	1 = 1
+			<if test="caseSj != null and caseSj != ''">
+				AND CASE_SJ LIKE CONCAT('%', #{caseSj},'%')
+			</if>
+			<if test="hashtag != null and hashtag != ''">
+				AND HASHTAG LIKE CONCAT('%', #{hashtag},'%')
+			</if>
+			<if test="serviceCd != null and serviceCd != ''">
+				AND SERVICE_CD = #{serviceCd}
+			</if>			
+	</select>
+	
+	<select id="getCaseServiceList" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT
+				AA.SERVICE_CD
+				,AA.SERVICE_NM
+		FROM 	TB_CATEGORY AA
+				JOIN (SELECT DISTINCT SERVICE_CD FROM TB_CASE) AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+		WHERE 	1 = 1
+				AND AA.USE_YN = 'Y'
+				AND AA.DEL_YN  = 'N'	
+	</select>
+	
+	<select id="getCaseList" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 	
+				AA.CASE_SEQ
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,AA.CASE_SJ
+				,AA.CASE_CN
+				,AA.REG_NM
+				,AA.FILE_SEQ
+				,AA.HASHTAG
+				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				 
+		FROM	TB_CASE AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD		
+		WHERE	1 = 1
+			<if test="caseSj != null and caseSj != ''">
+				AND AA.CASE_SJ LIKE CONCAT('%', #{caseSj},'%')
+			</if>
+			<if test="hashtag != null and hashtag != ''">
+				AND AA.HASHTAG LIKE CONCAT('%', #{hashtag},'%')
+			</if>
+			<if test="serviceCd != null and serviceCd != ''">
+				AND AA.SERVICE_CD = #{serviceCd}
+			</if>
+		ORDER BY 
+				AA.CASE_SEQ DESC
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+	</select>
+	
+	<select id="getCaseView" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 	
+				AA.CASE_SEQ
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM				
+				,AA.CASE_SJ
+				,AA.CASE_CN
+				,AA.REG_NM
+				,AA.FILE_SEQ
+				,AA.HASHTAG
+				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+		FROM	TB_CASE AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD		
+		WHERE	1 = 1	
+				AND AA.CASE_SEQ = #{caseSeq}
+	</select>
+	
+	<update id="setCaseUpd" parameterType="hashMap">
+		UPDATE 	TB_CASE
+		SET
+				CASE_SJ		= #{caseSj}
+				,CASE_CN	= #{caseCn}
+				,REG_NM		= #{regNm}
+				,FILE_SEQ	= #{fileSeq}
+				,HASHTAG	= #{hashtag}
+				,SERVICE_CD	= #{serviceCd}
+		WHERE 	CASE_SEQ 	= #{caseSeq}
+	</update>
+	
+	<insert id="setCaseReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="CASE_SEQ">
+		INSERT INTO TB_CASE(
+			CASE_SJ
+			,CASE_CN
+			,REG_NM
+			,FILE_SEQ
+			,HASHTAG
+			,RGS_DT
+			,SERVICE_CD 	
+		)VALUES(
+			#{caseSj}
+			,#{caseCn}
+			,#{regNm}
+			,#{fileSeq}
+			,#{hashtag}
+			,NOW()
+			,#{serviceCd}
+		)
+	</insert>
+	
+	<delete id="setCaseDel" parameterType="hashMap">
+		DELETE 
+		FROM 	TB_CASE
+		WHERE 	CASE_SEQ 	= #{caseSeq}
+	</delete>
+
+</mapper>

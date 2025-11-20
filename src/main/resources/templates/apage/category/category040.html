@@ -1,0 +1,133 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>:: 서비스 카테고리 수정 ::</title>
+</head>
+<body>
+<div layout:fragment="content">
+	<section class="content">
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>서비스 카테고리 수정</h2>
+                        </div>
+                        <div class="body">
+                            <form id="serviceForm" method="post" action="#">
+                                <input type="hidden" id="serviceCd" name="serviceCd" th:value="${detail.serviceCd}">
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <colgroup>
+                                            <col style="width:20%">
+                                            <col style="width:80%">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <th class="bg-light-blue">서비스 코드</th>
+                                                <td th:text="${detail.serviceCd}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light-blue">서비스명 <span class="col-red">*</span></th>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <div class="form-line">
+                                                            <input type="text" class="form-control" id="serviceNm" name="serviceNm" 
+                                                                   th:value="${detail.serviceNm}" maxlength="100" required>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light-blue">정렬 순서</th>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <div class="form-line">
+                                                            <input type="number" class="form-control" id="serviceOrder" name="serviceOrder" 
+                                                                   th:value="${detail.serviceOrder}" min="1">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light-blue">사용여부</th>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <input type="radio" name="useYn" id="useY" value="Y" 
+                                                               th:checked="${detail.useYn == 'Y'}">
+                                                        <label for="useY" style="margin-right: 20px;">사용</label>
+                                                        <input type="radio" name="useYn" id="useN" value="N" 
+                                                               th:checked="${detail.useYn == 'N'}">
+                                                        <label for="useN">미사용</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light-blue">등록일시</th>
+                                                <td th:text="${detail.regDt}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light-blue">수정일시</th>
+                                                <td th:text="${detail.modDt}"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="row clearfix">
+                                    <div class="col-xs-12 text-center">
+                                        <button type="button" class="btn btn-primary waves-effect" onclick="updateServiceCategory()">
+                                            <i class="material-icons">save</i>
+                                            <span>수정</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default waves-effect" 
+												th:attr="data-servicecd=${detail.serviceCd}"
+                                                onclick="location.href='/apage/category020.do?serviceCd=' + this.dataset.servicecd">
+                                            <i class="material-icons">cancel</i>
+                                            <span>취소</span>
+                                        </button>
+										
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script th:inline="javascript">
+            function updateServiceCategory() {
+                // 유효성 검사
+                var serviceNm = $('#serviceNm').val().trim();
+                
+                if (!serviceNm) {
+                    alert('서비스명을 입력하세요.');
+                    $('#serviceNm').focus();
+                    return;
+                }
+                
+                // 수정 처리
+                $.ajax({
+                    url: '/apage/category041.do',
+                    type: 'POST',
+                    data: $('#serviceForm').serialize(),
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.result && data.result.result === 'SUCCESS') {
+                            alert(data.result.msg);
+                            location.href = '/apage/category020.do?serviceCd=' + $('#serviceCd').val();
+                        } else {
+                            alert(data.result.msg || '수정에 실패하였습니다.');
+                        }
+                    },
+                    error: function() {
+                        alert('서버 오류가 발생하였습니다.');
+                    }
+                });
+            }
+        </script>
+    </section>
+</div>
+</body>
+</html>

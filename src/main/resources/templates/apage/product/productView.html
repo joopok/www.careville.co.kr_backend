@@ -1,0 +1,241 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+	<head>
+	<title>:: 상품 상세 ::</title>
+	<style>
+	.product-info-table th {background-color:#f5f5f5; width:20%;}
+	.product-info-table td {padding:10px;}
+	.price-info {font-size:18px; font-weight:bold;}
+	.discount-info {color:#ff5722; font-weight:bold;}
+	.service-includes {background-color:#f9f9f9; padding:15px; border-radius:5px; margin-top:10px;}
+	.service-includes h5 {margin-top:0; color:#333;}
+	.service-includes ul {margin-bottom:0;}
+	</style>
+	</head>
+	<body>
+<div layout:fragment="content">
+	<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <h2>상품 관리</h2>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>상품 상세정보</h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered product-info-table">
+                                <tbody>
+                                    <tr>
+                                        <th>상품번호</th>
+                                        <td id="productNo">-</td>
+                                        <th>카테고리</th>
+                                        <td id="serviceNm">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>상품명</th>
+                                        <td colspan="3" id="productNm">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>평형대</th>
+                                        <td id="areaType">-</td>
+                                        <th>소요시간</th>
+                                        <td id="serviceTime">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>정가</th>
+                                        <td><span id="originalPrice">-</span></td>
+                                        <th>판매가</th>
+                                        <td>
+                                            <span class="price-info" id="salePrice">-</span>
+                                            <span class="discount-info" id="discountInfo"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>노출여부</th>
+                                        <td id="displayYn">-</td>
+                                        <th>판매여부</th>
+                                        <td id="saleYn">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>노출순서</th>
+                                        <td id="displayOrder">-</td>
+                                        <th>등록일시</th>
+                                        <td id="regDt">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>등록자</th>
+                                        <td id="regUserId">-</td>
+                                        <th>최종 수정일시</th>
+                                        <td id="modDt">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>수정자</th>
+                                        <td colspan="3" id="modUserId">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>상품 설명</th>
+                                        <td colspan="3">
+                                            <div id="productDesc">-</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="service-includes" id="serviceIncludesDiv" style="display:none;">
+                            <h5>서비스 포함사항</h5>
+                            <ul id="serviceIncludesList"></ul>
+                        </div>
+                        
+                        <div class="row clearfix" style="margin-top:20px;">
+                            <div class="col-xs-12 text-center">
+                                <button type="button" class="btn btn-primary waves-effect" id="btnModify">
+                                    <i class="material-icons">edit</i> 수정
+                                </button>
+                                <button type="button" class="btn btn-danger waves-effect" id="btnDelete">
+                                    <i class="material-icons">delete</i> 삭제
+                                </button>
+                                <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/product010.do'">
+                                    <i class="material-icons">list</i> 목록
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+        var productNo = /*[[${param.productNo[0]}]]*/ null;
+        
+        $(document).ready(function() {
+            if (!productNo) {
+                alert('상품번호가 없습니다.');
+                location.href = '/apage/product010.do';
+                return;
+            }
+            
+            loadProductDetail();
+        });
+        
+        function loadProductDetail() {
+            $.ajax({
+                url: '/apage/product021.do',
+                type: 'POST',
+                data: { 'productNo': productNo },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === 'SUCCESS' && data.product) {
+                        displayProductInfo(data.product);
+                    } else {
+                        alert('상품 정보를 불러올 수 없습니다.');
+                        location.href = '/apage/product010.do';
+                    }
+                },
+                error: function() {
+                    alert('서버 오류가 발생하였습니다.');
+                    location.href = '/apage/product010.do';
+                }
+            });
+        }
+        
+        function displayProductInfo(product) {
+            $('#productNo').text(product.productNo);
+            $('#serviceNm').text(product.serviceNm || '-');
+            $('#productNm').text(product.productNm);
+            $('#areaType').text(product.areaType || '-');
+            $('#serviceTime').text(product.serviceTime || '-');
+            $('#originalPrice').text(formatPrice(product.originalPrice) + '원');
+            $('#salePrice').text(formatPrice(product.salePrice) + '원');
+            
+            if (product.discountRate > 0) {
+                $('#discountInfo').text('(' + product.discountRate + '% 할인)');
+            }
+            
+            $('#displayYn').html(product.displayYn === 'Y' 
+                ? '<span class="label label-success">노출</span>' 
+                : '<span class="label label-default">미노출</span>');
+            $('#saleYn').html(product.saleYn === 'Y' 
+                ? '<span class="label label-primary">판매</span>' 
+                : '<span class="label label-warning">미판매</span>');
+            
+            $('#displayOrder').text(product.displayOrder || '999');
+            $('#regDt').text(formatDateTime(product.regDt));
+            $('#regUserId').text(product.regUserId || '-');
+            $('#modDt').text(formatDateTime(product.modDt));
+            $('#modUserId').text(product.modUserId || '-');
+            
+            if (product.productDesc) {
+                $('#productDesc').html(product.productDesc.replace(/\n/g, '<br>'));
+            }
+            
+            if (product.serviceIncludes) {
+                try {
+                    var includes = JSON.parse(product.serviceIncludes);
+                    if (includes && includes.length > 0) {
+                        var listHtml = '';
+                        $.each(includes, function(index, item) {
+                            listHtml += '<li>' + item + '</li>';
+                        });
+                        $('#serviceIncludesList').html(listHtml);
+                        $('#serviceIncludesDiv').show();
+                    }
+                } catch(e) {
+                    console.log('서비스 포함사항 파싱 오류');
+                }
+            }
+        }
+        
+        $('#btnModify').on('click', function() {
+            location.href = '/apage/product040.do?productNo=' + productNo;
+        });
+        
+        $('#btnDelete').on('click', function() {
+            if (!confirm('정말로 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) {
+                return;
+            }
+            
+            $.ajax({
+                url: '/apage/product051.do',
+                type: 'POST',
+                data: { productNo: productNo },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === 'SUCCESS') {
+                        alert('삭제되었습니다.');
+                        location.href = '/apage/product010.do';
+                    } else {
+                        alert(data.msg || '삭제에 실패하였습니다.');
+                    }
+                },
+                error: function() {
+                    alert('서버 오류가 발생하였습니다.');
+                }
+            });
+        });
+        
+        function formatPrice(price) {
+            if (!price) return '0';
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            var date = new Date(dateStr);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+        }
+    </script>
+    </section>
+</div>
+</body>
+</html>

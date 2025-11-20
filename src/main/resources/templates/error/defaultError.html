@@ -1,0 +1,30 @@
+﻿<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title layout:title-pattern="$CONTENT_TITLE - Careville">Careville | 500 Error</title>
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext}" >
+	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" >
+	<link rel="stylesheet" th:href="@{/plugins/bootstrap/css/bootstrap.css}" >
+	<link rel="stylesheet" th:href="@{/plugins/node-waves/waves.css}" />
+	<link rel="stylesheet" th:href="@{/apage/css/style.css}">
+</head>
+<body>
+	<div class="five-zero-zero">
+		
+	    <div class="five-zero-zero-container">
+	        <div class="error-code" th:text="${excpCd}">500</div>
+	        <div class="error-message"  th:text="${excpMsg}">Internal Server Error</div>
+	        <div class="button-place">
+	            <a th:href="${backUrl}" class="btn btn-default btn-lg waves-effect">GO TO HOMEPAGE</a>
+	        </div>
+	    </div>
+	</div>
+
+	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+	<script th:src="@{/plugins/bootstrap/js/bootstrap.js}"></script>
+	<script th:src="@{/plugins/node-waves/waves.js}"></script>
+</body>
+
+</html>

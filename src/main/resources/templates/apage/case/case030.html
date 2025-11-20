@@ -1,0 +1,130 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>:: 시공 사례 ::</title>
+<style>
+</style>
+<link rel="stylesheet" th:href="@{/apage/css/themes/all-themes.css}" />
+<link th:href="@{/plugins/jquery-spinner/css/bootstrap-spinner.css}" rel="stylesheet">
+<link th:href="@{/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css}" rel="stylesheet">
+
+<style>
+.input-group .form-line:after {bottom:0px;border-bottom: 1px solid #ddd;}
+.col-md-12 {margin-bottom:0px !important;}
+.col-md-6 {margin-bottom:0px !important;}
+#fileAttachView{display:none;}
+.demo-tagsinput-area{margin-bottom: 0px !important;}
+</style>
+<script type="text/javascript" th:src="@{/plugins/smartEditor/js/service/HuskyEZCreator.js}" charset="utf-8"></script>
+<script th:src="@{/plugins/bootstrap-select/js/bootstrap-select.js}"></script>
+<script th:src="@{/plugins/jquery-slimscroll/jquery.slimscroll.js}"></script>
+<script th:src="@{/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js}"></script>
+<script th:src="@{/plugins/jquery-inputmask/jquery.inputmask.bundle.js}"></script>
+<script th:src="@{/plugins/multi-select/js/jquery.multi-select.js}"></script>
+<script th:src="@{/plugins/jquery-spinner/js/jquery.spinner.js}"></script>
+<script th:src="@{/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js}"></script>
+<script th:src="@{/plugins/nouislider/nouislider.js}"></script>
+
+<script th:src="@{/apage/js/case030.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+	
+	<section class="content">
+	    <div class="container-fluid">
+
+			<div class="row clearfix">
+				
+			    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			        <div class="card">
+			            <div class="header"><h2>시공 사례 등록</h2></div>
+			            <div class="body">
+							<div class="demo-masked-input">
+								<div class="row clearfix demo-icon-container">
+									
+									<form id="form_validation" method="POST">
+										<div class="col-md-12">
+											<b>제목</b>
+											<div class="input-group">
+												<span class="input-group-addon">
+													<i class="material-icons">subtitles</i>
+												</span>
+												<div class="form-line focused">
+													<input type="text" id="caseSj" name="caseSj" class="form-control" placeholder="Ex: 줄눈/나노 코팅 시공">
+												</div>
+											</div>
+										</div>
+										
+										<div class="col-md-12">
+											<b>대표이미지</b>
+											<div class="input-group">
+												<span class="input-group-addon">
+													<i class="material-icons">insert_photo</i>
+												</span>
+												<div class="form-line focused">
+													<div id="fileAttachView">
+														<input type="text" class="form-control" style="width:30%;" readonly>
+														<i class="material-icons" id="fileAttachDel" style="margin-top:5px;">clear</i>
+													</div>
+													<input type="file" id="fieInput" class="form-control">
+													<input type="hidden" id="mainImg" name="mainImg" class="form-control">
+												</div>
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<b>서비스 종류</b>
+											<div class="input-group">
+												<span class="input-group-addon">
+													<i class="material-icons">subtitles</i>
+												</span>
+												<div class="form-line focused">
+													<select id="serviceCd" name="serviceCd" class="form-control show-tick">
+														<option value="">선택하세요</option>
+														<option th:each="code : ${svcCdList}" th:value="${code.serviceCd}" th:text="${code.serviceNm}"></option>
+				                                    </select>
+												</div>
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<b>해시태그</b>
+											<div class="input-group">
+												<span class="input-group-addon">
+													<i class="material-icons">subtitles</i>
+												</span>
+												<div class="form-group demo-tagsinput-area">
+												    <div class="form-line">
+												        <input type="text" id="hashtag" name="hashtag" class="form-control" data-role="tagsinput" placeholder="Ex: #현관#화장실">
+												    </div>
+												</div>
+											</div>
+										</div>		
+																		
+																	
+										<div class="col-md-12">
+											<b>내용</b>
+											<div class="input-group">
+												<div class="form-line" style="padding-top:7px;">
+													<textarea id="caseCn" name="caseCn" style="width:100%; height:450px;" rows="10" class="form-control no-resize"></textarea>
+												</div>
+											</div>
+										</div>									
+										<div class="col-md-12">
+											<button id="btnSubmit" class="btn btn-primary waves-effect" type="button">저장</button>
+											<button id="btnList" class="btn bg-grey waves-effect" type="button">목록</button>
+										</div>
+									</form>
+									
+								</div>
+							</div>
+			            </div>
+			        </div>
+			    </div>
+			</div>			
+							
+	    </div>
+	</section>	
+	
+</div>
+</body>
+</html>

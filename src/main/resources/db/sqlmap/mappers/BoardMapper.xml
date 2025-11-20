@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.BoardMapper">
+
+	<select id="getBoardCnt" parameterType="hashMap" resultType="int" >
+		SELECT 	COUNT(*) 
+		FROM 	TB_BOARD
+		WHERE	1 = 1
+				AND BOARD_GB = #{boardGb}
+		<choose>
+			<when test="boardSj != null and boardSj != ''">
+				AND BOARD_SJ LIKE CONCAT('%', #{boardSj},'%')
+			</when>
+			<when test="boardCn != null and boardCn != ''">
+				AND BOARD_CN LIKE CONCAT('%', #{boardCn},'%')
+			</when>
+			<when test="regNm != null and regNm != ''">
+				AND REG_NM LIKE CONCAT('%', #{regNm},'%')
+			</when>
+		</choose>
+	</select>
+	
+	<select id="getBoardList" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 	
+				AA.BOARD_SEQ
+				,AA.NOTICE_YN
+				,AA.BOARD_SJ
+				,AA.BOARD_CN
+				,AA.REG_NM
+				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+				,AA.SECRET_YN
+				,AA.SECRET_PW				 
+		FROM	TB_BOARD AA
+		WHERE	1 = 1
+				AND BOARD_GB = #{boardGb}
+		<choose>
+			<when test="boardSj != null and boardSj != ''">
+				AND AA.BOARD_SJ LIKE CONCAT('%', #{boardSj},'%')
+			</when>
+			<when test="boardCn != null and boardCn != ''">
+				AND AA.BOARD_CN LIKE CONCAT('%', #{boardCn},'%')
+			</when>
+			<when test="regNm != null and regNm != ''">
+				AND AA.REG_NM LIKE CONCAT('%', #{regNm},'%')
+			</when>
+		</choose>
+		ORDER BY 
+				AA.BOARD_SEQ DESC
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+	</select>
+	
+	<select id="getBoardView" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 	
+				AA.BOARD_SEQ
+				,AA.NOTICE_YN
+				,AA.BOARD_SJ
+				,AA.BOARD_CN
+				,AA.REG_NM
+				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+				,AA.SECRET_YN
+				,AA.SECRET_PW				 
+		FROM	TB_BOARD AA	
+		WHERE	1 = 1	
+				AND AA.BOARD_SEQ = #{boardSeq}
+	</select>
+	
+	<update id="setBoardUpd" parameterType="hashMap">
+		UPDATE 	TB_BOARD
+		SET
+				BOARD_GB		= #{boardGb}
+				,NOTICE_YN		= #{noticeYn}
+				,BOARD_SJ		= #{boardSj}
+				,BOARD_CN		= #{boardCn}
+				,REG_NM			= #{regNm}
+				,RGS_DT			= NOW()
+				,SECRET_YN		= #{secretYn}
+				,SECRET_PW		= #{secretPw}
+		WHERE 	BOARD_SEQ = #{boardSeq}
+	</update>
+	
+	<insert id="setBoardReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="CNSLT_SEQ">
+		INSERT INTO TB_BOARD(
+			BOARD_GB
+			,NOTICE_YN
+			,BOARD_SJ
+			,BOARD_CN
+			,REG_NM
+			,RGS_DT
+			,SECRET_YN
+			,SECRET_PW			
+		)VALUES(
+			#{boardGb}
+			,#{noticeYn}
+			,#{boardSj}
+			,#{boardCn}
+			,#{regNm}
+			,NOW()
+			,#{secretYn}
+			,#{secretPw}			
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,116 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>:: 작업후기 상세 ::</title>
+<style>
+.star-rating {color: #ffd700; font-size: 20px;}
+</style>
+<script th:src="@{/apage/js/review020.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+	<section class="content">
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>작업후기 상세보기</h2>
+                        </div>
+                        <div class="body">
+							
+							<form id="searchMap" method="POST" >
+							    <th:block th:each="entry : ${searchMap}">
+							        <input type="hidden" th:name="${entry.key}" th:value="${entry.value != null ? entry.value : ''}">
+							    </th:block>
+							</form>	
+							
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>작성자명</label>
+                                        <div class="form-line">
+                                            <input type="text" id="reviewNm" class="form-control" th:value="${view.reviewNm}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>서비스 종류</label>
+                                        <div class="form-line">
+                                            <input type="text" class="form-control" th:value="${view.serviceNm} + ${#strings.isEmpty(view.productNm) ? '' : ' - '+view.productNm}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>별점</label>
+                                        <div class="star-rating">
+                                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                                <i class="material-icons" th:text="${i <= view.starRate} ? 'star' : 'star_border'"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>서비스 받은 날짜</label>
+                                        <div class="form-line">
+                                            <input type="text" class="form-control" th:value="${@sUtils.toDate(view.svcDate)}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>등록일</label>
+                                        <div class="form-line">
+                                            <input type="text" class="form-control" th:value="${view.rgsDt}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>후기 내용</label>
+                                        <div class="form-line">
+                                            <textarea id="reviewCn" class="form-control" rows="10" readonly th:text="${view.reviewCn}"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>노출 여부</label>
+                                        <div>
+                                            <span class="label" th:classappend="${view.dispYn == 'Y' ? 'label-success' : 'label-danger'}" 
+                                                  th:text="${view.dispYn == 'Y' ? '노출' : '비노출'}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-warning waves-effect" id="btnModify">
+                                    <i class="material-icons">edit</i>
+                                    <span>수정</span>
+                                </button>
+                                <button type="button" class="btn btn-danger waves-effect" id="btnDel">
+                                    <i class="material-icons">delete</i>
+                                    <span>삭제</span>
+                                </button>
+                                <button type="button" class="btn btn-default waves-effect" id="btnList">
+                                    <i class="material-icons">list</i>
+                                    <span>목록</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

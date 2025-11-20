@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cleaning.mapper.CmmnMapper">
+    
+	<select id="getCodeList" parameterType="string" resultType="linkedhashMapCamel" >
+		SELECT 
+				CODE
+				,CODE_NM
+		FROM 	TB_CMMN_CODE
+		WHERE	1 = 1
+				AND GROUP_CD = #{groupCd} 
+				AND CODE_USE_YN = 'Y'
+		ORDER BY 
+				CODE
+	</select>
+	
+	<select id="getServiceCdList" parameterType="string" resultType="linkedhashMapCamel" >
+		SELECT 
+				SERVICE_CD
+				,SERVICE_NM
+		FROM  	TB_CATEGORY 
+		WHERE 	1 = 1
+				AND USE_YN = 'Y'
+				AND DEL_YN  = 'N'
+		ORDER BY 
+				SERVICE_ORDER ASC
+	</select>
+	
+	<select id="getProductCdList" parameterType="string" resultType="linkedhashMapCamel" >
+		SELECT 
+				AA.SERVICE_CD  	
+				,AA.SERVICE_NM
+				,AB.PRODUCT_NO
+				,AB.PRODUCT_NM		
+		FROM 	TB_CATEGORY AA
+				JOIN TB_PRODUCT AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+		WHERE	1 = 1
+				AND AA.USE_YN  = 'Y'
+				AND AA.DEL_YN = 'N'
+				AND AB.DISPLAY_YN = 'Y'
+				AND AB.SALE_YN  = 'Y'
+				AND AB.DEL_YN = 'N'
+		ORDER BY 
+				AA.SERVICE_ORDER 
+				,AB.PRODUCT_DESC
+	</select>
+	
+	<select id="getFileList" parameterType="hashMap" resultType="linkedhashMapCamel">
+		SELECT 
+				A.FILE_RELATE_SEQ	
+				,A.FILE_TRGET_SE
+				,A.FILE_TRGET_SEQ
+				,A.FILE_SEQ
+				,B.FILE_REAL_NM
+				,B.FILE_SIZE
+				,B.FILE_EXTSN
+		FROM 	TB_FILE_RELATION A
+				JOIN TB_FILE B
+					ON A.FILE_RELATE_SEQ = B.FILE_SEQ
+		WHERE	1 = 1
+				AND A.FILE_TRGET_SE = #{fileTrgetSe}
+				AND A.FILE_TRGET_SEQ = #{fileTrgetSeq}
+	</select>
+	
+	<select id="getFileView" parameterType="hashMap" resultType="linkedhashMapCamel">
+		SELECT 
+				FILE_SEQ
+				,FILE_REAL_NM
+				,FILE_FAKE_NM
+				,FILE_PATH
+				,FILE_EXTSN
+				,FILE_SIZE
+				,RGS_DT
+				,CONCAT(FILE_PATH,'/',FILE_FAKE_NM) AS FILE_FULL_PATH
+		FROM 	TB_FILE
+		WHERE	1 = 1
+				AND FILE_SEQ = #{fileSeq}
+	</select>
+	
+	<insert id="setFileInsert" parameterType="hashMap" useGeneratedKeys="true" keyProperty="FILE_SEQ">
+		INSERT INTO TB_FILE(
+			FILE_REAL_NM
+			,FILE_FAKE_NM
+			,FILE_PATH
+			,FILE_EXTSN
+			,FILE_SIZE
+			,RGS_DT	
+		)VALUES(
+			#{fileRealNm}
+			,#{fileFakeNm}
+			,#{filePath}
+			,#{fileExtsn}
+			,#{fileSize}
+			,NOW()	
+		);
+	</insert>
+	
+	<delete id="setFileDel" parameterType="hashMap">
+		DELETE 
+		FROM 	TB_FILE
+		WHERE	FILE_SEQ = #{fileSeq}
+	</delete>
+	
+	<insert id="setFileRelationInsert" parameterType="hashMap">
+		INSERT INTO TB_FILE_RELATION(
+			FILE_TRGET_SE
+			,FILE_TRGET_SEQ
+			,FILE_SEQ
+			,RGS_DT
+		)VALUES(
+			#{fileTrgetSe}
+			,#{fileTrgetSeq}
+			,#{fileSeq}
+			,NOW()			
+		)
+	</insert>
+	
+	<update id="setFileRelationUpdate" parameterType="hashMap">
+		UPDATE TB_FILE_RELATION
+		SET
+			FILE_SEQ	= #{fileSeq} 
+			,RGS_DT		= NOW();
+		WHERE	1 = 1
+				AND FILE_TRGET_SE	= #{fileTrgetSe}
+				AND FILE_TRGET_SEQ	= #{fileTrgetSeq}
+	</update>
+	
+	<select id="getFileRelationList" parameterType="hashMap" resultType="linkedhashMapCamel">
+		SELECT 
+				A.FILE_RELATE_SEQ	
+				,A.FILE_TRGET_SE
+				,A.FILE_TRGET_SEQ
+				,A.RGS_DT	
+				,B.FILE_SEQ
+				,B.FILE_REAL_NM
+				,B.FILE_FAKE_NM
+				,B.FILE_PATH
+				,B.FILE_EXTSN
+				,B.FILE_SIZE		
+				,CASE WHEN B.FILE_SEQ IS NOT NULL THEN CONCAT(B.FILE_PATH,'/',B.FILE_FAKE_NM) ELSE null END AS FILE_FULL_PATH
+		FROM 	TB_FILE_RELATION A
+				LEFT OUTER JOIN TB_FILE B
+					ON ON A.FILE_SEQ = B.FILE_SEQ
+		WHERE	1 = 1
+		<choose>
+			<when test="fileRelateSeq != null and fileRelateSeq != ''">
+				AND A.FILE_RELATE_SEQ = #{fileRelateSeq}
+			</when>
+			<otherwise>
+				AND A.FILE_TRGET_SE = #{fileTrgetSe} 
+				AND A.FILE_TRGET_SEQ = #{fileTrgetSeq}	
+			</otherwise>
+		</choose>		
+	</select>
+	
+	<delete id="setFileRelationDelFirst" parameterType="hashMap">
+		DELETE 
+		FROM 	TB_FILE
+		WHERE	FILE_SEQ IN(
+					SELECT 
+							FILE_SEQ 
+					FROM 	TB_FILE_RELATION 
+					WHERE 	1 = 1
+					<choose>
+						<when test="fileRelateSeq != null and fileRelateSeq != ''">
+							AND FILE_RELATE_SEQ = #{fileRelateSeq}
+						</when>
+						<otherwise>
+							AND FILE_TRGET_SE = #{fileTrgetSe} 
+							AND FILE_TRGET_SEQ = #{fileTrgetSeq}
+						</otherwise>
+					</choose>		
+				)
+	</delete>
+	
+	<delete id="setFileRelationDelSecond" parameterType="hashMap">
+		DELETE 
+		FROM 	TB_FILE_RELATION
+		WHERE 	1 = 1
+		<choose>
+			<when test="fileRelateSeq != null and fileRelateSeq != ''">
+				AND FILE_RELATE_SEQ = #{fileRelateSeq}
+			</when>
+			<otherwise>
+				AND FILE_TRGET_SE = #{fileTrgetSe} 
+				AND FILE_TRGET_SEQ = #{fileTrgetSeq}
+			</otherwise>
+		</choose>	
+	</delete>
+	
+	<select id="getSignIn" parameterType="hashMap" resultType="linkedhashMapCamel">
+		SELECT 
+				MNGR_SEQ
+				,MNGR_ID
+				,MNGR_PW
+				,MNGR_NM
+				,MNGR_NCNM
+				,MNGR_TEL
+				,MNGR_STTUS
+		FROM	TB_MANAGER
+		WHERE	1 = 1
+				AND MNGR_ID = #{mngrId}
+				AND MNGR_STTUS = 'Y'
+	</select>
+	
+</mapper>

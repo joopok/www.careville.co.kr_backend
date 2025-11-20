@@ -1,0 +1,87 @@
+spring:
+  application:
+    name: cleaning
+  datasource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mysql://localhost:3306/ksm1779?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${DB_USERNAME:ksm1779}
+    password: ${DB_PASSWORD:Chae1030!!}
+    hikari:
+      maximum-pool-size: 8
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: validate
+  sql:
+    init:
+      mode: never 
+  servlet:
+    multipart:
+      maxFileSize: 10MB # 파일 하나의 최대 크기
+      maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
+
+mybatis:
+  mapper-locations: classpath:db/sqlmap/mappers/*.xml
+  config-location: classpath:db/sqlmap/sql-mapper-config.xml
+
+server:
+  port: 8081
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+    include-binding-errors: always
+    whitelabel:
+      enabled: false
+    path: '/error'
+
+#blue,cyan,faint,green,magenta,red,yello
+logging:
+  pattern:
+    console: "%clr(%5p){} %clr(%d{HH:mm:ss}){faint} %clr([%15.15t]){magenta} %clr(%-40.40logger{39}){cyan} %clr(%3L){red} %m%n"
+  level:
+    root: INFO
+    jdbc: OFF
+    jdbc.sqlonly: OFF
+    jdbc.sqltiming: OFF ## DEBUG 로 변경시 SQL LOG WIEW
+    jdbc.audit: OFF
+    jdbc.resultset: OFF
+    jdbc.resultsettable: OFF
+    jdbc.connection: OFF
+    org.springframework.security: OFF
+    # 비밀번호 검증 로깅 설정
+    kr.co.cleaning.ctrl.ReviewCtrl: OFF  # API 호출 로그
+    kr.co.cleaning.svc.ReviewSvc: OFF    # 비밀번호 검증 상세 로그
+    kr.co.cleaning.mapper: OFF           # SQL 쿼리 로그
+
+kframe:
+  viewRowCnt: 10
+  viewPageCnt: 5
+  session-id: LCMS_SESSION
+  session-log-in-key : KF_LOGON
+  aes:
+    key: my-secret-cleaning-12345
+    algorithm: AES
+  filePath: C:/Users/nun/Downloads/careville
+
+# SpringDoc OpenAPI (Swagger) 설정
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    groups-order: DESC
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+

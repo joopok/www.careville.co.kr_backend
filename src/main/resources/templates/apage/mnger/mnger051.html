@@ -1,0 +1,47 @@
+
+	<style>
+	button.dropdown-toggle{padding-top: 13px;padding-left:0px;}
+	button.dropdown-toggle,
+	button.dropdown-toggle:hover,
+	button.dropdown-toggle:active,
+	button.dropdown-toggle:focus{background-color: transparent !important;}
+	button.dropdown-toggle span{margin-left:0px !important;}
+	p.col-red{margin-bottom:15px !important;}
+	</style>
+	<div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="carda">
+                <div class="body">
+					<form id="form_validation">
+					
+						<div class="row clearfix">
+							<div class="col-sm-12">
+							    <p class="font-bold col-red">
+									관리자 계정을 삭제하면 시스템 접근 권한이 완전히 제거됩니다.
+									<br>기존 활동 내역 또한 삭제되어 복구가 불가능 하니 주의하세요.<br>
+								</p>
+							</div>
+						</div>
+						
+						<div class="row clearfix">
+							<div class="col-sm-12">
+							    <b>비밀번호</b>
+							    <div class="input-group">
+							        <span class="input-group-addon">
+							            <i class="material-icons">https</i>
+							        </span>
+							        <div class="form-line">
+										<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
+							            <input type="password" class="form-control" name="mngrPw" data-name="비밀번호">
+							        </div>
+							    </div>
+							</div>
+						</div>
+					
+					</form>
+                </div>
+            </div>
+        </div>
+    </div>
+		
+	<script th:src="@{/apage/js/admin.js}"></script>

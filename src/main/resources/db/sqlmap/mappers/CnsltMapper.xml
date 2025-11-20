@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.CnsltMapper">
+
+	<sql id="listSelect">
+		SELECT 	
+				AA.CNSLT_SEQ
+				,AA.NM
+				,AA.TEL2
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,AA.PRODUCT_NO
+				,AD.PRODUCT_NM
+				,CASE 
+					WHEN AA.REQ_TYPE = '001' THEN AB.SERVICE_NM
+					WHEN AA.REQ_TYPE = '002' THEN AD.PRODUCT_NM
+				 END AS SERVICE_NAME
+				,AA.HOPE_DAY
+				,FORMATDATETIME(AA.REG_DT ,'yyyyMMdd') AS REG_DT
+				,CASE WHEN AA.ANSWER_DT IS NOT NULL THEN FORMATDATETIME(AA.ANSWER_DT, 'yyyyMMdd') ELSE '' END AS ANSWER_DT				
+				,AA.STTUS_CD
+				,AC.CODE_NM	AS STTUS_NM
+				,AA.REQ_TYPE
+				,AE.CODE_NM	AS REQ_TYPE_NM
+				,CASE WHEN AD.FILE_TRGET_SEQ IS NOT NULL THEN 'Y' ELSE 'N' END  AS IS_FILE 
+		FROM	TB_CONSULTATION AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+				LEFT OUTER JOIN TB_PRODUCT AD
+					ON AA.PRODUCT_NO = AD.PRODUCT_NO
+				LEFT OUTER JOIN TB_CMMN_CODE AC
+					ON AA.STTUS_CD = AC.CODE
+					AND AC.GROUP_CD = '002'
+				LEFT OUTER JOIN TB_CMMN_CODE AE
+					ON AA.REQ_TYPE = AE.CODE
+					AND AE.GROUP_CD = '003'
+				LEFT OUTER JOIN (SELECT DISTINCT FILE_TRGET_SEQ FROM TB_FILE_RELATION WHERE FILE_TRGET_SE = #{fileTrgetSe}) AD
+					ON AA.CNSLT_SEQ = AD.FILE_TRGET_SEQ 					
+	</sql>
+	
+	<select id="getCnsltCnt" parameterType="hashMap" resultType="int" >
+		SELECT 	COUNT(*) 
+		FROM 	TB_CONSULTATION
+		WHERE	1 = 1
+			<if test="nm != null and nm != ''">
+				AND NM LIKE CONCAT('%', #{nm},'%')
+			</if>
+			<if test="serviceCd != null and serviceCd != ''">
+				AND SERVICE_CD = #{serviceCd}
+			</if>
+			<if test="reqType != null and reqType != ''">
+				AND REQ_TYPE = #{reqType}
+			</if>
+	</select>
+	
+	<select id="getCnsltList" parameterType="hashMap" resultType="hashMapCamel" >
+		<include refid="listSelect"></include>
+		WHERE	1 = 1
+			<if test="nm != null and nm != ''">
+				AND AA.NM LIKE CONCAT('%', #{nm},'%')
+			</if>
+			<if test="serviceCd != null and serviceCd != ''">
+				AND AA.SERVICE_CD = #{serviceCd}
+			</if>
+			<if test="reqType != null and reqType != ''">
+				AND AA.REQ_TYPE = #{reqType}
+			</if>				
+		ORDER BY 
+				AA.CNSLT_SEQ DESC
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+	</select>
+	
+	<select id="getCnsltView" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 	
+				AA.CNSLT_SEQ
+				,AA.NM
+				,AA.TEL1
+				,AA.TEL2
+				,REGEXP_REPLACE(AA.TEL2, '(\d{3})(\d{4})(\d{4})', '$1-$2-$3') AS PHONE
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,AA.PRODUCT_NO
+				,AD.PRODUCT_NM
+				,AA.HOPE_DAY
+				,AA.INQRY_CN
+				,FORMATDATETIME(AA.REG_DT ,'yyyy-MM-dd') AS REG_DT
+				,CASE WHEN AA.ANSWER_DT IS NOT NULL THEN FORMATDATETIME(AA.ANSWER_DT, 'yyyy-MM-dd') ELSE null END AS ANSWER_DT				
+				,AA.STTUS_CD
+				,AC.CODE_NM	AS STTUS_NM
+				,AA.ADRES1||' '||ADRES2 AS ADRES
+				,AA.REQ_TYPE
+				,AE.CODE_NM	AS REQ_TYPE_NM				
+		FROM	TB_CONSULTATION AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+				LEFT OUTER JOIN TB_PRODUCT AD
+					ON AA.PRODUCT_NO = AD.PRODUCT_NO
+				LEFT OUTER JOIN TB_CMMN_CODE AC
+					ON AA.STTUS_CD = AC.CODE
+					AND AC.GROUP_CD = '002'
+				LEFT OUTER JOIN TB_CMMN_CODE AE
+					ON AA.REQ_TYPE = AE.CODE
+					AND AE.GROUP_CD = '003'					
+		WHERE	AA.CNSLT_SEQ = #{cnsltSeq}
+	</select>
+	
+	<update id="setCnsltUpd" parameterType="hashMap">
+		UPDATE 	TB_CONSULTATION
+		SET		ANSWER			= #{answer}
+				,ANSWER_ID		= #{answerId}
+				,ANSWER_DT 		= NOW()
+				,STTUS_CD		= #{sttusCd}
+		WHERE	CNSLT_SEQ	= #{cnsltSeq}
+	</update>
+	
+	<insert id="setCnsltReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="CNSLT_SEQ">
+		INSERT INTO TB_CONSULTATION(
+			NM
+			,TEL1
+			,TEL2
+			,ZIP
+			,ADRES1
+			,ADRES2
+			,SERVICE_CD
+			,PRODUCT_NO
+			,HOPE_DAY
+			,INQRY_CN
+			,REG_DT
+			,PW
+			,STTUS_CD
+			,REQ_TYPE
+		)VALUES(
+			#{nm}
+			,#{tel1}
+			,#{tel2}
+			,#{zip}
+			,#{adres1}
+			,#{adres2}
+			,#{serviceCd}
+			,#{productNo}
+			,#{hopeDay}
+			,#{inqryCn}
+			,NOW()
+			,#{pw}
+			,'001'
+			,#{reqType}
+		);	
+	</insert>
+
+</mapper>

@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: cleaning
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ksm1779?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${DB_USERNAME:ksm1779}
+    password: ${DB_PASSWORD:Chae1030!!}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  h2:
+    console:
+      enabled: false
+  jpa:
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: validate
+  sql:
+    init:
+      mode: never
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 30MB
+
+mybatis:
+  mapper-locations: classpath:db/sqlmap/mappers/*.xml
+  config-location: classpath:db/sqlmap/sql-mapper-config.xml
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-exception: false
+    include-message: always
+    include-stacktrace: never
+    include-binding-errors: always
+    whitelabel:
+      enabled: false
+    path: '/error'
+
+logging:
+  level:
+    root: WARN
+    kr.co.cleaning: INFO
+    jdbc: OFF
+    jdbc.sqlonly: OFF
+    jdbc.sqltiming: OFF
+    jdbc.audit: OFF
+    jdbc.resultset: OFF
+    jdbc.resultsettable: OFF
+    jdbc.connection: OFF
+    org.springframework.security: OFF
+
+kframe:
+  viewRowCnt: 10
+  viewPageCnt: 5
+  session-id: LCMS_SESSION
+  session-log-in-key: KF_LOGON
+  aes:
+    key: ${AES_ENCRYPTION_KEY:my-secret-cleaning-12345}
+    algorithm: AES
+  filePath: ${FILE_PATH:/home/careville/files}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    groups-order: DESC
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

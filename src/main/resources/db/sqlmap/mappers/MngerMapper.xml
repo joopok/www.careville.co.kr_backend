@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.MngerMapper">
+
+	<select id="getMngerCnt" parameterType="hashMap" resultType="int" >
+		SELECT 	
+				COUNT(*) 
+		FROM	TB_MANAGER
+	</select>
+	
+	<select id="getMngerList" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 
+				MNGR_SEQ
+				,MNGR_ID
+				,MNGR_PW
+				,MNGR_NM
+				,MNGR_NCNM
+				,MNGR_TEL
+				,MNGR_STTUS
+				,FORMATDATETIME(RGS_DT, 'yyyy-MM-dd') AS RGS_DT	
+		FROM	TB_MANAGER
+		ORDER BY 
+				MNGR_SEQ ASC
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+	</select>
+	
+	<select id="getMngerView" parameterType="hashMap" resultType="hashMapCamel" >
+		SELECT 
+				MNGR_SEQ
+				,MNGR_ID
+				,MNGR_PW
+				,MNGR_NM
+				,MNGR_NCNM
+				,MNGR_TEL
+				,MNGR_STTUS
+				,FORMATDATETIME(RGS_DT, 'yyyy-MM-dd') AS RGS_DT	
+		FROM	TB_MANAGER
+		WHERE	1 = 1		
+				AND MNGR_SEQ = #{mngrSeq}		
+	</select>
+	
+	<select id="getMngerIdDupChk" parameterType="hashMap" resultType="int">
+		SELECT 	
+				COUNT(*) 
+		FROM	TB_MANAGER	
+		WHERE	1 = 1		
+				AND MNGR_ID = #{mngrId}		
+	</select>
+	
+	<insert id="setMngerReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="MNGR_SEQ">
+		INSERT INTO TB_MANAGER(
+			MNGR_ID
+			,MNGR_PW
+			,MNGR_NM
+			,MNGR_NCNM
+			,MNGR_TEL
+			,MNGR_STTUS
+			,RGS_DT
+		)VALUES(
+			#{mngrId}
+			,#{mngrPw}
+			,#{mngrNm}
+			,#{mngrNcnm}
+			,#{mngrTel}
+			,'Y'
+			,NOW()
+		)
+	</insert>
+	
+	<update id="setMngerUpd" parameterType="hashMap">
+		UPDATE 	TB_MANAGER
+		SET		MNGR_NM		= #{mngrNm}
+				,MNGR_NCNM	= #{mngrNcnm}
+				,MNGR_TEL 	= #{mngrTel}
+		WHERE	1 = 1
+				AND MNGR_SEQ 	= #{mngrSeq}
+			<if test='sessionMngrSeq != null and sessionMngrSeq != "1"'>
+				AND MNGR_PW		= #{mngrPw}
+			</if>
+	</update>
+	
+	<update id="setMngrSttusUpd" parameterType="hashMap">
+		UPDATE 	TB_MANAGER
+		SET		MNGR_STTUS		= #{mngrSttus}
+		WHERE	1 = 1
+				AND MNGR_SEQ 	= #{mngrSeq}
+	</update>
+	
+	<update id="setMngrPwUpd" parameterType="hashMap">
+		UPDATE 	TB_MANAGER
+		SET		MNGR_PW			= #{encMngrPw}
+		WHERE	1 = 1
+				AND MNGR_SEQ 	= #{mngrSeq}
+	</update>
+	
+	<delete id="setMngrDel" parameterType="hashMap">
+		DELETE 	TB_MANAGER
+		WHERE	1 = 1
+				AND MNGR_SEQ 	= #{mngrSeq}
+	</delete>
+	
+</mapper>

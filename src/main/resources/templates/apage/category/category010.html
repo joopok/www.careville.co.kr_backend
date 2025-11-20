@@ -1,0 +1,240 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+	<head>
+	<title>:: 서비스 카테고리 관리 ::</title>
+	<style>
+	[type="checkbox"] + label {height:20px; line-height:0px; padding-left:0px; width:20px; margin:0px; display:block;}
+	#templateTable{margin-bottom:0;}
+	#pagination-container{text-align: center;}
+	</style>
+	<script th:src="@{/apage/js/pages/tables/jquery-datatable.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/jquery.dataTables.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.flash.min.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/jszip.min.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/pdfmake.min.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/vfs_fonts.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.html5.min.js}"></script>
+	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.print.min.js}"></script>
+	</head>
+	<body>
+<div layout:fragment="content">
+	<section class="content">
+    <div class="container-fluid">
+
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>서비스 카테고리 목록</h2>
+                    </div>
+                    <div class="body">
+                        <!-- 검색 영역 -->
+                        <form id="searchForm" method="post" action="/apage/category010.do">
+                            <input type="hidden" name="pageNo" id="pageNo" th:value="${params != null ? (params.pageNo != null ? params.pageNo : '1') : '1'}"/>
+                            
+                            <div class="list-unstyled row clearfix">
+                                <div class="col-xs-3">
+                                    <div class="form-group">
+                                        <select class="form-control" name="searchType" id="searchType">
+                                            <option value="">전체</option>
+                                            <option value="serviceCd">서비스코드</option>
+                                            <option value="serviceNm">서비스명</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="form-group">
+										<div class="form-line">
+                                        	<input type="text" class="form-control" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요">
+										</div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="form-group">
+                                        <select class="form-control" name="useYn" id="useYn">
+                                            <option value="">사용여부 전체</option>
+                                            <option value="Y">사용</option>
+                                            <option value="N">미사용</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+									<button type="submit" class="btn btn-primary waves-effect btnSearch">
+										<i class="material-icons">search</i>
+										<span>검색</span>
+									</button>									
+									<button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/category030.do'">
+										<i class="material-icons">insert_comment</i>
+										<span>등록</span>
+									</button>									
+	                            </div>
+                            </div>
+                        </form>
+                        
+                        
+                        <!-- 목록 테이블 -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" width="10%">번호</th>
+                                        <th class="text-center" width="10%">서비스코드</th>
+                                        <th class="text-center">서비스명</th>
+                                        <th class="text-center" width="10%">정렬순서</th>
+                                        <th class="text-center" width="10%">사용여부</th>
+                                        <th class="text-center" width="15%">등록일</th>
+                                        <th class="text-center" width="15%">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="text-center">데이터 조회 중...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            loadData();
+        });
+        
+        function loadData() {
+            var params = {
+                pageNo: $('#pageNo').val() || '1',
+                searchType: $('#searchType').val(),
+                searchWord: $('#searchWord').val(),
+                useYn: $('#useYn').val()
+            };
+            
+            $.ajax({
+                url: '/apage/category011.do',
+                type: 'POST',
+                data: params,
+                dataType: 'json',
+                success: function(data) {
+                    renderTable(data);
+                    renderPagination(data.pagination);
+                },
+                error: function() {
+                    alert('데이터 조회 중 오류가 발생하였습니다.');
+                }
+            });
+        }
+        
+        function renderTable(data) {
+            var tbody = $('table tbody');
+            tbody.empty();
+            
+            if (data.list && data.list.length > 0) {
+                $.each(data.list, function(index, item) {
+                    var row = '<tr style="cursor:pointer;" onclick="location.href=\'/apage/category020.do?serviceCd=' + item.serviceCd + '\'">';
+                    row += '<td class="text-center">' + (data.rowNum - index) + '</td>';
+                    row += '<td class="text-center">' + item.serviceCd + '</td>';
+                    row += '<td>' + item.serviceNm + '</td>';
+                    row += '<td class="text-center">' + item.serviceOrder + '</td>';
+                    row += '<td class="text-center">';
+                    if (item.useYn === 'Y') {
+                        row += '<span class="label label-success">사용</span>';
+                    } else {
+                        row += '<span class="label label-danger">미사용</span>';
+                    }
+                    row += '</td>';
+                    row += '<td class="text-center">' + item.regDt + '</td>';
+                    row += '<td class="text-center" onclick="event.stopPropagation();">';
+                    row += '<button type="button" class="btn btn-xs btn-default waves-effect" onclick="location.href=\'/apage/category040.do?serviceCd=' + item.serviceCd + '\'"><i class="material-icons">edit</i></button> ';
+                    row += '<button type="button" class="btn btn-xs btn-default waves-effect" onclick="deleteServiceCategory(\'' + item.serviceCd + '\')"><i class="material-icons">delete_sweep</i></button>';
+                    row += '</td>';
+                    row += '</tr>';
+                    tbody.append(row);
+                });
+            } else {
+                tbody.append('<tr><td colspan="7" class="text-center">등록된 데이터가 없습니다.</td></tr>');
+            }
+        }
+        
+        function renderPagination(pagination) {
+            if (!pagination) return;
+            
+            var container = $('#pagination-container');
+            container.empty(); // Clear previous pagination
+
+            var html = '<div class="text-center"><ul class="pagination">';
+            
+            // 이전 버튼
+            if (pagination.prev > 0) {
+                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.prev + ')"><span>&laquo;</span></a></li>';
+            } else {
+                html += '<li class="disabled"><a href="javascript:void(0);"><span>&laquo;</span></a></li>';
+            }
+            
+            // 페이지 번호
+            if (pagination.order && pagination.order.length > 0) {
+                $.each(pagination.order, function(index, pageNum) {
+                    if (pagination.currPage == pageNum) {
+                        html += '<li class="active"><a href="javascript:void(0);">' + pageNum + '</a></li>';
+                    } else {
+                        html += '<li><a href="javascript:void(0);" onclick="goPage(' + pageNum + ')">' + pageNum + '</a></li>';
+                    }
+                });
+            }
+            
+            // 다음 버튼
+            if (pagination.next > 0) {
+                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.next + ')"><span>&raquo;</span></a></li>';
+            } else {
+                html += '<li class="disabled"><a href="javascript:void(0);"><span>&raquo;</span></a></li>';
+            }
+            
+            html += '</ul></div>';
+            
+            container.html(html);
+        }
+        
+        $('#searchForm').on('submit', function(e) {
+            e.preventDefault();
+            $('#pageNo').val('1');
+            loadData();
+        });
+        
+        function deleteServiceCategory(serviceCd) {
+            if (!confirm('정말로 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            $.ajax({
+                url: '/apage/category051.do',
+                type: 'POST',
+                data: { serviceCd: serviceCd },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === 'SUCCESS') {
+                        alert(data.msg || '삭제되었습니다.');
+                        loadData();
+                    } else {
+                        alert(data.msg || '삭제에 실패하였습니다.');
+                    }
+                },
+                error: function() {
+                    alert('서버 오류가 발생하였습니다.');
+                }
+            });
+        }
+        
+        function goPage(pageNo) {
+            if (!pageNo || pageNo == 0) return false;
+            $('#pageNo').val(pageNo);
+            loadData();
+        }
+    </script>
+    </section>
+</div>
+</body>
+</html>

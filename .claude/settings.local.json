@@ -1,0 +1,57 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof:*)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:ontotalcare.co.kr)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Read(/C:\\c\\workspace\\clean02/**)",
+      "Read(/C:\\c\\workspace\\clean02/**)",
+      "Read(/C:\\c\\workspace\\clean02\\www.careville.co.kr_frontend\\node_modules/**)",
+      "Bash(npx playwright install:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx playwright test-hero-animation.js)",
+      "Bash(node:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(tree:*)",
+      "Bash(dir:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(mvnw.cmd:*)",
+      "Bash(./mvnw:*)",
+      "Bash(rm:*)",
+      "Bash(sed:*)",
+      "Bash(cmd.exe /c mvnw.cmd spring-boot:run)",
+      "Bash(mcp call:*)",
+      "WebSearch",
+      "Read(C:\\Users\\KCS\\Desktop/**)",
+      "Read(C:\\Users\\KCS\\Desktop/**)",
+      "Bash(git push:*)",
+      "Bash(ssh:*)",
+      "Bash(nmap:*)",
+      "Bash(nc:*)",
+      "Bash(chmod:*)",
+      "Bash(java:*)",
+      "Bash(javac:*)",
+      "Bash(brew install:*)",
+      "Bash(export PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\")",
+      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && head -30 {}')",
+      "Bash(unzip:*)",
+      "Bash(pip3 install:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "context7"
+  ],
+  "disabledMcpjsonServers": [
+    "context7"
+  ]
+}

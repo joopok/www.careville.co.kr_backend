@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title layout:title-pattern="$CONTENT_TITLE - Careville">Careville</title>
+	
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext}" >
+	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" >
+	<link rel="stylesheet" th:href="@{/plugins/bootstrap/css/bootstrap.css}" >
+	<link rel="stylesheet" th:href="@{/plugins/node-waves/waves.css}" />
+	<link rel="stylesheet" th:href="@{/plugins/animate-css/animate.css}" />
+	<link rel="stylesheet" th:href="@{/plugins/bootstrap-select/css/bootstrap-select.css}" />
+	<link rel="stylesheet" th:href="@{/plugins/sweetalert/sweetalert.css}" />
+	<link rel="stylesheet" th:href="@{/apage/css/style.css}">
+	<link rel="stylesheet" th:href="@{/apage/css/common.css}">
+	<link rel="stylesheet" th:href="@{/apage/css/themes/all-themes.css}" />
+
+	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+	<script th:src="@{/plugins/bootstrap/js/bootstrap.js}"></script>
+	<script th:src="@{/plugins/bootstrap-select/js/bootstrap-select.js}"></script>
+	<script th:src="@{/plugins/jquery-slimscroll/jquery.slimscroll.js}"></script>
+	<script th:src="@{/plugins/node-waves/waves.js}"></script>
+	<script th:src="@{/plugins/sweetalert/sweetalert.min.js}"></script>
+	<script th:src="@{/plugins/jquery-countto/jquery.countTo.js}"></script>
+	<script th:src="@{/apage/js/admin.js}"></script>
+	<script th:src="@{/apage/js/demo.js}"></script>
+	<script th:src="@{/apage/js/common.js}"></script>
+	<layout:fragment name="script"></layout:fragment>
+</head>
+
+<body class="theme-red">
+	<header th:replace="~{layout/apage/header :: header}"></header>
+	<sidebar th:replace="~{layout/apage/sidebar :: sidebar}"></sidebar>
+
+	<main layout:fragment="content">
+	    <!-- 개별 페이지 컨텐츠 -->
+	</main>
+
+</body>
+</html>

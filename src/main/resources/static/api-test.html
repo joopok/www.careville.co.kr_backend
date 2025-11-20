@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .api-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .api-section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 300px;
+        }
+        textarea {
+            vertical-align: top;
+            height: 100px;
+        }
+        .star-rating {
+            display: inline-block;
+        }
+        .star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+        }
+        .star.active {
+            color: #ffd700;
+        }
+        .review-item {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>작업후기 REST API 테스트</h1>
+    
+    <!-- 리뷰 목록 조회 -->
+    <div class="api-section">
+        <h2>1. 리뷰 목록 조회 (GET /api/reviews)</h2>
+        <div class="form-group">
+            <label>페이지 번호:</label>
+            <input type="number" id="pageNum" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>페이지 크기:</label>
+            <input type="number" id="pageSize" value="10" min="1">
+        </div>
+        <div class="form-group">
+            <label>작성자명:</label>
+            <input type="text" id="searchName" placeholder="검색할 이름">
+        </div>
+        <div class="form-group">
+            <label>별점 필터:</label>
+            <select id="starFilter">
+                <option value="">전체</option>
+                <option value="5">5점</option>
+                <option value="4">4점</option>
+                <option value="3">3점</option>
+                <option value="2">2점</option>
+                <option value="1">1점</option>
+            </select>
+        </div>
+        <button onclick="getReviewList()">리뷰 목록 조회</button>
+        <button onclick="getAllReviews()">전체 리뷰 조회</button>
+        <div id="listResponse" class="response"></div>
+    </div>
+
+    <!-- 리뷰 상세 조회 -->
+    <div class="api-section">
+        <h2>2. 리뷰 상세 조회 (GET /api/reviews/{id})</h2>
+        <div class="form-group">
+            <label>리뷰 번호:</label>
+            <input type="number" id="reviewSeq" value="1" min="1">
+        </div>
+        <button onclick="getReviewDetail()">리뷰 상세 조회</button>
+        <div id="detailResponse" class="response"></div>
+    </div>
+
+    <!-- 리뷰 등록 -->
+    <div class="api-section">
+        <h2>3. 리뷰 등록 (POST /api/reviews)</h2>
+        <div class="form-group">
+            <label>작성자명:</label>
+            <input type="text" id="newReviewNm" placeholder="홍길동">
+        </div>
+        <div class="form-group">
+            <label>후기 내용:</label>
+            <textarea id="newReviewCn" placeholder="서비스 후기를 작성해주세요"></textarea>
+        </div>
+        <div class="form-group">
+            <label>별점:</label>
+            <div class="star-rating" id="starRating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="newStarRate" value="5">
+        </div>
+        <div class="form-group">
+            <label>서비스 코드:</label>
+            <select id="newserviceCd">
+                <option value="001">에어컨 케어 및 세척</option>
+                <option value="002">설치/교체 서비스</option>
+                <option value="003">상가/사무실 시공</option>
+                <option value="004">매트리스 청소(케어)</option>
+                <option value="005">세탁기 케어</option>
+                <option value="006">욕실 전문 시공</option>
+                <option value="007">환풍기 설치</option>
+                <option value="008">프리미엄 주방케어</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>서비스 날짜:</label>
+            <input type="text" id="newSvcDate" placeholder="20250301">
+        </div>
+        <div class="form-group">
+            <label>비밀번호:</label>
+            <input type="password" id="newPw" placeholder="수정/삭제용 비밀번호">
+        </div>
+        <button onclick="createReview()">리뷰 등록</button>
+        <div id="createResponse" class="response"></div>
+    </div>
+
+    <!-- 리뷰 수정 -->
+    <div class="api-section">
+        <h2>4. 리뷰 수정 (POST /api/reviews/{id})</h2>
+        <div class="form-group">
+            <label>리뷰 번호:</label>
+            <input type="number" id="updateSeq" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>작성자명:</label>
+            <input type="text" id="updateReviewNm" placeholder="수정할 이름">
+        </div>
+        <div class="form-group">
+            <label>후기 내용:</label>
+            <textarea id="updateReviewCn" placeholder="수정할 내용"></textarea>
+        </div>
+        <div class="form-group">
+            <label>별점:</label>
+            <input type="number" id="updateStarRate" value="5" min="1" max="5">
+        </div>
+        <div class="form-group">
+            <label>비밀번호:</label>
+            <input type="password" id="updatePw" placeholder="등록시 입력한 비밀번호">
+        </div>
+        <button onclick="updateReview()">리뷰 수정</button>
+        <div id="updateResponse" class="response"></div>
+    </div>
+
+    <!-- 리뷰 삭제 -->
+    <div class="api-section">
+        <h2>5. 리뷰 삭제 (POST /api/reviews/{id}/delete)</h2>
+        <div class="form-group">
+            <label>리뷰 번호:</label>
+            <input type="number" id="deleteSeq" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>비밀번호:</label>
+            <input type="password" id="deletePw" placeholder="등록시 입력한 비밀번호">
+        </div>
+        <button onclick="deleteReview()">리뷰 삭제</button>
+        <div id="deleteResponse" class="response"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8081';
+        
+        // 별점 클릭 이벤트
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.dataset.value);
+                document.getElementById('newStarRate').value = rating;
+                updateStarDisplay(rating);
+            });
+        });
+        
+        function updateStarDisplay(rating) {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // 초기 별점 5점 설정
+        updateStarDisplay(5);
+        
+        // 1. 리뷰 목록 조회
+        async function getReviewList() {
+            const pageNum = document.getElementById('pageNum').value;
+            const pageSize = document.getElementById('pageSize').value;
+            const reviewNm = document.getElementById('searchName').value;
+            const starRate = document.getElementById('starFilter').value;
+            
+            let url = `${API_BASE_URL}/api/reviews?pageNum=${pageNum}&pageSize=${pageSize}`;
+            if (reviewNm) url += `&reviewNm=${reviewNm}`;
+            if (starRate) url += `&starRate=${starRate}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let display = JSON.stringify(data, null, 2);
+                if (data.success && data.data) {
+                    display += '\n\n=== 리뷰 목록 ===\n';
+                    data.data.forEach((review, index) => {
+                        display += `\n[${index + 1}] ${review.reviewNm} (${review.starRate}★)\n`;
+                        display += `    ${review.reviewCn}\n`;
+                        display += `    서비스: ${review.svcCnNm} | 날짜: ${review.rgsDt}\n`;
+                    });
+                }
+                
+                document.getElementById('listResponse').textContent = display;
+            } catch (error) {
+                document.getElementById('listResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 2. 전체 리뷰 조회
+        async function getAllReviews() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
+                const data = await response.json();
+                
+                let display = JSON.stringify(data, null, 2);
+                if (data.success && data.data) {
+                    display += `\n\n=== 전체 리뷰 (${data.data.length}개) ===\n`;
+                    data.data.forEach((review, index) => {
+                        display += `\n[${index + 1}] ${review.reviewNm} (${review.starRate}★)\n`;
+                        display += `    ${review.reviewCn}\n`;
+                    });
+                }
+                
+                document.getElementById('listResponse').textContent = display;
+            } catch (error) {
+                document.getElementById('listResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 3. 리뷰 상세 조회
+        async function getReviewDetail() {
+            const reviewSeq = document.getElementById('reviewSeq').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewSeq}`);
+                const data = await response.json();
+                document.getElementById('detailResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('detailResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 4. 리뷰 등록
+        async function createReview() {
+            const reviewData = {
+                reviewNm: document.getElementById('newReviewNm').value,
+                reviewCn: document.getElementById('newReviewCn').value,
+                starRate: parseInt(document.getElementById('newStarRate').value),
+                serviceCd: document.getElementById('newserviceCd').value,
+                svcDate: document.getElementById('newSvcDate').value,
+                pw: document.getElementById('newPw').value,
+                dispYn: 'Y'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+                const data = await response.json();
+                document.getElementById('createResponse').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    alert('리뷰가 등록되었습니다!');
+                    // 입력 필드 초기화
+                    document.getElementById('newReviewNm').value = '';
+                    document.getElementById('newReviewCn').value = '';
+                    document.getElementById('newPw').value = '';
+                }
+            } catch (error) {
+                document.getElementById('createResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 5. 리뷰 수정
+        async function updateReview() {
+            const reviewSeq = document.getElementById('updateSeq').value;
+            const updateData = {
+                reviewNm: document.getElementById('updateReviewNm').value,
+                reviewCn: document.getElementById('updateReviewCn').value,
+                starRate: parseInt(document.getElementById('updateStarRate').value),
+                pw: document.getElementById('updatePw').value,
+                dispYn: 'Y'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewSeq}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                const data = await response.json();
+                document.getElementById('updateResponse').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    alert('리뷰가 수정되었습니다!');
+                }
+            } catch (error) {
+                document.getElementById('updateResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 6. 리뷰 삭제
+        async function deleteReview() {
+            const reviewSeq = document.getElementById('deleteSeq').value;
+            const pw = document.getElementById('deletePw').value;
+            
+            if (!confirm('정말 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewSeq}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ pw: pw })
+                });
+                const data = await response.json();
+                document.getElementById('deleteResponse').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    alert('리뷰가 삭제되었습니다!');
+                }
+            } catch (error) {
+                document.getElementById('deleteResponse').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // 페이지 로드시 리뷰 목록 조회
+        window.onload = function() {
+            getReviewList();
+        };
+    </script>
+</body>
+</html>

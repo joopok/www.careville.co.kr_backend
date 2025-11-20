@@ -1,0 +1,99 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>:: 온라인 상담 ::</title>
+<style>
+[type="checkbox"] + label {height:20px; line-height:0px; padding-left:0px; width:20px; margin:0px; display:block;}
+#templateTable{margin-bottom:0;}
+#pagination{text-align: center;}
+</style>
+<script th:src="@{/apage/js/cnslt010.js}"></script>
+<script th:src="@{/apage/js/pages/tables/jquery-datatable.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/jquery.dataTables.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.flash.min.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/jszip.min.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/pdfmake.min.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/jquery-inputmask/jquery.inputmask.bundle.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+	<section class="content">
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>온라인 예약/상담 목록</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+								
+								<form id="searchFrom">
+									<input type="hidden" name="currPage"value="1">
+									<div class="col-xs-3">
+										<div class="form-group">
+											<div class="form-line">
+												<input type="text" name="nm" class="form-control" placeholder="작성자명">
+											</div>
+										</div>
+									</div>
+									<div class="col-xs-2">
+										<div class="form-group">
+											<select name="serviceCd" class="form-control">
+												<option value="">서비스 전체</option>
+												<option th:each="code : ${svcCdList}" th:value="${code.serviceCd}" th:text="${code.serviceNm}"></option>
+											</select>
+										</div>
+									</div>
+									<div class="col-xs-2">
+										<div class="form-group">
+											<select name="reqType" class="form-control">
+												<option value="">예약/상담</option>
+												<option value="001">상담</option>
+												<option value="002">예약</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-xs-3 ">
+										<button type="button" class="btn btn-primary waves-effect btnSearch">
+											<i class="material-icons">search</i>
+											<span>검색</span>
+										</button>
+									</div>
+								</form>
+								
+								<table id="templateTable" class="table table-bordered table-striped table-hover dataTable"></table>
+								<div id="pagination" class="dataTables_paginate paging_simple_numbers"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+    </section>
+	
+	<div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
+	    <div class="modal-dialog modal-lg" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h4 class="modal-title" id="defaultModalLabel">온라인 예약/상담 상세</h4>
+	            </div>
+	            <div class="modal-body" id="viewDiv">
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-link waves-effect btnModalUpdate">UPDATE</button>
+	                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+
+</div>
+</body>
+</html>

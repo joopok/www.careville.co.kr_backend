@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Careville API 테스트 페이지</h1>
+    
+    <div class="button-group">
+        <h2>통합 카테고리-상품 API (/api/category-products.do)</h2>
+        <button onclick="testAPI('/api/category-products.do')">기본 조회</button>
+        <button onclick="testAPI('/api/category-products.do?groupByCategory=true')">카테고리별 그룹핑</button>
+        <button onclick="testAPI('/api/category-products.do?includeStats=false')">통계 제외</button>
+        <button onclick="testAPI('/api/category-products.do?onlyActive=false')">모든 상품</button>
+        <button onclick="testAPI('/api/category-products.do?groupByCategory=true&includeStats=true&onlyActive=true')">모든 옵션</button>
+    </div>
+    
+    <div class="button-group">
+        <h2>심플 카탈로그 API (/api/v1/catalog)</h2>
+        <button onclick="testAPI('/api/v1/catalog')">카탈로그 조회</button>
+    </div>
+    
+    <h2>응답 결과</h2>
+    <div id="result" class="result">
+        <pre>API를 테스트하려면 위의 버튼을 클릭하세요.</pre>
+    </div>
+    
+    <script>
+        function testAPI(url) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<pre>Loading...</pre>';
+            resultDiv.className = 'result';
+            
+            const startTime = Date.now();
+            
+            fetch(url)
+                .then(response => {
+                    const elapsed = Date.now() - startTime;
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json().then(data => ({data, elapsed}));
+                })
+                .then(({data, elapsed}) => {
+                    resultDiv.className = 'result success';
+                    let output = `URL: ${url}\n`;
+                    output += `응답 시간: ${elapsed}ms\n`;
+                    output += `상태: ${data.result || (data.success ? 'SUCCESS' : 'FAIL')}\n`;
+                    output += '─'.repeat(60) + '\n';
+                    output += JSON.stringify(data, null, 2);
+                    resultDiv.innerHTML = `<pre>${output}</pre>`;
+                    
+                    // 통계 정보 표시
+                    if (data.statistics) {
+                        console.log('통계 정보:', data.statistics);
+                    }
+                    if (data.data && data.data.summary) {
+                        console.log('요약 정보:', data.data.summary);
+                    }
+                })
+                .catch(error => {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<pre>Error: ${error.message}\n\nURL: ${url}</pre>`;
+                });
+        }
+        
+        // 페이지 로드 시 기본 API 테스트
+        window.addEventListener('load', () => {
+            console.log('API 테스트 페이지가 로드되었습니다.');
+            console.log('사용 가능한 엔드포인트:');
+            console.log('1. /api/category-products.do - 통합 카테고리-상품 조회');
+            console.log('2. /api/v1/catalog - 심플 카탈로그 조회');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+
+	<style>
+	.form-group .form-line:after{border-bottom-color:#ddd;}
+	button.dropdown-toggle{padding-top: 13px;padding-left:0px;}
+	button.dropdown-toggle,
+	button.dropdown-toggle:hover,
+	button.dropdown-toggle:active,
+	button.dropdown-toggle:focus{background-color: transparent !important;}
+	button.dropdown-toggle span{margin-left:0px !important;}
+	</style>
+	<div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="carda">
+                <div class="body">
+					<div class="row clearfix">
+					    <div class="col-md-6">
+							<div class="form-group form-float">
+							    <div class="form-line">
+							        <input type="hidden" name="cnsltSeq" th:value="${view.cnsltSeq}">
+							        <input type="text" class="form-control" name="nm" th:value="${view.nm}" readonly>
+							        <label class="form-label">이름</label>
+							    </div>
+							</div>
+					    </div>
+						<div class="col-sm-6">
+							<div class="form-group form-float">
+							    <div class="form-line focused">
+									<select class="form-control" id="sttusCd" name="sttusCd">
+	                                    <option value="">상태</option>
+										<option th:each="s : ${sttusCdLst}"
+										        th:value="${s.code}"
+										        th:text="${s.codeNm}"
+												th:selected="${s.code == view.sttusCd}">
+										</option>
+	                                </select>
+									<label class="form-label">상태</label>
+								</div>
+							</div>		
+						</div>
+					</div>							
+					
+					<div class="row clearfix">
+					    <div class="col-md-6">
+							<div class="form-group form-float">
+							    <div class="form-line">
+							        <input type="text" class="form-control" name="tel1" th:value="${view.tel1}" readonly>
+							        <label class="form-label">전화번호</label>
+							    </div>
+							</div>
+					    </div>
+					    <div class="col-md-6">
+							<div class="form-group form-float">
+							    <div class="form-line">
+							        <input type="text" class="form-control" name="tel2" th:value="${view.phone}" readonly>
+							        <label class="form-label">휴대번호</label>
+							    </div>
+							</div>
+					    </div>
+					</div>
+					
+					<div class="row clearfix">
+					    <div class="col-md-6" th:if="${view.reqType == '001'}">
+	                        <div class="form-group form-float">
+	                            <div class="form-line">
+	                                <input type="text" class="form-control" name="serviceCd" th:value="${view.serviceNm}" readonly>
+	                                <label class="form-label">상담 서비스</label>
+	                            </div>
+	                        </div>
+						</div>
+					    <div class="col-md-6" th:if="${view.reqType == '002'}">
+	                        <div class="form-group form-float">
+	                            <div class="form-line">
+	                                <input type="text" class="form-control" name="productNo" th:value="${view.productNm}" readonly>
+	                                <label class="form-label">예약 상품</label>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-md-6">								
+	                        <div class="form-group form-float">
+	                            <div class="form-line">
+	                                <input type="text" class="form-control" name="hopeDay" th:value="${view.hopeDay}" readonly>
+	                                <label class="form-label" th:if="${view.reqType == '001'}">상담 희망일</label>
+	                                <label class="form-label" th:if="${view.reqType == '002'}">예약 희망일</label>
+	                            </div>
+	                        </div>
+						</div>
+					</div>				
+							
+					<div class="form-group form-float">
+					    <div class="form-line">
+					        <input type="text" class="form-control" name="adres" th:value="${view.adres}" readonly>
+					        <label class="form-label">주소</label>
+					    </div>
+					</div>
+											
+					<div class="form-group form-float">
+                        <div class="form-line">
+                            <textarea name="inqryCn" cols="30" rows="5" class="form-control no-resize" aria-required="true" aria-invalid="false" th:text="${view.inqryCn}" readonly></textarea>
+                            <label class="form-label">내용</label>
+                        </div>
+                    </div>
+					
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input type="text" class="form-control" name="regDt" th:value="${view.regDt}" readonly>
+                            <label class="form-label">등록일</label>
+                        </div>
+                    </div>
+                </div>
+				
+				<!-- div class="body">
+				    <table class="table table-striped">
+				        <thead>
+				            <tr>
+				                <th>No.</th>
+				                <th>파일명</th>
+				                <th>확장자</th>
+				                <th>사이즈</th>
+				            </tr>
+				        </thead>
+				        <tbody>
+				            <tr th:each="item,stat : ${filesLst}">
+				                <td th:text="${stat.index +1}"></td>
+				                <td><a th:href="@{/fileView.do(viewFileSeq=${item.viewfileseq})}" th:text="${item.fileRealNm}"></a></td>
+				                <td th:text="${item.fileExtsn}"></td>
+				                <td th:text="${item.fileSize}"></td>
+				            </tr>
+							<tr th:if="${#lists.isEmpty(filesLst)}">
+							    <td colspan="4">등록된 파일이 없습니다.</td>
+							</tr>									
+				        </tbody>
+				    </table>
+				</div -->				
+            </div>
+        </div>
+    </div>
+	
+	<script th:src="@{/apage/js/admin.js}"></script>

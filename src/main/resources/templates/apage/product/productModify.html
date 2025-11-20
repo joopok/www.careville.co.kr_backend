@@ -1,0 +1,399 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+	<head>
+	<title>:: 상품 수정 ::</title>
+	<style>
+	.form-group label {font-weight:600;}
+	.required-mark {color:#ff5722; margin-left:3px;}
+	.price-input {text-align:right;}
+	.service-item {margin-bottom:10px;}
+	.service-item input {margin-bottom:5px;}
+	.service-item button {margin-left:5px;}
+	.help-info {color:#999; font-size:12px; margin-top:5px;}
+	.info-text {color:#666; font-size:14px;}
+	</style>
+	</head>
+	<body>
+<div layout:fragment="content">
+	<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <h2>상품 관리</h2>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>상품 정보 수정</h2>
+                    </div>
+                    <div class="body">
+                        <form id="productForm" method="post" action="/apage/product041.do">
+                            <input type="hidden" name="productNo" id="productNo">
+                            
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>상품번호</label>
+                                        <p class="form-control-static info-text" id="productNoDisplay">-</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>등록일시</label>
+                                        <p class="form-control-static info-text" id="regDtDisplay">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>카테고리 <span class="required-mark">*</span></label>
+                                        <select class="form-control" name="serviceCd" id="serviceCd" required>
+                                            <option value="">카테고리를 선택하세요</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>상품명 <span class="required-mark">*</span></label>
+                                        <input type="text" class="form-control" name="productNm" id="productNm" 
+                                               placeholder="예: 아파트 기본 청소" required maxlength="200">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>평형대</label>
+                                        <select class="form-control" name="areaType" id="areaType">
+                                            <option value="">선택하세요</option>
+                                            <option value="20-30평형">20-30평형</option>
+                                            <option value="30-40평형">30-40평형</option>
+                                            <option value="40-50평형">40-50평형</option>
+                                            <option value="50평형 이상">50평형 이상</option>
+                                            <option value="원룸/오피스텔">원룸/오피스텔</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>소요시간</label>
+                                        <input type="text" class="form-control" name="serviceTime" id="serviceTime" 
+                                               placeholder="예: 3-4시간" maxlength="50">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>정가 <span class="required-mark">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control price-input" name="originalPrice" id="originalPrice" 
+                                                   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
+                                            <span class="input-group-addon">원</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>판매가 <span class="required-mark">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control price-input" name="salePrice" id="salePrice" 
+                                                   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
+                                            <span class="input-group-addon">원</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>할인율</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="discountRate" id="discountRate" 
+                                                   value="0" min="0" max="100" readonly>
+                                            <span class="input-group-addon">%</span>
+                                        </div>
+                                        <div class="help-info">자동 계산됩니다</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>노출여부 <span class="required-mark">*</span></label>
+                                        <select class="form-control" name="displayYn" id="displayYn" required>
+                                            <option value="Y">노출</option>
+                                            <option value="N">미노출</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>판매여부 <span class="required-mark">*</span></label>
+                                        <select class="form-control" name="saleYn" id="saleYn" required>
+                                            <option value="Y">판매</option>
+                                            <option value="N">미판매</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>노출순서</label>
+                                        <input type="number" class="form-control" name="displayOrder" id="displayOrder" 
+                                               value="999" min="0" max="9999">
+                                        <div class="help-info">숫자가 작을수록 먼저 노출됩니다</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>상품 설명</label>
+                                        <textarea class="form-control" name="productDesc" id="productDesc" 
+                                                  rows="5" placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>서비스 포함사항</label>
+                                        <div id="serviceIncludesContainer">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-info waves-effect" onclick="addServiceItem()">
+                                            <i class="material-icons">add</i> 항목 추가
+                                        </button>
+                                        <div class="help-info">서비스에 포함되는 항목을 추가해주세요</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-xs-12 text-center">
+                                    <button type="submit" class="btn btn-primary waves-effect">
+                                        <i class="material-icons">save</i> 수정 저장
+                                    </button>
+                                    <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/product020.do?productNo=' + $('#productNo').val()">
+                                        <i class="material-icons">cancel</i> 취소
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+        var productNo = /*[[${param.productNo[0]}]]*/ null;
+        
+        $(document).ready(function() {
+            if (!productNo) {
+                alert('상품번호가 없습니다.');
+                location.href = '/apage/product010.do';
+                return;
+            }
+            
+            loadCategories();
+            loadProductDetail();
+        });
+        
+        function loadCategories() {
+            $.ajax({
+                url: '/apage/product011.do',
+                type: 'POST',
+                data: {action: 'getCategories'},
+                dataType: 'json',
+                success: function(data) {
+                    if(data.categories) {
+                        var select = $('#serviceCd');
+                        $.each(data.categories, function(index, category) {
+                            select.append('<option value="' + category.serviceCd + '">' + category.serviceNm + '</option>');
+                        });
+                    }
+                }
+            });
+        }
+        
+        function loadProductDetail() {
+            $.ajax({
+                url: '/apage/product021.do',
+                type: 'POST',
+                data: { productNo: productNo },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === 'SUCCESS' && data.product) {
+                        populateForm(data.product);
+                    } else {
+                        alert('상품 정보를 불러올 수 없습니다.');
+                        location.href = '/apage/product010.do';
+                    }
+                },
+                error: function() {
+                    alert('서버 오류가 발생하였습니다.');
+                    location.href = '/apage/product010.do';
+                }
+            });
+        }
+        
+        function populateForm(product) {
+            $('#productNo').val(product.productNo);
+            $('#productNoDisplay').text(product.productNo);
+            $('#regDtDisplay').text(formatDateTime(product.regDt));
+            
+            // Wait for categories to load, then select
+            setTimeout(function() {
+                $('#serviceCd').val(product.serviceCd);
+            }, 500);
+            
+            $('#productNm').val(product.productNm);
+            $('#areaType').val(product.areaType);
+            $('#serviceTime').val(product.serviceTime);
+            $('#originalPrice').val(formatPrice(product.originalPrice));
+            $('#salePrice').val(formatPrice(product.salePrice));
+            $('#discountRate').val(product.discountRate || 0);
+            $('#displayYn').val(product.displayYn);
+            $('#saleYn').val(product.saleYn);
+            $('#displayOrder').val(product.displayOrder);
+            $('#productDesc').val(product.productDesc);
+            
+            // Load service includes
+            if (product.serviceIncludes) {
+                try {
+                    var includes = JSON.parse(product.serviceIncludes);
+                    if (includes && includes.length > 0) {
+                        $('#serviceIncludesContainer').empty();
+                        $.each(includes, function(index, item) {
+                            addServiceItemWithValue(item);
+                        });
+                    } else {
+                        addServiceItem();
+                    }
+                } catch(e) {
+                    console.log('서비스 포함사항 파싱 오류');
+                    addServiceItem();
+                }
+            } else {
+                addServiceItem();
+            }
+        }
+        
+        function addServiceItem() {
+            var itemHtml = '<div class="service-item">' +
+                          '<div class="input-group">' +
+                          '<input type="text" class="form-control" name="serviceIncludes[]" placeholder="포함사항 입력">' +
+                          '<span class="input-group-btn">' +
+                          '<button type="button" class="btn btn-danger waves-effect" onclick="removeServiceItem(this)">' +
+                          '<i class="material-icons">remove</i>' +
+                          '</button>' +
+                          '</span>' +
+                          '</div>' +
+                          '</div>';
+            $('#serviceIncludesContainer').append(itemHtml);
+        }
+        
+        function addServiceItemWithValue(value) {
+            var itemHtml = '<div class="service-item">' +
+                          '<div class="input-group">' +
+                          '<input type="text" class="form-control" name="serviceIncludes[]" value="' + value + '" placeholder="포함사항 입력">' +
+                          '<span class="input-group-btn">' +
+                          '<button type="button" class="btn btn-danger waves-effect" onclick="removeServiceItem(this)">' +
+                          '<i class="material-icons">remove</i>' +
+                          '</button>' +
+                          '</span>' +
+                          '</div>' +
+                          '</div>';
+            $('#serviceIncludesContainer').append(itemHtml);
+        }
+        
+        function removeServiceItem(btn) {
+            $(btn).closest('.service-item').remove();
+        }
+        
+        function formatNumber(input) {
+            var value = input.value.replace(/[^0-9]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('ko-KR');
+                input.value = value;
+            }
+        }
+        
+        function calculateDiscount() {
+            var original = $('#originalPrice').val().replace(/[^0-9]/g, '');
+            var sale = $('#salePrice').val().replace(/[^0-9]/g, '');
+            
+            if (original && sale) {
+                original = parseInt(original);
+                sale = parseInt(sale);
+                
+                if (original > 0 && sale < original) {
+                    var discount = Math.round((original - sale) / original * 100);
+                    $('#discountRate').val(discount);
+                } else {
+                    $('#discountRate').val(0);
+                }
+            }
+        }
+        
+        function formatPrice(price) {
+            if (!price) return '0';
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            var date = new Date(dateStr);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+        }
+        
+        $('#productForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // 서비스 포함사항 JSON 변환
+            var includes = [];
+            $('input[name="serviceIncludes[]"]').each(function() {
+                var value = $(this).val().trim();
+                if (value) {
+                    includes.push(value);
+                }
+            });
+            
+            var formData = $(this).serialize();
+            if (includes.length > 0) {
+                formData += '&serviceIncludesJson=' + encodeURIComponent(JSON.stringify(includes));
+            }
+            
+            $.ajax({
+                url: '/apage/product041.do',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === 'SUCCESS') {
+                        alert('상품 정보가 수정되었습니다.');
+                        location.href = '/apage/product020.do?productNo=' + productNo;
+                    } else {
+                        alert(data.msg || '수정에 실패하였습니다.');
+                    }
+                },
+                error: function() {
+                    alert('서버 오류가 발생하였습니다.');
+                }
+            });
+        });
+    </script>
+    </section>
+</div>
+</body>
+</html>

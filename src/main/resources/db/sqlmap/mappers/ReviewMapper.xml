@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.ReviewMapper">
+
+	<sql id="listSelect">
+		SELECT 	
+				AA.REVIEW_SEQ
+				,AA.REVIEW_NM
+				,AA.REVIEW_CN
+				,AA.STAR_RATE
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,AA.PRODUCT_NO
+				,AC.PRODUCT_NM
+				,AA.SVC_DATE
+				,AA.DISP_YN
+				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd') AS RGS_DT
+		FROM	TB_REVIEW AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+				LEFT OUTER JOIN TB_PRODUCT AC
+					ON AA.PRODUCT_NO = AC.PRODUCT_NO
+	</sql>
+	
+	<select id="getReviewCnt" parameterType="hashMap" resultType="int">
+		SELECT 	COUNT(*) 
+		FROM 	TB_REVIEW
+		WHERE	1=1
+		<if test="reviewNm != null and reviewNm != ''">
+			AND REVIEW_NM LIKE CONCAT('%', #{reviewNm},'%')
+		</if>
+		<if test="dispYn != null and dispYn != ''">
+			AND DISP_YN = #{dispYn}
+		</if>
+		<if test="serviceCd != null and serviceCd != ''">
+			AND SERVICE_CD = #{serviceCd}
+		</if>
+		<if test="starRate != null and starRate != ''">
+			AND STAR_RATE = #{starRate}
+		</if>
+	</select>
+	
+	<select id="getReviewList" parameterType="hashMap" resultType="hashMapCamel">
+		<include refid="listSelect"></include>
+		WHERE	1=1
+		<if test="reviewNm != null and reviewNm != ''">
+			AND AA.REVIEW_NM LIKE CONCAT('%', #{reviewNm},'%')
+		</if>
+		<if test="dispYn != null and dispYn != ''">
+			AND AA.DISP_YN = #{dispYn}
+		</if>
+		<if test="serviceCd != null and serviceCd != ''">
+			AND AA.SERVICE_CD = #{serviceCd}
+		</if>
+		<if test="starRate != null and starRate != ''">
+			AND AA.STAR_RATE = #{starRate}
+		</if>
+		ORDER BY 
+				AA.REVIEW_SEQ DESC
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt}
+	</select>
+	
+	<select id="getReviewView" parameterType="hashMap" resultType="hashMapCamel">
+		SELECT 	
+				AA.REVIEW_SEQ
+				,AA.REVIEW_NM
+				,AA.REVIEW_CN
+				,AA.STAR_RATE
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,IFNULL(AC.PRODUCT_NM, '') AS PRODUCT_NM
+				,AA.SVC_DATE
+				,AA.DISP_YN
+				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd HH:mm:ss') AS RGS_DT
+		FROM	TB_REVIEW AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+				LEFT OUTER JOIN TB_PRODUCT AC
+					ON AA.PRODUCT_NO = AC.PRODUCT_NO
+		WHERE	AA.REVIEW_SEQ = #{reviewSeq}
+	</select>
+	
+	<select id="getReviewViewWithPassword" parameterType="hashMap" resultType="hashMapCamel">
+		SELECT 	
+				AA.REVIEW_SEQ
+				,AA.REVIEW_NM
+				,AA.REVIEW_CN
+				,AA.STAR_RATE
+				,AA.SERVICE_CD
+				,AB.CODE_NM AS SVC_CN_NM
+				,AA.SVC_DATE
+				,AA.DISP_YN
+				,AA.PW
+				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd HH:mm:ss') AS RGS_DT
+		FROM	TB_REVIEW AA
+				LEFT OUTER JOIN TB_CMMN_CODE AB
+					ON AA.SERVICE_CD = AB.CODE
+					AND AB.GROUP_CD = '001'
+		WHERE	AA.REVIEW_SEQ = #{reviewSeq}
+	</select>
+	
+	<insert id="setReviewReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="REVIEW_SEQ">
+		INSERT INTO TB_REVIEW(
+			REVIEW_NM
+			,REVIEW_CN
+			,STAR_RATE
+			,SERVICE_CD
+			,PRODUCT_NO
+			,SVC_DATE
+			,DISP_YN
+			,PW
+			,RGS_DT
+		) VALUES (
+			#{reviewNm}
+			,#{reviewCn}
+			,#{starRate}
+			,#{serviceCd}
+			,#{productNo}
+			,#{svcDate}
+			,#{dispYn}
+			,#{pw}
+			,NOW()
+		)
+	</insert>
+	
+	<update id="setReviewUpd" parameterType="hashMap">
+		UPDATE 	TB_REVIEW
+		SET		REVIEW_NM = #{reviewNm}
+				,REVIEW_CN = #{reviewCn}
+				,STAR_RATE = #{starRate}
+				,SERVICE_CD = #{serviceCd}
+				,PRODUCT_NO = #{productNo}
+				,SVC_DATE = #{svcDate}
+				<if test="dispYn != null and dispYn != ''">
+					,DISP_YN = #{dispYn}
+				</if>
+		WHERE	REVIEW_SEQ = #{reviewSeq}
+		<if test="pw != null and pw != ''">
+			AND PW = #{pw}
+		</if>
+	</update>
+	
+	<update id="setReviewDispUpd" parameterType="hashMap">
+		UPDATE 	TB_REVIEW
+		SET		DISP_YN = #{dispYn}
+		WHERE	REVIEW_SEQ = #{reviewSeq}
+	</update>
+	
+	<delete id="setReviewDel" parameterType="hashMap">
+		DELETE FROM TB_REVIEW
+		WHERE	REVIEW_SEQ = #{reviewSeq}
+		<if test="pw != null and pw != ''">
+			AND PW = #{pw}
+		</if>
+	</delete>
+	
+</mapper>
