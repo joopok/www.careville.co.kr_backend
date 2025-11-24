@@ -42,7 +42,8 @@
       "Bash(export PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\")",
       "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && head -30 {}')",
       "Bash(unzip:*)",
-      "Bash(pip3 install:*)"
+      "Bash(pip3 install:*)",
+      "Bash(git remote:*)"
     ],
     "deny": [],
     "ask": []
