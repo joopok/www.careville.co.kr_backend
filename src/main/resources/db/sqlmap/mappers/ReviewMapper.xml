@@ -4,7 +4,7 @@
 <mapper namespace="kr.co.cleaning.mapper.ReviewMapper">
 
 	<sql id="listSelect">
-		SELECT 	
+		SELECT
 				AA.REVIEW_SEQ
 				,AA.REVIEW_NM
 				,AA.REVIEW_CN
@@ -15,7 +15,7 @@
 				,AC.PRODUCT_NM
 				,AA.SVC_DATE
 				,AA.DISP_YN
-				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd') AS RGS_DT
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_REVIEW AA
 				LEFT OUTER JOIN TB_CATEGORY AB
 					ON AA.SERVICE_CD = AB.SERVICE_CD
@@ -62,7 +62,7 @@
 	</select>
 	
 	<select id="getReviewView" parameterType="hashMap" resultType="hashMapCamel">
-		SELECT 	
+		SELECT
 				AA.REVIEW_SEQ
 				,AA.REVIEW_NM
 				,AA.REVIEW_CN
@@ -72,7 +72,7 @@
 				,IFNULL(AC.PRODUCT_NM, '') AS PRODUCT_NM
 				,AA.SVC_DATE
 				,AA.DISP_YN
-				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd HH:mm:ss') AS RGS_DT
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d %H:%i:%s') AS RGS_DT
 		FROM	TB_REVIEW AA
 				LEFT OUTER JOIN TB_CATEGORY AB
 					ON AA.SERVICE_CD = AB.SERVICE_CD
@@ -82,7 +82,7 @@
 	</select>
 	
 	<select id="getReviewViewWithPassword" parameterType="hashMap" resultType="hashMapCamel">
-		SELECT 	
+		SELECT
 				AA.REVIEW_SEQ
 				,AA.REVIEW_NM
 				,AA.REVIEW_CN
@@ -92,7 +92,7 @@
 				,AA.SVC_DATE
 				,AA.DISP_YN
 				,AA.PW
-				,FORMATDATETIME(AA.RGS_DT ,'yyyy-MM-dd HH:mm:ss') AS RGS_DT
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d %H:%i:%s') AS RGS_DT
 		FROM	TB_REVIEW AA
 				LEFT OUTER JOIN TB_CMMN_CODE AB
 					ON AA.SERVICE_CD = AB.CODE

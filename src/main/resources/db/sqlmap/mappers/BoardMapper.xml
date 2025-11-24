@@ -22,15 +22,15 @@
 	</select>
 	
 	<select id="getBoardList" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 	
+		SELECT
 				AA.BOARD_SEQ
 				,AA.NOTICE_YN
 				,AA.BOARD_SJ
 				,AA.BOARD_CN
 				,AA.REG_NM
-				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 				,AA.SECRET_YN
-				,AA.SECRET_PW				 
+				,AA.SECRET_PW
 		FROM	TB_BOARD AA
 		WHERE	1 = 1
 				AND BOARD_GB = #{boardGb}
@@ -45,23 +45,23 @@
 				AND AA.REG_NM LIKE CONCAT('%', #{regNm},'%')
 			</when>
 		</choose>
-		ORDER BY 
+		ORDER BY
 				AA.BOARD_SEQ DESC
-		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt}
 	</select>
 	
 	<select id="getBoardView" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 	
+		SELECT
 				AA.BOARD_SEQ
 				,AA.NOTICE_YN
 				,AA.BOARD_SJ
 				,AA.BOARD_CN
 				,AA.REG_NM
-				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 				,AA.SECRET_YN
-				,AA.SECRET_PW				 
-		FROM	TB_BOARD AA	
-		WHERE	1 = 1	
+				,AA.SECRET_PW
+		FROM	TB_BOARD AA
+		WHERE	1 = 1
 				AND AA.BOARD_SEQ = #{boardSeq}
 	</select>
 	

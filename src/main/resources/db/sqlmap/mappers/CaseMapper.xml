@@ -31,7 +31,7 @@
 	</select>
 	
 	<select id="getCaseList" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 	
+		SELECT
 				AA.CASE_SEQ
 				,AA.SERVICE_CD
 				,AB.SERVICE_NM
@@ -40,10 +40,10 @@
 				,AA.REG_NM
 				,AA.FILE_SEQ
 				,AA.HASHTAG
-				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				 
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
 				LEFT OUTER JOIN TB_CATEGORY AB
-					ON AA.SERVICE_CD = AB.SERVICE_CD		
+					ON AA.SERVICE_CD = AB.SERVICE_CD
 		WHERE	1 = 1
 			<if test="caseSj != null and caseSj != ''">
 				AND AA.CASE_SJ LIKE CONCAT('%', #{caseSj},'%')
@@ -54,26 +54,26 @@
 			<if test="serviceCd != null and serviceCd != ''">
 				AND AA.SERVICE_CD = #{serviceCd}
 			</if>
-		ORDER BY 
+		ORDER BY
 				AA.CASE_SEQ DESC
-		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt}
 	</select>
 	
 	<select id="getCaseView" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 	
+		SELECT
 				AA.CASE_SEQ
 				,AA.SERVICE_CD
-				,AB.SERVICE_NM				
+				,AB.SERVICE_NM
 				,AA.CASE_SJ
 				,AA.CASE_CN
 				,AA.REG_NM
 				,AA.FILE_SEQ
 				,AA.HASHTAG
-				,FORMATDATETIME(AA.RGS_DT, 'yyyy-MM-dd') AS RGS_DT				
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
 				LEFT OUTER JOIN TB_CATEGORY AB
-					ON AA.SERVICE_CD = AB.SERVICE_CD		
-		WHERE	1 = 1	
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+		WHERE	1 = 1
 				AND AA.CASE_SEQ = #{caseSeq}
 	</select>
 	

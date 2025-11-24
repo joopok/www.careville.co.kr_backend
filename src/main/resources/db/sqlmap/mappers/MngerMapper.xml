@@ -10,7 +10,7 @@
 	</select>
 	
 	<select id="getMngerList" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 
+		SELECT
 				MNGR_SEQ
 				,MNGR_ID
 				,MNGR_PW
@@ -18,15 +18,15 @@
 				,MNGR_NCNM
 				,MNGR_TEL
 				,MNGR_STTUS
-				,FORMATDATETIME(RGS_DT, 'yyyy-MM-dd') AS RGS_DT	
+				,DATE_FORMAT(RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_MANAGER
-		ORDER BY 
+		ORDER BY
 				MNGR_SEQ ASC
-		LIMIT	#{limitStartNum} , #{limitViewRowCnt};
+		LIMIT	#{limitStartNum} , #{limitViewRowCnt}
 	</select>
 	
 	<select id="getMngerView" parameterType="hashMap" resultType="hashMapCamel" >
-		SELECT 
+		SELECT
 				MNGR_SEQ
 				,MNGR_ID
 				,MNGR_PW
@@ -34,10 +34,10 @@
 				,MNGR_NCNM
 				,MNGR_TEL
 				,MNGR_STTUS
-				,FORMATDATETIME(RGS_DT, 'yyyy-MM-dd') AS RGS_DT	
+				,DATE_FORMAT(RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_MANAGER
-		WHERE	1 = 1		
-				AND MNGR_SEQ = #{mngrSeq}		
+		WHERE	1 = 1
+				AND MNGR_SEQ = #{mngrSeq}
 	</select>
 	
 	<select id="getMngerIdDupChk" parameterType="hashMap" resultType="int">
@@ -95,9 +95,9 @@
 	</update>
 	
 	<delete id="setMngrDel" parameterType="hashMap">
-		DELETE 	TB_MANAGER
+		DELETE FROM TB_MANAGER
 		WHERE	1 = 1
-				AND MNGR_SEQ 	= #{mngrSeq}
+				AND MNGR_SEQ = #{mngrSeq}
 	</delete>
 	
 </mapper>

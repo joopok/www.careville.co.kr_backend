@@ -4,15 +4,15 @@
 
     <!-- 서비스 카테고리 목록 조회 -->
     <select id="selectCategoryList" parameterType="hashMap" resultType="hashMapCamel">
-        SELECT 
+        SELECT
             SERVICE_CD,
             SERVICE_NM,
             SERVICE_ORDER,
             USE_YN,
             REG_USER_ID,
-            FORMATDATETIME(REG_DT, 'yyyy-MM-dd HH:mm') AS REG_DT,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i') AS REG_DT,
             MOD_USER_ID,
-            FORMATDATETIME(MOD_DT, 'yyyy-MM-dd HH:mm') AS MOD_DT
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i') AS MOD_DT
         FROM TB_CATEGORY
         WHERE DEL_YN = 'N'
         <if test="searchType != null and searchType != '' and searchWord != null and searchWord != ''">
@@ -64,15 +64,15 @@
     
     <!-- 서비스 카테고리 상세 조회 -->
     <select id="selectCategory" parameterType="string" resultType="hashMapCamel">
-        SELECT 
+        SELECT
             SERVICE_CD,
             SERVICE_NM,
             SERVICE_ORDER,
             USE_YN,
             REG_USER_ID,
-            FORMATDATETIME(REG_DT, 'yyyy-MM-dd HH:mm:ss') AS REG_DT,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
             MOD_USER_ID,
-            FORMATDATETIME(MOD_DT, 'yyyy-MM-dd HH:mm:ss') AS MOD_DT
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i:%s') AS MOD_DT
         FROM TB_CATEGORY
         WHERE SERVICE_CD = #{serviceCd}
           AND DEL_YN = 'N'

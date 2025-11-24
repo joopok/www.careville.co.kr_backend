@@ -64,7 +64,7 @@
 	</select>
 	
 	<select id="getFileView" parameterType="hashMap" resultType="linkedhashMapCamel">
-		SELECT 
+		SELECT
 				FILE_SEQ
 				,FILE_REAL_NM
 				,FILE_FAKE_NM
@@ -73,7 +73,7 @@
 				,FILE_SIZE
 				,RGS_DT
 				,CONCAT(FILE_PATH,'/',FILE_FAKE_NM) AS FILE_FULL_PATH
-		FROM 	TB_FILE
+		FROM	TB_FILE
 		WHERE	1 = 1
 				AND FILE_SEQ = #{fileSeq}
 	</select>
@@ -127,21 +127,21 @@
 	</update>
 	
 	<select id="getFileRelationList" parameterType="hashMap" resultType="linkedhashMapCamel">
-		SELECT 
-				A.FILE_RELATE_SEQ	
+		SELECT
+				A.FILE_RELATE_SEQ
 				,A.FILE_TRGET_SE
 				,A.FILE_TRGET_SEQ
-				,A.RGS_DT	
+				,A.RGS_DT
 				,B.FILE_SEQ
 				,B.FILE_REAL_NM
 				,B.FILE_FAKE_NM
 				,B.FILE_PATH
 				,B.FILE_EXTSN
-				,B.FILE_SIZE		
-				,CASE WHEN B.FILE_SEQ IS NOT NULL THEN CONCAT(B.FILE_PATH,'/',B.FILE_FAKE_NM) ELSE null END AS FILE_FULL_PATH
-		FROM 	TB_FILE_RELATION A
+				,B.FILE_SIZE
+				,CASE WHEN B.FILE_SEQ IS NOT NULL THEN CONCAT(B.FILE_PATH,'/',B.FILE_FAKE_NM) ELSE NULL END AS FILE_FULL_PATH
+		FROM	TB_FILE_RELATION A
 				LEFT OUTER JOIN TB_FILE B
-					ON ON A.FILE_SEQ = B.FILE_SEQ
+					ON A.FILE_SEQ = B.FILE_SEQ
 		WHERE	1 = 1
 		<choose>
 			<when test="fileRelateSeq != null and fileRelateSeq != ''">
