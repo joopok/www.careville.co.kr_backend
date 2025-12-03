@@ -16,79 +16,94 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 
+import org.springframework.lang.NonNull;
+
 import jakarta.servlet.http.HttpSession;
 import kr.co.cleaning.core.utils.AESUtil;
 import kr.co.cleaning.core.utils.FileUtil;
 import kr.co.cleaning.core.utils.PageUtil;
 
 @Configuration
-public class BaseConfig  implements WebMvcConfigurer{
+public class BaseConfig implements WebMvcConfigurer {
 
+	@Override
+	public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+		// CSS, JS, 이미지 등 정적 리소스
+		registry.addResourceHandler("/css/**")
+				.addResourceLocations("classpath:/static/css/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // CSS, JS, 이미지 등 정적 리소스
-        registry.addResourceHandler("/css/**")
-                .addResourceLocations("classpath:/static/css/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-        
-        registry.addResourceHandler("/js/**")
-                .addResourceLocations("classpath:/static/js/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-        
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("classpath:/static/images/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-        
-        registry.addResourceHandler("/plugins/**")
-                .addResourceLocations("classpath:/static/plugins/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-        
-        registry.addResourceHandler("/apage/**")
-                .addResourceLocations("classpath:/static/apage/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-        
-        // HTML 파일들 (테스트용)
-        registry.addResourceHandler("/*.html")
-                .addResourceLocations("classpath:/static/")
-                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
-    }
+		registry.addResourceHandler("/js/**")
+				.addResourceLocations("classpath:/static/js/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
 
-    @Bean
-    WebMvcConfigurer corsConfigurer() {
-    	return new WebMvcConfigurer() {
-    		@Override
-    		public void addCorsMappings(CorsRegistry registry) {
-    			registry.addMapping("/**") // 모든 경로 허용
-    			.allowedOrigins("http://localhost:3000") // React 개발 서버 주소
-    			.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-    			.allowedHeaders("*")
-    			.allowCredentials(true);
-    		}
-    	};
-    }
+		registry.addResourceHandler("/images/**")
+				.addResourceLocations("classpath:/static/images/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
+
+		registry.addResourceHandler("/plugins/**")
+				.addResourceLocations("classpath:/static/plugins/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
+
+		registry.addResourceHandler("/apage/**")
+				.addResourceLocations("classpath:/static/apage/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
+
+		// HTML 파일들 (테스트용)
+		registry.addResourceHandler("/*.html")
+				.addResourceLocations("classpath:/static/")
+				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
+	}
+
+	@Bean
+	WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(@NonNull CorsRegistry registry) {
+				registry.addMapping("/**") // 모든 경로 허용
+						// 개발 환경
+						.allowedOriginPatterns("http://localhost:*")
+						.allowedOriginPatterns("http://127.0.0.1:*")
+						// 프로덕션 환경
+						.allowedOriginPatterns("https://*.careville.co.kr")
+						.allowedOriginPatterns("https://careville.co.kr")
+						.allowedOriginPatterns("http://careville.co.kr")
+						.allowedOriginPatterns("http://www.careville.co.kr")
+						.allowedOriginPatterns("https://www.careville.co.kr")
+						// 카페24 호스팅 환경
+						.allowedOriginPatterns("http://ksm1779.cafe24.com")
+						.allowedOriginPatterns("https://ksm1779.cafe24.com")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
+						.allowedHeaders("*")
+						.exposedHeaders("Content-Type", "Authorization", "X-Total-Count")
+						.allowCredentials(true)
+						.maxAge(3600L); // preflight 캐시 1시간
+			}
+		};
+	}
 
 	// JSP 기반 뷰
-    /*
-    @Bean
-    ViewResolver viewResolver() {
-    	InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".jsp");
-        viewResolver.setOrder(2);
-        return viewResolver;
-    }
-    */
+	/*
+	 * @Bean
+	 * ViewResolver viewResolver() {
+	 * InternalResourceViewResolver viewResolver = new
+	 * InternalResourceViewResolver();
+	 * viewResolver.setPrefix("/WEB-INF/views/");
+	 * viewResolver.setSuffix(".jsp");
+	 * viewResolver.setOrder(2);
+	 * return viewResolver;
+	 * }
+	 */
 
-    // 컨트롤러 wiew 이름으로 등록된 빈으로 연결
-    @Bean
-    BeanNameViewResolver beanNameViewResolver() {
-        BeanNameViewResolver resolver = new BeanNameViewResolver();
-        resolver.setOrder(0); // Thymeleaf보다 먼저 처리
-        return resolver;
-    }
+	// 컨트롤러 wiew 이름으로 등록된 빈으로 연결
+	@Bean
+	BeanNameViewResolver beanNameViewResolver() {
+		BeanNameViewResolver resolver = new BeanNameViewResolver();
+		resolver.setOrder(0); // Thymeleaf보다 먼저 처리
+		return resolver;
+	}
 
-    // JSON 응답
+	// JSON 응답
 	@Bean
 	JsonView jsonView() {
 		return new JsonView();
@@ -122,30 +137,30 @@ public class BaseConfig  implements WebMvcConfigurer{
 	// AOP Pointcut
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	Pointcut pointcut(SessionCmn sessionCmn){
+	Pointcut pointcut(SessionCmn sessionCmn) {
 		return new Pointcut(sessionCmn);
 	}
 
 	// AES 암복호화 모듈
-    @Bean
-    AESUtil aesUtil(@Value("${kframe.aes.key}") String aesKey) {
-        return new AESUtil(aesKey);
-    }
+	@Bean
+	AESUtil aesUtil(@Value("${kframe.aes.key}") String aesKey) {
+		return new AESUtil(aesKey);
+	}
 
 	// 내부 Exception 공통 처리
-    @Bean
-    SimpleMappingExceptionResolver exceptionResolver() {
-    	return new KFExceptionResolver();
-    }
+	@Bean
+	SimpleMappingExceptionResolver exceptionResolver() {
+		return new KFExceptionResolver();
+	}
 
-    // 내부 Exception 공통 처리 정의
+	// 내부 Exception 공통 처리 정의
 	@Bean
 	KFExceptionResolver setExceptionResolver(KFExceptionResolver excpRes) {
 
-		Properties mappings 	= new Properties();	// 예외 클래스에 대해 에러 페이지를 지정합니다.
-		Properties statusCodes	= new Properties();	// 에러페이지에 상태코드를 지정합니다.
+		Properties mappings = new Properties(); // 예외 클래스에 대해 에러 페이지를 지정합니다.
+		Properties statusCodes = new Properties(); // 에러페이지에 상태코드를 지정합니다.
 
-		mappings.setProperty("java.lang.NullPointerException",	"error/defaultError");
+		mappings.setProperty("java.lang.NullPointerException", "error/defaultError");
 		statusCodes.setProperty("error/nullPointer", "500");
 
 		mappings.setProperty("org.springframework.web.multipart.MultipartException", "error/defaultError");
@@ -157,7 +172,7 @@ public class BaseConfig  implements WebMvcConfigurer{
 		mappings.setProperty("java.lang.Exception", "error/defaultError");
 		statusCodes.setProperty("error/defaultError", "500");
 
-		excpRes.setDefaultErrorView("error/defaultError");	// 지정되지 않은 예외에 대한 기본 에러페이지 입니다.
+		excpRes.setDefaultErrorView("error/defaultError"); // 지정되지 않은 예외에 대한 기본 에러페이지 입니다.
 		excpRes.setExceptionMappings(mappings);
 		excpRes.setStatusCodes(statusCodes);
 

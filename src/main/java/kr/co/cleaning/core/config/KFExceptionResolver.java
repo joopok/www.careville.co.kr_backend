@@ -16,101 +16,104 @@ import kr.co.cleaning.core.utils.SUtils;
 
 public class KFExceptionResolver extends SimpleMappingExceptionResolver {
 
-	private final Logger log	= LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex){
+	public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
 
-    	log.error("┌─────────────────────────────────────────────────────────────┐");
-    	log.error("│                    [ Exception Resolve ]                    │");
-    	log.error("└─────────────────────────────────────────────────────────────┘");
+		log.error("┌─────────────────────────────────────────────────────────────┐");
+		log.error("│                    [ Exception Resolve ]                    │");
+		log.error("└─────────────────────────────────────────────────────────────┘");
 
-		ModelAndView mv 				= new ModelAndView();
-		HashMap<String,Object> excpMap	= new HashMap<>();
+		ModelAndView mv = new ModelAndView();
+		HashMap<String, Object> excpMap = new HashMap<>();
 
-		String viewNm					= determineViewName(ex, request);
-		int excpCd						= determineStatusCode(request, viewNm);
-		String excpMsg					= ex.getMessage();
-        String excpPath					= SUtils.nvl(handler).replaceAll("#.*$", "");
-        String excpMethod				= ex.getClass().getSimpleName();
-        String excpCdMsg				= "";
+		String viewNm = determineViewName(ex, request);
+		int excpCd = determineStatusCode(request, viewNm);
+		String excpMsg = ex.getMessage();
+		String excpPath = SUtils.nvl(handler).replaceAll("#.*$", "");
+		String excpMethod = ex.getClass().getSimpleName();
+		String excpCdMsg = "";
 
-		if(ex instanceof DataAccessException) {
-			String sqlState		= null;
+		if (ex instanceof DataAccessException) {
+			String sqlState = null;
 
-			if(ex.getCause() instanceof java.sql.SQLException sqlEx){
-				sqlState	= sqlEx.getSQLState();
+			if (ex.getCause() instanceof java.sql.SQLException) {
+				java.sql.SQLException sqlEx = (java.sql.SQLException) ex.getCause();
+				sqlState = sqlEx.getSQLState();
 			}
 
-			SqlErrorCode codeFromState	= SqlErrorCode.fromSqlState(sqlState);
-			excpCd			= sqlState == null ? 99999 : SUtils.strToInt(sqlState);
-			excpCdMsg		= codeFromState.name();
-			excpMsg			= codeFromState.name()+" - "+codeFromState.getMessage();
+			SqlErrorCode codeFromState = SqlErrorCode.fromSqlState(sqlState);
+			excpCd = sqlState == null ? 99999 : SUtils.strToInt(sqlState);
+			excpCdMsg = codeFromState.name();
+			excpMsg = codeFromState.name() + " - " + codeFromState.getMessage();
 
-		}else{
-			if(ex instanceof KFException){
-				excpCd	= ((KFException) ex).getCode();
+		} else {
+			if (ex instanceof KFException) {
+				excpCd = ((KFException) ex).getCode();
 			}
 
-			HttpStatus status	= HttpStatus.resolve(excpCd);
-			excpCdMsg			= status == null || excpCd == 999 ?  "User-specified error." : status.getReasonPhrase();
+			HttpStatus status = HttpStatus.resolve(excpCd);
+			excpCdMsg = status == null || excpCd == 999 ? "User-specified error." : status.getReasonPhrase();
 		}
 
-        /*
-        StringBuffer excpToStr			= new StringBuffer();
-        StackTraceElement[] stacks 		= ex.getStackTrace();
-        excpToStr.append(ex.getMessage()+"<br>");
-        for(StackTraceElement element : stacks){
-        	excpToStr.append(element+"<br>");
-        }
-		excpMap.put("excpToStr"		,excpToStr.toString());
-        */
+		/*
+		 * StringBuffer excpToStr = new StringBuffer();
+		 * StackTraceElement[] stacks = ex.getStackTrace();
+		 * excpToStr.append(ex.getMessage()+"<br>");
+		 * for(StackTraceElement element : stacks){
+		 * excpToStr.append(element+"<br>");
+		 * }
+		 * excpMap.put("excpToStr" ,excpToStr.toString());
+		 */
 
-        excpMap.put("isError"		,"true");
-		excpMap.put("excpCd"		,excpCd);
-		excpMap.put("excpCdMsg"		,excpCdMsg);
-		excpMap.put("excpMsg"		,excpMsg);
-		excpMap.put("excpPath"		,excpPath);
-		excpMap.put("excpMethod"	,excpMethod);
+		excpMap.put("isError", "true");
+		excpMap.put("excpCd", excpCd);
+		excpMap.put("excpCdMsg", excpCdMsg);
+		excpMap.put("excpMsg", excpMsg);
+		excpMap.put("excpPath", excpPath);
+		excpMap.put("excpMethod", excpMethod);
 
-    	Enumeration<String> em 				= request.getHeaderNames();
-    	HashMap<String,String> headerMap	= new HashMap<>();
-    	String headerNm						= "";
-    	String pageView						= "";
+		Enumeration<String> em = request.getHeaderNames();
+		HashMap<String, String> headerMap = new HashMap<>();
+		String headerNm = "";
+		String pageView = "";
 
-    	while(em.hasMoreElements()){
-    		headerNm	=  em.nextElement();
-    		headerMap.put(headerNm, request.getHeader(headerNm));
-    	}
+		while (em.hasMoreElements()) {
+			headerNm = em.nextElement();
+			headerMap.put(headerNm, request.getHeader(headerNm));
+		}
 
-    	log.error("───── isAjax   : {}",headerMap.containsKey("x-kframe-ajax-call"));
-    	log.error("───── isJson   : {}",SUtils.nvl(headerMap.get("accept")).contains("application/json"));
+		log.error("───── isAjax   : {}", headerMap.containsKey("x-kframe-ajax-call"));
+		log.error("───── isJson   : {}", SUtils.nvl(headerMap.get("accept")).contains("application/json"));
 
-    	if(SUtils.nvl(headerMap.get("accept")).contains("application/json")){
-    		pageView	= "jsonView";
+		if (SUtils.nvl(headerMap.get("accept")).contains("application/json")) {
+			pageView = "jsonView";
 
-    	}else{
-    		pageView		= viewNm;
-    		String referer	= SUtils.nvl(headerMap.get("referer"),"/apage/");
+		} else {
+			pageView = viewNm;
+			String referer = SUtils.nvl(headerMap.get("referer"), "/apage/");
 
-    		if(excpCd == 901){
-    			referer	= "/apage/";
-    		}
+			if (excpCd == 901) {
+				referer = "/apage/";
+			}
 
-    		excpMap.put("backUrl"	,referer);
-    	}
+			excpMap.put("backUrl", referer);
+		}
 
 		mv.setViewName(pageView);
 		mv.addAllObjects(excpMap);
 
-		log.error("───── pageView   : {}",pageView);
-		log.error("───── excpCd     : {}",excpCd);
-		log.error("───── excpCdMsg  : {}",excpCdMsg);
-		log.error("───── excpMsg    : {}",excpMsg);;
-		log.error("───── excpPath   : {}",excpPath);
-		log.error("───── excpMethod : {}",excpMethod);
+		log.error("───── pageView   : {}", pageView);
+		log.error("───── excpCd     : {}", excpCd);
+		log.error("───── excpCdMsg  : {}", excpCdMsg);
+		log.error("───── excpMsg    : {}", excpMsg);
+		;
+		log.error("───── excpPath   : {}", excpPath);
+		log.error("───── excpMethod : {}", excpMethod);
 
-//		ex.printStackTrace();
+		// ex.printStackTrace();
 
 		return mv;
 	}

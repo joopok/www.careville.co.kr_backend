@@ -25,28 +25,25 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 
 -- -----------------------------------------------------------------------------
--- 기존 데이터 삭제 (재실행 가능)
+-- 기존 데이터 삭제 (재실행 가능) - TRUNCATE로 성능 최적화
 -- -----------------------------------------------------------------------------
-DELETE FROM `TB_FILE_RELATION`;
-DELETE FROM `TB_REVIEW`;
-DELETE FROM `TB_CONSULTATION`;
-DELETE FROM `TB_CASE`;
-DELETE FROM `TB_BOARD`;
-DELETE FROM `TB_FILE`;
-DELETE FROM `TB_MANAGER`;
-DELETE FROM `TB_CMMN_CODE`;
-DELETE FROM `TB_PRODUCT`;
-DELETE FROM `TB_CATEGORY`;
+-- 외래키 관계 순서대로 삭제 (자식 → 부모)
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 
--- AUTO_INCREMENT 초기화
-ALTER TABLE `TB_FILE_RELATION` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_REVIEW` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_CONSULTATION` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_CASE` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_BOARD` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_FILE` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_MANAGER` AUTO_INCREMENT = 1;
-ALTER TABLE `TB_PRODUCT` AUTO_INCREMENT = 1;
+TRUNCATE TABLE `TB_FILE_RELATION`;
+TRUNCATE TABLE `TB_REVIEW`;
+TRUNCATE TABLE `TB_CONSULTATION`;
+TRUNCATE TABLE `TB_CASE`;
+TRUNCATE TABLE `TB_BOARD`;
+TRUNCATE TABLE `TB_FILE`;
+TRUNCATE TABLE `TB_MANAGER`;
+TRUNCATE TABLE `TB_CMMN_CODE`;
+TRUNCATE TABLE `TB_PRODUCT`;
+TRUNCATE TABLE `TB_CATEGORY`;
+
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+
+-- TRUNCATE는 AUTO_INCREMENT를 자동으로 초기화하므로 별도 작업 불필요
 
 -- -----------------------------------------------------------------------------
 -- 1. TB_MANAGER - 관리자 데이터
@@ -295,11 +292,11 @@ VALUES
 -- UNION ALL SELECT 'TB_REVIEW', COUNT(*) FROM TB_REVIEW;
 
 -- -----------------------------------------------------------------------------
--- 트랜잭션 커밋
+-- 트랜잭션 커밋 및 정리
 -- -----------------------------------------------------------------------------
-SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 SET AUTOCOMMIT = 1;
+
 
 -- =============================================================================
 -- 데이터 임포트 완료

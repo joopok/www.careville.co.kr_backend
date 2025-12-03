@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.BookingMapper">
+
+    <!-- 예약 등록 -->
+    <insert id="insertBooking" parameterType="hashMap"
+            useGeneratedKeys="true" keyProperty="CNSLT_SEQ">
+        INSERT INTO TB_CONSULTATION(
+            NM,
+            TEL1,
+            TEL2,
+            ZIP,
+            ADRES1,
+            ADRES2,
+            PRODUCT_NO,
+            HOPE_DAY,
+            INQRY_CN,
+            STTUS_CD,
+            REQ_TYPE,
+            REG_DT
+        ) VALUES (
+            #{nm},
+            #{tel1},
+            #{tel2},
+            #{zip},
+            #{adres1},
+            #{adres2},
+            #{productNo},
+            #{hopeDay},
+            #{inqryCn},
+            '001',  /* 초기 상태: 접수 */
+            '002',  /* 예약 타입 */
+            NOW()
+        )
+    </insert>
+
+    <!-- 예약 순번으로 조회 -->
+    <select id="getBookingBySeq" parameterType="int" resultType="hashMapCamel">
+        SELECT
+            CNSLT_SEQ,
+            NM,
+            TEL1,
+            TEL2,
+            ZIP,
+            ADRES1,
+            ADRES2,
+            PRODUCT_NO,
+            HOPE_DAY,
+            INQRY_CN,
+            STTUS_CD,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT
+        FROM TB_CONSULTATION
+        WHERE CNSLT_SEQ = #{cnsltSeq}
+          AND REQ_TYPE = '002'
+    </select>
+
+    <!-- 날짜별 예약 목록 조회 -->
+    <select id="getBookingsByDate" parameterType="string" resultType="hashMapCamel">
+        SELECT
+            CNSLT_SEQ,
+            NM,
+            TEL1,
+            PRODUCT_NO,
+            HOPE_DAY,
+            STTUS_CD,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT
+        FROM TB_CONSULTATION
+        WHERE HOPE_DAY = #{bookingDate}
+          AND REQ_TYPE = '002'
+        ORDER BY REG_DT DESC
+    </select>
+
+</mapper>

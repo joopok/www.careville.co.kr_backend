@@ -46,8 +46,9 @@ server:
 
 logging:
   level:
-    root: WARN
-    kr.co.cleaning: INFO
+    root: INFO
+    kr.co.cleaning: DEBUG
+    kr.co.cleaning.core.config.CorsConfig: DEBUG
     jdbc: OFF
     jdbc.sqlonly: OFF
     jdbc.sqltiming: OFF
@@ -56,6 +57,7 @@ logging:
     jdbc.resultsettable: OFF
     jdbc.connection: OFF
     org.springframework.security: OFF
+    org.springframework.web.cors: DEBUG
 
 kframe:
   viewRowCnt: 10

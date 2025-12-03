@@ -3,7 +3,7 @@ spring:
     name: cleaning
   datasource:
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mysql://localhost:3306/ksm1779?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:log4jdbc:mysql://ksm1779.cafe24.com:3306/ksm1779?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USERNAME:ksm1779}
     password: ${DB_PASSWORD:Chae1030!!}
     hikari:
@@ -20,11 +20,11 @@ spring:
       ddl-auto: validate
   sql:
     init:
-      mode: never 
+      mode: never
   servlet:
     multipart:
       maxFileSize: 10MB # 파일 하나의 최대 크기
-      maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
+      maxRequestSize: 30MB # 한 번에 최대 업로드 가능 용량
 
 mybatis:
   mapper-locations: classpath:db/sqlmap/mappers/*.xml
@@ -39,7 +39,7 @@ server:
     include-binding-errors: always
     whitelabel:
       enabled: false
-    path: '/error'
+    path: "/error"
 
 #blue,cyan,faint,green,magenta,red,yello
 logging:
@@ -56,15 +56,15 @@ logging:
     jdbc.connection: OFF
     org.springframework.security: OFF
     # 비밀번호 검증 로깅 설정
-    kr.co.cleaning.ctrl.ReviewCtrl: OFF  # API 호출 로그
-    kr.co.cleaning.svc.ReviewSvc: OFF    # 비밀번호 검증 상세 로그
-    kr.co.cleaning.mapper: OFF           # SQL 쿼리 로그
+    kr.co.cleaning.ctrl.ReviewCtrl: OFF # API 호출 로그
+    kr.co.cleaning.svc.ReviewSvc: OFF # 비밀번호 검증 상세 로그
+    kr.co.cleaning.mapper: OFF # SQL 쿼리 로그
 
 kframe:
   viewRowCnt: 10
   viewPageCnt: 5
   session-id: LCMS_SESSION
-  session-log-in-key : KF_LOGON
+  session-log-in-key: KF_LOGON
   aes:
     key: my-secret-cleaning-12345
     algorithm: AES
@@ -84,4 +84,3 @@ springdoc:
     groups-order: DESC
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-
