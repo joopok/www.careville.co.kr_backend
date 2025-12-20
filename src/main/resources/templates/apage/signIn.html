@@ -15,6 +15,38 @@
 	<link rel="stylesheet" th:href="@{/plugins/sweetalert/sweetalert.css}" />
 	<link rel="stylesheet" th:href="@{/apage/css/style.css}" />
 
+	<!-- 로그인 영역 중앙 배치 스타일 -->
+	<style>
+		body.login-page {
+			max-width: none !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			min-height: 100vh;
+			display: flex !important;
+			justify-content: center;
+			align-items: center;
+			background-color: #00BCD4;
+		}
+
+		.login-box {
+			width: 100%;
+			max-width: 360px;
+			padding: 0 15px;
+			box-sizing: border-box;
+		}
+
+		/* 모바일 반응형 */
+		@media (max-width: 480px) {
+			.login-box {
+				padding: 0 20px;
+			}
+
+			.login-box .logo a {
+				font-size: 28px !important;
+			}
+		}
+	</style>
+
 	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
 	<script th:src="@{/plugins/bootstrap/js/bootstrap.js}"></script>
 	<script th:src="@{/plugins/node-waves/waves.js}"></script>

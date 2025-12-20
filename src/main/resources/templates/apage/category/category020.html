@@ -23,46 +23,55 @@
                                     </colgroup>
                                     <tbody>
                                         <tr>
-                                            <th class="bg-light-blue">서비스 코드</th>
-                                            <td th:text="${detail.serviceCd}"></td>
-                                            <th class="bg-light-blue">서비스명</th>
+                                            <th class="bg-grey">서비스 코드</th>
+                                            <td><code th:text="${detail.serviceCd}"></code></td>
+                                            <th class="bg-grey">서비스명</th>
                                             <td th:text="${detail.serviceNm}"></td>
                                         </tr>
                                         <tr>
-                                            <th class="bg-light-blue">정렬 순서</th>
+                                            <th class="bg-grey">정렬 순서</th>
                                             <td th:text="${detail.serviceOrder}"></td>
-                                            <th class="bg-light-blue">사용여부</th>
+                                            <th class="bg-grey">사용여부</th>
                                             <td>
-                                                <span class="label" th:classappend="${detail.useYn == 'Y' ? 'label-success' : 'label-danger'}" 
+                                                <span class="label" th:classappend="${detail.useYn == 'Y' ? 'bg-green' : 'bg-grey'}"
                                                       th:text="${detail.useYn == 'Y' ? '사용' : '미사용'}"></span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th class="bg-light-blue">등록자</th>
-                                            <td th:text="${detail.regUserId}"></td>
-                                            <th class="bg-light-blue">등록일시</th>
-                                            <td th:text="${detail.regDt}"></td>
+                                            <th class="bg-grey">등록자</th>
+                                            <td th:text="${detail.regUserId} ?: '-'"></td>
+                                            <th class="bg-grey">등록일시</th>
+                                            <td th:text="${detail.regDt} ?: '-'"></td>
                                         </tr>
                                         <tr>
-                                            <th class="bg-light-blue">수정자</th>
-                                            <td th:text="${detail.modUserId}"></td>
-                                            <th class="bg-light-blue">수정일시</th>
-                                            <td th:text="${detail.modDt}"></td>
+                                            <th class="bg-grey">수정자</th>
+                                            <td th:text="${detail.modUserId} ?: '-'"></td>
+                                            <th class="bg-grey">수정일시</th>
+                                            <td th:text="${detail.modDt} ?: '-'"></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            
-                            <div class="row clearfix">
+
+                            <div class="row clearfix m-t-20">
                                 <div class="col-xs-12 text-center">
-                                    <button type="button" class="btn btn-primary waves-effect" 
-									        th:attr="data-servicecd=${detail.serviceCd}"
-                                            onclick="location.href='/apage/category040.do?serviceCd='+this.dataset.servicecd">수정</button>
-									<button type="button" class="btn btn-danger waves-effect"
-									        th:attr="data-servicecd=${detail.serviceCd}"
-									        onclick="deleteServiceCategory(this.dataset.servicecd)">삭제</button>
-                                    <button type="button" class="btn btn-default waves-effect" 
-                                            onclick="location.href='/apage/category010.do'">목록</button>
+                                    <button type="button" class="btn btn-primary waves-effect"
+                                            th:attr="data-servicecd=${detail.serviceCd}"
+                                            onclick="location.href='/apage/category040.do?serviceCd='+this.dataset.servicecd">
+                                        <i class="material-icons">edit</i>
+                                        <span>수정</span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger waves-effect"
+                                            th:attr="data-servicecd=${detail.serviceCd}"
+                                            onclick="deleteServiceCategory(this.dataset.servicecd)">
+                                        <i class="material-icons">delete</i>
+                                        <span>삭제</span>
+                                    </button>
+                                    <button type="button" class="btn btn-default waves-effect"
+                                            onclick="location.href='/apage/category010.do'">
+                                        <i class="material-icons">list</i>
+                                        <span>목록</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -70,13 +79,13 @@
                 </div>
             </div>
         </div>
-        
+
         <script th:inline="javascript">
             function deleteServiceCategory(serviceCd) {
                 if (!confirm('정말로 삭제하시겠습니까?')) {
                     return;
                 }
-                
+
                 $.ajax({
                     url: '/apage/category051.do',
                     type: 'POST',
