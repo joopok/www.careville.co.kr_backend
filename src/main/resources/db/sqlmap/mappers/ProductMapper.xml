@@ -122,6 +122,9 @@
             P.DISCOUNT_RATE,
             P.SERVICE_TIME,
             P.SERVICE_INCLUDES,
+            P.FEATURES,
+            P.SERVICE_EFFECTS,
+            P.WORK_PROCESS,
             P.DISPLAY_ORDER,
             P.DISPLAY_YN,
             P.SALE_YN,
@@ -178,6 +181,9 @@
             DISCOUNT_RATE,
             SERVICE_TIME,
             SERVICE_INCLUDES,
+            FEATURES,
+            SERVICE_EFFECTS,
+            WORK_PROCESS,
             DISPLAY_ORDER,
             DISPLAY_YN,
             SALE_YN,
@@ -201,6 +207,9 @@
             COALESCE(#{discountRate}, 0),
             #{serviceTime},
             #{serviceIncludes},
+            #{features},
+            #{serviceEffects},
+            #{workProcess},
             COALESCE(#{displayOrder}, 999),
             COALESCE(#{displayYn}, 'Y'),
             COALESCE(#{saleYn}, 'Y'),
@@ -218,22 +227,22 @@
             SERVICE_CD = #{serviceCd},
             PRODUCT_NM = #{productNm},
             PRODUCT_DESC = #{productDesc},
-            <if test="fileSeq1 != null">
+            <if test="fileSeq1 != null and fileSeq1 != ''">
             FILE_SEQ1 = #{fileSeq1},
             </if>
-            <if test="fileSeq2 != null">
+            <if test="fileSeq2 != null and fileSeq2 != ''">
             FILE_SEQ2 = #{fileSeq2},
             </if>
-            <if test="fileSeq3 != null">
+            <if test="fileSeq3 != null and fileSeq3 != ''">
             FILE_SEQ3 = #{fileSeq3},
             </if>
-            <if test="fileSeq4 != null">
+            <if test="fileSeq4 != null and fileSeq4 != ''">
             FILE_SEQ4 = #{fileSeq4},
             </if>
-            <if test="fileSeq5 != null">
+            <if test="fileSeq5 != null and fileSeq5 != ''">
             FILE_SEQ5 = #{fileSeq5},
             </if>
-            <if test="fileSeq6 != null">
+            <if test="fileSeq6 != null and fileSeq6 != ''">
             FILE_SEQ6 = #{fileSeq6},
             </if>
             AREA_TYPE = #{areaType},
@@ -242,6 +251,9 @@
             DISCOUNT_RATE = #{discountRate},
             SERVICE_TIME = #{serviceTime},
             SERVICE_INCLUDES = #{serviceIncludes},
+            FEATURES = #{features},
+            SERVICE_EFFECTS = #{serviceEffects},
+            WORK_PROCESS = #{workProcess},
             DISPLAY_ORDER = #{displayOrder},
             DISPLAY_YN = #{displayYn},
             SALE_YN = #{saleYn},
@@ -277,6 +289,9 @@
             P.DISCOUNT_RATE,
             P.SERVICE_TIME,
             P.SERVICE_INCLUDES,
+            P.FEATURES,
+            P.SERVICE_EFFECTS,
+            P.WORK_PROCESS,
             P.DISPLAY_ORDER,
             P.DISPLAY_YN,
             P.SALE_YN,
@@ -311,6 +326,9 @@
             P.DISCOUNT_RATE,
             P.SERVICE_TIME,
             P.SERVICE_INCLUDES,
+            P.FEATURES,
+            P.SERVICE_EFFECTS,
+            P.WORK_PROCESS,
             P.DISPLAY_ORDER,
             P.DISPLAY_YN,
             P.SALE_YN,
