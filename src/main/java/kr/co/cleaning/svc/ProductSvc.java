@@ -41,7 +41,20 @@ public class ProductSvc {
      * 상품 상세 조회
      */
     public Map<String, Object> selectProduct(Map<String, Object> param) {
-        return productMapper.selectProduct(param);
+        Map<String, Object> product = productMapper.selectProduct(param);
+        if (product != null) {
+            // 이미지 갤러리 조회
+            List<Map<String, Object>> images = productMapper.selectProductImages(param);
+            product.put("images", images);
+        }
+        return product;
+    }
+
+    /**
+     * 상품 이미지 갤러리 조회
+     */
+    public List<Map<String, Object>> selectProductImages(Map<String, Object> param) {
+        return productMapper.selectProductImages(param);
     }
 
     /**
@@ -75,23 +88,46 @@ public class ProductSvc {
             }
         }
 
-        // 서비스 포함사항 JSON 변환
-        if(param.get("serviceIncludes") != null) {
-            String includes = param.get("serviceIncludes").toString();
-            if(!includes.startsWith("{") && !includes.startsWith("[")) {
-                // 줄바꿈으로 구분된 텍스트를 JSON 배열로 변환
-                String[] items = includes.split("\n");
-                StringBuilder json = new StringBuilder("[");
-                for(int i = 0; i < items.length; i++) {
-                    if(i > 0) json.append(",");
-                    json.append("\"").append(items[i].trim()).append("\"");
-                }
-                json.append("]");
-                param.put("serviceIncludes", json.toString());
-            }
-        }
+        // JSON 필드 변환 처리
+        convertToJsonArray(param, "serviceIncludes", "serviceIncludesJson");
+        convertToJsonArray(param, "features", "featuresJson");
+        convertToJsonArray(param, "serviceEffects", "serviceEffectsJson");
+        convertToJsonArray(param, "workProcess", "workProcessJson");
 
         return productMapper.insertProduct(param);
+    }
+
+    /**
+     * 텍스트를 JSON 배열로 변환하는 헬퍼 메서드
+     */
+    private void convertToJsonArray(Map<String, Object> param, String fieldName, String jsonFieldName) {
+        String value = null;
+        if(param.get(jsonFieldName) != null && !"".equals(param.get(jsonFieldName).toString().trim())) {
+            value = param.get(jsonFieldName).toString();
+        } else if(param.get(fieldName) != null && !"".equals(param.get(fieldName).toString().trim())) {
+            value = param.get(fieldName).toString();
+        }
+
+        if(value != null && !value.isEmpty()) {
+            if(!value.startsWith("{") && !value.startsWith("[")) {
+                // 줄바꿈으로 구분된 텍스트를 JSON 배열로 변환
+                String[] items = value.split("\n");
+                StringBuilder json = new StringBuilder("[");
+                for(int i = 0; i < items.length; i++) {
+                    String item = items[i].trim();
+                    if(!item.isEmpty()) {
+                        if(json.length() > 1) json.append(",");
+                        // JSON escape 처리
+                        item = item.replace("\\", "\\\\").replace("\"", "\\\"");
+                        json.append("\"").append(item).append("\"");
+                    }
+                }
+                json.append("]");
+                param.put(fieldName, json.toString());
+            } else {
+                param.put(fieldName, value);
+            }
+        }
     }
 
     /**
@@ -125,20 +161,11 @@ public class ProductSvc {
             }
         }
 
-        // 서비스 포함사항 JSON 변환
-        if(param.get("serviceIncludes") != null) {
-            String includes = param.get("serviceIncludes").toString();
-            if(!includes.startsWith("{") && !includes.startsWith("[")) {
-                String[] items = includes.split("\n");
-                StringBuilder json = new StringBuilder("[");
-                for(int i = 0; i < items.length; i++) {
-                    if(i > 0) json.append(",");
-                    json.append("\"").append(items[i].trim()).append("\"");
-                }
-                json.append("]");
-                param.put("serviceIncludes", json.toString());
-            }
-        }
+        // JSON 필드 변환 처리
+        convertToJsonArray(param, "serviceIncludes", "serviceIncludesJson");
+        convertToJsonArray(param, "features", "featuresJson");
+        convertToJsonArray(param, "serviceEffects", "serviceEffectsJson");
+        convertToJsonArray(param, "workProcess", "workProcessJson");
 
         return productMapper.updateProduct(param);
     }

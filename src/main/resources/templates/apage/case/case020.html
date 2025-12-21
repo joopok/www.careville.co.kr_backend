@@ -1,104 +1,164 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
 <head>
-<title>:: 시공 사례 ::</title>
-<style>
-</style>
-<link rel="stylesheet" th:href="@{/apage/css/themes/all-themes.css}" />
-<style>
-.input-group .form-line:after {bottom:0px;border-bottom: 1px solid #ddd;}
-.col-md-12 {margin-bottom:0px !important;}
-.label{margin-right:3px;line-height:39px;}
-.writeContent img {
-  max-width: 100%;
-  height: auto;
-}
-</style>
+<title>시공사례 상세</title>
+<!-- All styles now in careville-admin.css -->
+<link rel="stylesheet" th:href="@{/plugins/light-gallery/css/lightgallery.css}" />
 <script th:src="@{/apage/js/case020.js}"></script>
+<script th:src="@{/plugins/light-gallery/js/lightgallery-all.js}"></script>
 </head>
 <body>
 <div layout:fragment="content">
-	
-	<section class="content">
-	    <div class="container-fluid">
 
-			<div class="row clearfix">
-				
-			    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			        <div class="card">
-			            <div class="header"><h2>시공 사례 상세</h2></div>
-			            <div class="body">
-							<div class="demo-masked-input">
-								<div class="row clearfix demo-icon-container">
-									
-									<form id="searchMap">
-									    <th:block th:each="entry : ${searchMap}">
-									        <input type="hidden" th:name="${entry.key}" th:value="${entry.value != null ? entry.value : ''}">
-									    </th:block>
-									</form>
-									
-									<div class="col-md-12">
-										<b>제목</b>
-										<div class="input-group">
-											<span class="input-group-addon">
-												<i class="material-icons">subtitles</i>
-											</span>
-											<div class="form-line focused">
-												<input type="text" id="caseSj" name="caseSj" class="form-control" th:value="${view.caseSj }" readonly>
-											</div>
-										</div>
-									</div>
-									
-									<div class="col-md-6">
-										<b>서비스 종류</b>
-										<div class="input-group">
-											<span class="input-group-addon">
-												<i class="material-icons">subtitles</i>
-											</span>
-											<div class="form-line focused">
-												<input type="text" id="serviceNm" name="serviceNm" class="form-control" th:value="${view.serviceNm }" readonly>
-											</div>
-										</div>
-									</div>
-																		
-									<div class="col-md-6">
-										<b>해시태그</b>
-										<div class="input-group">
-											<span class="input-group-addon">
-												<i class="material-icons">subtitles</i>
-											</span>
-											<div class="form-line focused">
-												<span class="label label-info" th:each="item : ${#strings.arraySplit(view.hashtag, ',')}">
-												  [[${item}]]
-												</span>
-												<span class="label bg-grey" th:if="${#strings.isEmpty(view.hashtag)}">
-												  #해시태그 없음.
-												</span>
-											</div>
-										</div>
-									</div>
-									
-									<div class="col-md-12">
-										<b>내용</b>
-										<div class="input-group">
-											<div class="form-line writeContent" style="padding-top:7px;" th:utext="${view.caseCn }"></div>
-										</div>
-									</div>									
-									<div class="col-md-12" style="text-align:center;">
-										<button id="btnModify" class="btn btn-success waves-effect" type="button">수정</button>
-										<button id="btnDelete" class="btn btn-warning waves-effect" type="button">삭제</button>
-										<button id="btnList" class="btn bg-grey waves-effect" type="button">목록</button>
-									</div>
-									
-								</div>
-							</div>
-			            </div>
-			        </div>
-			    </div>
-			</div>			
-							
-	    </div>
-	</section>	
-	
+	<form id="searchMap">
+		<th:block th:each="entry : ${searchMap}">
+			<input type="hidden" th:name="${entry.key}" th:value="${entry.value != null ? entry.value : ''}">
+		</th:block>
+	</form>
+
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">시공사례 상세</h1>
+			<p class="cv-page-desc">시공사례 상세 정보</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" id="btnList">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
+
+	<!-- Detail Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+
+			<!-- Row 1: 제목 -->
+			<div class="cv-detail-grid cols-1">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">제목</div>
+					<div class="cv-detail-value" th:text="${view.caseSj}"></div>
+				</div>
+			</div>
+
+			<!-- Row 2: 서비스 종류, 해시태그 -->
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">서비스 종류</div>
+					<div class="cv-detail-value" th:text="${view.serviceNm}"></div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">해시태그</div>
+					<div class="cv-detail-value">
+						<span th:if="${#strings.isEmpty(view.hashtag)}" class="cv-tag-empty">해시태그 없음</span>
+						<span th:unless="${#strings.isEmpty(view.hashtag)}">
+							<span class="cv-tag" th:each="item : ${#strings.arraySplit(view.hashtag, ',')}">
+								#[[${item}]]
+							</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row 3: 대표이미지1, 대표이미지2 -->
+			<div class="cv-detail-grid cols-2">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">대표이미지1</div>
+					<div class="cv-detail-value">
+						<div th:if="${view.viewFileSeq != null and view.viewFileSeq != ''}" class="cv-image-preview">
+							<a th:href="@{|/fileView.do?viewFileSeq=${view.viewFileSeq}|}" target="_blank">
+								<img th:src="@{|/fileThumbView.do?viewFileSeq=${view.viewFileSeq}&w=400|}"
+								     alt="대표이미지1" class="cv-detail-image" loading="lazy">
+							</a>
+						</div>
+						<span th:if="${view.viewFileSeq == null or view.viewFileSeq == ''}" class="cv-tag-empty">이미지 없음</span>
+					</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">대표이미지2</div>
+					<div class="cv-detail-value">
+						<div th:if="${view.viewFileSeq2 != null and view.viewFileSeq2 != ''}" class="cv-image-preview">
+							<a th:href="@{|/fileView.do?viewFileSeq=${view.viewFileSeq2}|}" target="_blank">
+								<img th:src="@{|/fileThumbView.do?viewFileSeq=${view.viewFileSeq2}&w=400|}"
+								     alt="대표이미지2" class="cv-detail-image" loading="lazy">
+							</a>
+						</div>
+						<span th:if="${view.viewFileSeq2 == null or view.viewFileSeq2 == ''}" class="cv-tag-empty">이미지 없음</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row 4: 내용 -->
+			<div class="cv-detail-grid cols-1">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">내용</div>
+					<div class="cv-detail-value content-area" th:utext="${view.caseCn}"></div>
+				</div>
+			</div>
+
+			<!-- Row 5: 갤러리 (대표이미지1,2 제외) -->
+			<div class="cv-detail-grid cols-1" th:if="${#lists.size(galleryList) > 0}">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">추가 이미지</div>
+					<div class="cv-detail-value">
+						<div class="cv-gallery-grid" id="caseGallery">
+							<th:block th:each="g : ${galleryList}">
+                            <a th:href="@{|/fileView.do?viewFileSeq=${g.viewFileSeq}|}"
+                               th:if="${g.fileSeq != view.fileSeq and (view.fileSeq2 == null or g.fileSeq != view.fileSeq2)}"
+                               class="cv-gallery-link" th:attr="data-sub-html=${view.caseSj}">
+                                <img th:src="@{|/fileThumbView.do?viewFileSeq=${g.viewFileSeq}&w=320|}"
+                                     th:alt="${g.fileRealNm}"
+                                     class="cv-gallery-thumb" loading="lazy">
+                            </a>
+							</th:block>
+						</div>
+					</div>
+				</div>
+			</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+document.addEventListener('DOMContentLoaded', function(){
+  var el = document.getElementById('caseGallery');
+  if (el && typeof $(el).lightGallery === 'function') {
+    $(el).lightGallery({
+      selector: 'a.cv-gallery-link',
+      download: false,
+      thumbnail: true
+    });
+  }
+});
+/*]]>*/
+</script>
+
+			<!-- Buttons -->
+			<div class="cv-btn-group">
+				<button type="button" class="cv-btn cv-btn-primary" id="btnModify">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+					</svg>
+					수정
+				</button>
+				<button type="button" class="cv-btn cv-btn-danger" id="btnDelete">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<polyline points="3 6 5 6 21 6"></polyline>
+						<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+					</svg>
+					삭제
+				</button>
+			</div>
+
+		</div>
+	</div>
+
 </div>
 </body>
 </html>

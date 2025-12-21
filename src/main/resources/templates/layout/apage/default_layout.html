@@ -1,43 +1,355 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="ko">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title layout:title-pattern="$CONTENT_TITLE - Careville">Careville</title>
-	
-	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
-	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext}" >
-	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" >
-	<link rel="stylesheet" th:href="@{/plugins/bootstrap/css/bootstrap.css}" >
-	<link rel="stylesheet" th:href="@{/plugins/node-waves/waves.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/animate-css/animate.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/bootstrap-select/css/bootstrap-select.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/sweetalert/sweetalert.css}" />
-	<link rel="stylesheet" th:href="@{/apage/css/style.css}">
-	<link rel="stylesheet" th:href="@{/apage/css/common.css}">
-	<link rel="stylesheet" th:href="@{/apage/css/themes/all-themes.css}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title layout:title-pattern="$CONTENT_TITLE - Careville Admin">Careville Admin</title>
 
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+	<!-- Premium Fonts - Fontshare -->
+	<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+	<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+
+	<!-- Core Styles -->
+	<link rel="stylesheet" th:href="@{/plugins/bootstrap/css/bootstrap.css}">
+	<link rel="stylesheet" th:href="@{/plugins/sweetalert/sweetalert.css}">
+
+	<!-- Careville Admin Theme v5.0 - Dark OLED Luxury -->
+	<link rel="stylesheet" th:href="@{/apage/css/careville-admin.css}">
+
+	<!-- Scripts -->
 	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
 	<script th:src="@{/plugins/bootstrap/js/bootstrap.js}"></script>
-	<script th:src="@{/plugins/bootstrap-select/js/bootstrap-select.js}"></script>
-	<script th:src="@{/plugins/jquery-slimscroll/jquery.slimscroll.js}"></script>
-	<script th:src="@{/plugins/node-waves/waves.js}"></script>
 	<script th:src="@{/plugins/sweetalert/sweetalert.min.js}"></script>
-	<script th:src="@{/plugins/jquery-countto/jquery.countTo.js}"></script>
+	<script th:src="@{/plugins/sortable/Sortable.min.js}"></script>
+	<script th:src="@{/apage/js/cv-image-uploader.js}"></script>
 	<script th:src="@{/apage/js/admin.js}"></script>
-	<script th:src="@{/apage/js/demo.js}"></script>
 	<script th:src="@{/apage/js/common.js}"></script>
 	<layout:fragment name="script"></layout:fragment>
 </head>
 
-<body class="theme-red">
-	<header th:replace="~{layout/apage/header :: header}"></header>
-	<sidebar th:replace="~{layout/apage/sidebar :: sidebar}"></sidebar>
+<body>
+	<!-- Sidebar -->
+	<aside class="cv-sidebar" id="sidebar">
+		<div class="cv-sidebar-header">
+			<a th:href="@{/apage/home.do}" class="cv-sidebar-brand">
+				<img th:src="@{/apage/images/logo.jpg}" alt="Careville" class="cv-sidebar-logo-img">
+			</a>
+		</div>
 
-	<main layout:fragment="content">
-	    <!-- 개별 페이지 컨텐츠 -->
+		<div class="cv-sidebar-content">
+			<div class="cv-sidebar-section">
+				<div class="cv-sidebar-section-title">메인</div>
+				<nav class="cv-sidebar-nav">
+					<a th:href="@{/apage/home.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/home')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+							<polyline points="9 22 9 12 15 12 15 22"></polyline>
+						</svg>
+						<span>대시보드</span>
+					</a>
+					<a th:href="@{/apage/cnslt010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/cnslt0')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+						</svg>
+						<span>온라인 상담</span>
+						<span class="cv-sidebar-badge">New</span>
+					</a>
+					<a th:href="@{/apage/case010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/case0')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+							<circle cx="8.5" cy="8.5" r="1.5"></circle>
+							<polyline points="21 15 16 10 5 21"></polyline>
+						</svg>
+						<span>시공 사례</span>
+					</a>
+					<a th:href="@{/apage/review010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/review')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+						</svg>
+						<span>고객 리뷰</span>
+					</a>
+					<a th:href="@{/apage/faq010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/faq')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+							<line x1="12" y1="17" x2="12.01" y2="17"></line>
+						</svg>
+						<span>FAQ</span>
+					</a>
+				</nav>
+			</div>
+
+			<div class="cv-sidebar-section">
+				<div class="cv-sidebar-section-title">상품관리</div>
+				<nav class="cv-sidebar-nav">
+					<a th:href="@{/apage/category010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/category')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<line x1="8" y1="6" x2="21" y2="6"></line>
+							<line x1="8" y1="12" x2="21" y2="12"></line>
+							<line x1="8" y1="18" x2="21" y2="18"></line>
+							<line x1="3" y1="6" x2="3.01" y2="6"></line>
+							<line x1="3" y1="12" x2="3.01" y2="12"></line>
+							<line x1="3" y1="18" x2="3.01" y2="18"></line>
+						</svg>
+						<span>카테고리</span>
+					</a>
+					<a th:href="@{/apage/product010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/product')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+							<polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+							<line x1="12" y1="22.08" x2="12" y2="12"></line>
+						</svg>
+						<span>상품 목록</span>
+					</a>
+				</nav>
+			</div>
+
+			<div class="cv-sidebar-section">
+				<div class="cv-sidebar-section-title">설정</div>
+				<nav class="cv-sidebar-nav">
+					<a th:href="@{/apage/mnger010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/mnger0')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+							<circle cx="9" cy="7" r="4"></circle>
+							<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+							<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+						</svg>
+						<span>관리자</span>
+					</a>
+					<a th:href="@{/apage/config010.do}"
+					   th:classappend="${#strings.contains(currentUri, '/apage/config')} ? 'active' : ''"
+					   class="cv-sidebar-link">
+						<svg class="cv-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="3"></circle>
+							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+						</svg>
+						<span>환경 설정</span>
+					</a>
+				</nav>
+			</div>
+		</div>
+
+		<div class="cv-sidebar-footer">
+			<div class="cv-sidebar-footer-content">
+				<span class="cv-sidebar-footer-version">v5.0</span>
+				<span class="cv-sidebar-footer-copy">2024 Careville</span>
+			</div>
+		</div>
+	</aside>
+
+	<!-- Sidebar Overlay -->
+	<div class="cv-sidebar-overlay" id="sidebarOverlay"></div>
+
+	<!-- Top Navbar -->
+	<nav class="cv-navbar">
+		<div class="cv-navbar-left">
+			<button class="cv-sidebar-toggle" id="sidebarToggle" type="button">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="3" y1="12" x2="21" y2="12"></line>
+					<line x1="3" y1="6" x2="21" y2="6"></line>
+					<line x1="3" y1="18" x2="21" y2="18"></line>
+				</svg>
+			</button>
+			<a th:href="@{/apage/home.do}" class="cv-navbar-brand">
+				<div class="cv-navbar-logo">CV</div>
+				<span class="cv-navbar-title">CAREVILLE</span>
+			</a>
+		</div>
+
+		<div class="cv-navbar-right">
+			<div class="cv-navbar-user dropdown">
+				<button class="cv-navbar-user-btn" data-toggle="dropdown" type="button">
+					<div class="cv-navbar-avatar" th:text="${loginSession?.mngrNm?.substring(0, 1) ?: 'A'}">A</div>
+					<div class="cv-navbar-user-info">
+						<span class="cv-navbar-user-name" th:text="${loginSession?.mngrNm ?: 'Admin'}">Admin</span>
+						<span class="cv-navbar-user-role">Administrator</span>
+					</div>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<polyline points="6 9 12 15 18 9"></polyline>
+					</svg>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right">
+					<li>
+						<a th:href="@{/apage/signout.do}">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+								<polyline points="16 17 21 12 16 7"></polyline>
+								<line x1="21" y1="12" x2="9" y2="12"></line>
+							</svg>
+							Logout
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Main Content -->
+	<main class="cv-main">
+		<div class="cv-main-content cv-page-enter" layout:fragment="content">
+		</div>
 	</main>
 
+	<script>
+		$(document).ready(function() {
+			var sidebar = $('#sidebar');
+			var overlay = $('#sidebarOverlay');
+			var toggle = $('#sidebarToggle');
+
+			// Active menu detection based on current URL
+			(function() {
+				var currentPath = window.location.pathname;
+				$('.cv-sidebar-link').removeClass('active');
+
+				$('.cv-sidebar-link').each(function() {
+					var href = $(this).attr('href');
+					if (!href) return;
+
+					// Exact match for home
+					if (href.indexOf('/apage/home.do') !== -1 && currentPath.indexOf('/apage/home') !== -1) {
+						$(this).addClass('active');
+					}
+					// Match for other pages (cnslt, case, review, category, product, mnger)
+					else if (href.indexOf('/apage/cnslt') !== -1 && currentPath.indexOf('/apage/cnslt') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/case') !== -1 && currentPath.indexOf('/apage/case') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/review') !== -1 && currentPath.indexOf('/apage/review') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/category') !== -1 && currentPath.indexOf('/apage/category') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/product') !== -1 && currentPath.indexOf('/apage/product') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/mnger') !== -1 && currentPath.indexOf('/apage/mnger') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/faq') !== -1 && currentPath.indexOf('/apage/faq') !== -1) {
+						$(this).addClass('active');
+					}
+					else if (href.indexOf('/apage/config') !== -1 && currentPath.indexOf('/apage/config') !== -1) {
+						$(this).addClass('active');
+					}
+				});
+			})();
+
+			toggle.on('click', function(e) {
+				e.stopPropagation();
+				sidebar.toggleClass('open');
+				overlay.toggleClass('show');
+			});
+
+			overlay.on('click', function() {
+				sidebar.removeClass('open');
+				overlay.removeClass('show');
+			});
+
+			$('.cv-sidebar-link').on('click', function() {
+				// Update active state on click
+				$('.cv-sidebar-link').removeClass('active');
+				$(this).addClass('active');
+
+				if ($(window).width() <= 1024) {
+					sidebar.removeClass('open');
+					overlay.removeClass('show');
+				}
+			});
+
+			$(window).on('resize', function() {
+				if ($(window).width() > 1024) {
+					sidebar.removeClass('open');
+					overlay.removeClass('show');
+				}
+			});
+
+			// Touch swipe gesture support for sidebar
+			(function() {
+				var touchStartX = 0;
+				var touchStartY = 0;
+				var touchEndX = 0;
+				var touchEndY = 0;
+				var minSwipeDistance = 50;
+				var maxVerticalDistance = 100;
+				var edgeThreshold = 30; // pixels from left edge to trigger swipe open
+
+				// Swipe to open sidebar (from left edge)
+				document.addEventListener('touchstart', function(e) {
+					touchStartX = e.changedTouches[0].screenX;
+					touchStartY = e.changedTouches[0].screenY;
+				}, { passive: true });
+
+				document.addEventListener('touchend', function(e) {
+					if ($(window).width() > 1024) return;
+
+					touchEndX = e.changedTouches[0].screenX;
+					touchEndY = e.changedTouches[0].screenY;
+
+					var deltaX = touchEndX - touchStartX;
+					var deltaY = Math.abs(touchEndY - touchStartY);
+
+					// Only process horizontal swipes
+					if (deltaY > maxVerticalDistance) return;
+
+					// Swipe right from left edge to open
+					if (touchStartX < edgeThreshold && deltaX > minSwipeDistance && !sidebar.hasClass('open')) {
+						sidebar.addClass('open');
+						overlay.addClass('show');
+					}
+					// Swipe left to close (when sidebar is open)
+					else if (deltaX < -minSwipeDistance && sidebar.hasClass('open')) {
+						sidebar.removeClass('open');
+						overlay.removeClass('show');
+					}
+				}, { passive: true });
+
+				// Swipe on sidebar to close
+				sidebar[0].addEventListener('touchstart', function(e) {
+					touchStartX = e.changedTouches[0].screenX;
+					touchStartY = e.changedTouches[0].screenY;
+				}, { passive: true });
+
+				sidebar[0].addEventListener('touchend', function(e) {
+					if ($(window).width() > 1024) return;
+
+					touchEndX = e.changedTouches[0].screenX;
+					touchEndY = e.changedTouches[0].screenY;
+
+					var deltaX = touchEndX - touchStartX;
+					var deltaY = Math.abs(touchEndY - touchStartY);
+
+					if (deltaY > maxVerticalDistance) return;
+
+					// Swipe left on sidebar to close
+					if (deltaX < -minSwipeDistance) {
+						sidebar.removeClass('open');
+						overlay.removeClass('show');
+					}
+				}, { passive: true });
+			})();
+		});
+	</script>
 </body>
 </html>

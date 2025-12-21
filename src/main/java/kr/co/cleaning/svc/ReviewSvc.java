@@ -37,7 +37,12 @@ public class ReviewSvc {
 
 		HashMap<String,Object> returnMap = new HashMap<String, Object>();
 
-		pageUtil.setViewRowCnt(10);
+		// limitViewRowCnt가 이미 설정된 경우 그 값을 사용, 아니면 기본값 10
+		int viewRowCnt = 10;
+		if (paramMap.get("limitViewRowCnt") != null) {
+			viewRowCnt = Integer.parseInt(paramMap.get("limitViewRowCnt").toString());
+		}
+		pageUtil.setViewRowCnt(viewRowCnt);
 
 		// pagination setting
 		pageUtil.setCurrPage(paramMap);
@@ -180,7 +185,7 @@ public class ReviewSvc {
 
 				// 비밀번호 검증
 				String inputPassword = SUtils.nvl(paramMap.get("pw"));
-				log.debug("[리뷰 수정] 비밀번호 검증 시작1111 - reviewSeq: {}", paramMap.get("reviewSeq"));
+				log.debug("[review_update] 비밀번호 검증 시작 - reviewSeq={}", paramMap.get("reviewSeq"));
 
 				boolean passwordMatch = BCrypt.checkpw(inputPassword, SUtils.nvl(reviewInfo.get("pw")));
 				if(!passwordMatch) {
@@ -202,8 +207,11 @@ public class ReviewSvc {
 			}
 		}
 
-		paramMap.put("svcDate", reviewInfo.get("svcDate").toString().replaceAll("-","'"));
-		log.info("[리뷰 수정] 성공 ---------------------수정된 행 수: {}", paramMap.get("svcDate"));
+		// 서비스 날짜 포맷 처리
+		if (reviewInfo.get("svcDate") != null) {
+			paramMap.put("svcDate", reviewInfo.get("svcDate").toString().replaceAll("-", ""));
+		}
+		log.debug("[review_update] svcDate 처리 완료 - reviewSeq={}", paramMap.get("reviewSeq"));
 
 		// 리뷰 수정 실행
 		int reviewCnt = mapper.setReviewUpd(paramMap);
@@ -235,6 +243,21 @@ public class ReviewSvc {
 		if(reviewCnt == 0){
 			throw new KFException("수정되지 않았습니다.");
 		}
+
+		return returnMap;
+	}
+
+	@Transactional
+	public HashMap<String,Object> setReviewDispUpdAll(HttpServletRequest req, HashMap<String,Object> paramMap) throws Exception {
+
+		HashMap<String,Object> returnMap = new HashMap<String, Object>();
+
+		// 일괄 노출 상태 변경
+		int reviewCnt = mapper.setReviewDispUpdAll(paramMap);
+
+		returnMap.put("updatedCount", reviewCnt);
+		returnMap.put("success", true);
+		returnMap.put("message", reviewCnt + "개의 리뷰가 업데이트되었습니다.");
 
 		return returnMap;
 	}

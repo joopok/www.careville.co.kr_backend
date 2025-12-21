@@ -1,0 +1,310 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+  <title>FAQ 관리</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <!-- Page Header -->
+  <div class="cv-page-header">
+    <div class="cv-page-header-left">
+      <h1 class="cv-page-title">FAQ 관리 <span class="count" id="totalCount"></span></h1>
+      <p class="cv-page-desc">자주 묻는 질문을 관리합니다</p>
+    </div>
+    <div class="cv-page-header-right">
+      <button type="button" class="cv-btn cv-btn-primary" id="btnNew">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        FAQ 등록
+      </button>
+    </div>
+  </div>
+
+  <!-- 등록/수정 폼 영역 (인라인) -->
+  <div class="cv-data-card" id="faqFormCard" style="display:none; margin-bottom:20px;">
+    <div class="cv-card-header" style="padding:16px 20px; border-bottom:1px solid #e9ecef;">
+      <h3 class="cv-card-title" id="formTitle" style="margin:0; font-size:16px; font-weight:600;">FAQ 등록</h3>
+    </div>
+    <div style="padding:20px;">
+      <form id="faqForm">
+        <input type="hidden" name="faqSeq" id="faqSeq">
+        <div class="cv-detail-grid cols-1">
+          <div class="cv-detail-item">
+            <div class="cv-detail-label">질문 <span style="color:red;">*</span></div>
+            <input type="text" class="cv-form-input" name="question" id="question" required placeholder="질문을 입력하세요">
+          </div>
+          <div class="cv-detail-item">
+            <div class="cv-detail-label">답변 <span style="color:red;">*</span></div>
+            <textarea class="cv-form-textarea" name="answer" id="answer" required rows="5" placeholder="답변을 입력하세요"></textarea>
+          </div>
+          <div class="cv-detail-grid cols-2">
+            <div class="cv-detail-item">
+              <div class="cv-detail-label">노출여부</div>
+              <select class="cv-form-select" name="displayYn" id="displayYn">
+                <option value="Y">노출</option>
+                <option value="N">비노출</option>
+              </select>
+            </div>
+            <div class="cv-detail-item">
+              <div class="cv-detail-label">정렬순서</div>
+              <input type="number" class="cv-form-input" name="displayOrder" id="displayOrder" value="999">
+            </div>
+          </div>
+        </div>
+        <div class="cv-btn-group" style="margin-top:20px; text-align:center;">
+          <button type="button" class="cv-btn cv-btn-primary" id="btnSave">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            저장
+          </button>
+          <button type="button" class="cv-btn cv-btn-secondary" id="btnCancel">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Search Box -->
+  <form id="searchForm">
+    <input type="hidden" name="currPage" value="1">
+    <div class="cv-search-box">
+      <div class="cv-search-row">
+        <div class="cv-search-field">
+          <select class="cv-search-select" name="displayYn" id="searchDisplayYn">
+            <option value="">전체 노출</option>
+            <option value="Y">노출</option>
+            <option value="N">비노출</option>
+          </select>
+        </div>
+        <div class="cv-search-field wide">
+          <input type="text" class="cv-search-input" name="keyword" id="keyword" placeholder="질문/답변 검색...">
+        </div>
+        <div class="cv-search-actions">
+          <button type="button" class="cv-btn cv-btn-primary" id="btnSearch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            검색
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Data Table -->
+  <div class="cv-data-card">
+    <div class="cv-table-wrap">
+      <table class="cv-table" style="table-layout: fixed; width: 100%;">
+        <thead>
+          <tr>
+            <th style="width: 60px;" class="text-center">번호</th>
+            <th class="text-left">질문</th>
+            <th style="width: 80px;" class="text-center">노출</th>
+            <th style="width: 120px;" class="text-center">등록일</th>
+            <th style="width: 100px;" class="text-center">관리</th>
+          </tr>
+        </thead>
+        <tbody id="faqBody">
+          <tr>
+            <td colspan="5" class="text-center text-muted">로딩 중...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="pagination" class="cv-pagination-wrap"></div>
+  </div>
+
+  <script th:inline="javascript">
+    var rowNumStart = 0;
+
+    function loadList(page){
+      var data = $('#searchForm').serializeArray();
+      if(page){
+        var replaced = false;
+        data.forEach(function(d){ if(d.name==='currPage'){ d.value=page; replaced=true; }});
+        if(!replaced) data.push({name:'currPage', value: page});
+      }
+      $.ajax({
+        url:'/faqList.do', type:'POST', data: $.param(data), dataType:'json',
+        success:function(rs){
+          var $b = $('#faqBody'); $b.empty();
+          rowNumStart = rs.rowNum || 0;
+          var totalCount = rs.totalCount || 0;
+          $('#totalCount').text('(' + totalCount + ')');
+
+          if(rs.list && rs.list.length){
+            rs.list.forEach(function(it, idx){
+              var row = '<tr class="clickable" onclick="openEdit('+it.faqSeq+')">';
+              row += '<td class="text-center">'+ (rowNumStart - idx) +'</td>';
+              row += '<td class="text-left">'+ (it.question||'') +'</td>';
+              row += '<td class="text-center">';
+              if(it.displayYn==='Y'){
+                row += '<span class="cv-badge cv-badge-success">노출</span>';
+              } else {
+                row += '<span class="cv-badge cv-badge-default">비노출</span>';
+              }
+              row += '</td>';
+              row += '<td class="text-center">'+ formatDate(it.regDt) +'</td>';
+              row += '<td class="text-center" onclick="event.stopPropagation();">';
+              row += '<div class="cv-actions">';
+              row += '<button type="button" class="cv-action-btn edit" onclick="openEdit('+it.faqSeq+')" title="수정">';
+              row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+              row += '</button>';
+              row += '<button type="button" class="cv-action-btn delete" onclick="delFaq('+it.faqSeq+')" title="삭제">';
+              row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+              row += '</button>';
+              row += '</div>';
+              row += '</td>';
+              row += '</tr>';
+              $b.append(row);
+            });
+          } else {
+            $b.append('<tr><td colspan="5" class="text-center"><div class="cv-empty"><svg class="cv-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><p class="cv-empty-title">FAQ가 없습니다</p><p class="cv-empty-desc">FAQ를 등록해 주세요</p></div></td></tr>');
+          }
+          renderPagination(rs.pagination);
+        }, error:function(){
+          alert('조회 실패');
+        }
+      });
+    }
+
+    function renderPagination(pg){
+      if(!pg){ $('#pagination').empty(); return; }
+      var html = '<div class="cv-pagination">';
+      if(pg.prev>0){
+        html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="loadList('+pg.prev+')">&laquo;</a>';
+      } else {
+        html += '<span class="cv-pagination-item disabled">&laquo;</span>';
+      }
+      if(pg.order){
+        pg.order.forEach(function(p){
+          if(p===pg.currPage) html += '<span class="cv-pagination-item active">'+p+'</span>';
+          else html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="loadList('+p+')">'+p+'</a>';
+        });
+      }
+      if(pg.next>0){
+        html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="loadList('+pg.next+')">&raquo;</a>';
+      } else {
+        html += '<span class="cv-pagination-item disabled">&raquo;</span>';
+      }
+      html += '</div>';
+      $('#pagination').html(html);
+    }
+
+    function showForm(isNew){
+      if(isNew){
+        $('#formTitle').text('FAQ 등록');
+        $('#faqForm')[0].reset();
+        $('#faqSeq').val('');
+        $('#displayOrder').val('999');
+      }
+      $('#faqFormCard').slideDown(300);
+      $('html, body').animate({ scrollTop: 0 }, 300);
+    }
+
+    function hideForm(){
+      $('#faqFormCard').slideUp(300);
+    }
+
+    function openEdit(seq){
+      $.ajax({
+        url: '/faqView.do',
+        type: 'POST',
+        data: { faqSeq: seq },
+        dataType: 'json',
+        success: function(rs){
+          if(rs.view){
+            $('#formTitle').text('FAQ 수정');
+            $('#faqSeq').val(rs.view.faqSeq);
+            $('#question').val(rs.view.question || '');
+            $('#answer').val(rs.view.answer || '');
+            $('#displayYn').val(rs.view.displayYn || 'Y');
+            $('#displayOrder').val(rs.view.displayOrder || 999);
+            $('#faqFormCard').slideDown(300);
+            $('html, body').animate({ scrollTop: 0 }, 300);
+          } else {
+            alert('FAQ 정보를 불러올 수 없습니다.');
+          }
+        },
+        error: function(){
+          alert('FAQ 정보 조회 실패');
+        }
+      });
+    }
+
+    function delFaq(seq){
+      if(!confirm('이 FAQ를 삭제하시겠습니까?')) return;
+      $.post('/faqDel.do', {faqSeq: seq}, function(rs){
+        if(rs.isDel==='Y'){
+          alert('삭제되었습니다');
+          loadList();
+        } else {
+          alert('삭제 실패');
+        }
+      }, 'json');
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      // 이미 포맷된 문자열인 경우
+      if (dateStr.indexOf('-') > 0 && dateStr.length <= 16) {
+        return dateStr.substring(0, 10);
+      }
+      var date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      var year = date.getFullYear();
+      var month = ('0' + (date.getMonth() + 1)).slice(-2);
+      var day = ('0' + date.getDate()).slice(-2);
+      return year + '-' + month + '-' + day;
+    }
+
+    $(function(){
+      $('#btnSearch').on('click', function(){ loadList(1); });
+
+      // 엔터키로 검색
+      $('#keyword').on('keypress', function(e){
+        if(e.which === 13){ e.preventDefault(); loadList(1); }
+      });
+
+      $('#btnNew').on('click', function(){
+        showForm(true);
+      });
+
+      $('#btnCancel').on('click', function(){
+        hideForm();
+      });
+
+      $('#btnSave').on('click', function(){
+        var question = $('#question').val().trim();
+        var answer = $('#answer').val().trim();
+        if(!question){ alert('질문을 입력하세요'); $('#question').focus(); return; }
+        if(!answer){ alert('답변을 입력하세요'); $('#answer').focus(); return; }
+
+        var data = $('#faqForm').serialize();
+        var isUpd = !!$('#faqSeq').val();
+        $.ajax({
+          url: isUpd ? '/faqUpd.do' : '/faqReg.do',
+          type:'POST', data: data, dataType:'json',
+          success:function(rs){
+            if((rs.isReg==='Y') || (rs.isUpd==='Y')){
+              alert('저장되었습니다');
+              hideForm();
+              loadList(1);
+            } else {
+              alert('저장 실패');
+            }
+          }, error:function(){ alert('처리 실패'); }
+        });
+      });
+
+      loadList(1);
+    });
+  </script>
+</div>
+</body>
+</html>

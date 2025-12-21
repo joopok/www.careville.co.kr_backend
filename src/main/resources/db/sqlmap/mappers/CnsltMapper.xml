@@ -8,6 +8,8 @@
 				AA.CNSLT_SEQ
 				,AA.NM
 				,AA.TEL2
+				,AA.EMAIL
+				,AA.COMP_NM
 				,AA.SERVICE_CD
 				,AB.SERVICE_NM
 				,AA.PRODUCT_NO
@@ -16,14 +18,15 @@
 					WHEN AA.REQ_TYPE = '001' THEN AB.SERVICE_NM
 					WHEN AA.REQ_TYPE = '002' THEN AD.PRODUCT_NM
 				END AS SERVICE_NAME
-				,AA.HOPE_DAY
-				,DATE_FORMAT(AA.REG_DT, '%Y%m%d') AS REG_DT
-				,CASE WHEN AA.ANSWER_DT IS NOT NULL THEN DATE_FORMAT(AA.ANSWER_DT, '%Y%m%d') ELSE '' END AS ANSWER_DT
+				,DATE_FORMAT(AA.HOPE_DAY, '%Y-%m-%d') AS HOPE_DAY
+				,AA.HOPE_TIME
+				,DATE_FORMAT(AA.REG_DT, '%Y-%m-%d') AS REG_DT
+				,CASE WHEN AA.ANSWER_DT IS NOT NULL THEN DATE_FORMAT(AA.ANSWER_DT, '%Y-%m-%d') ELSE '' END AS ANSWER_DT
 				,AA.STTUS_CD
 				,AC.CODE_NM AS STTUS_NM
 				,AA.REQ_TYPE
 				,AE.CODE_NM AS REQ_TYPE_NM
-				,CASE WHEN AD.FILE_TRGET_SEQ IS NOT NULL THEN 'Y' ELSE 'N' END AS IS_FILE
+				,CASE WHEN AF.FILE_TRGET_SEQ IS NOT NULL THEN 'Y' ELSE 'N' END AS IS_FILE
 		FROM	TB_CONSULTATION AA
 				LEFT OUTER JOIN TB_CATEGORY AB
 					ON AA.SERVICE_CD = AB.SERVICE_CD
@@ -35,8 +38,8 @@
 				LEFT OUTER JOIN TB_CMMN_CODE AE
 					ON AA.REQ_TYPE = AE.CODE
 					AND AE.GROUP_CD = '003'
-				LEFT OUTER JOIN (SELECT DISTINCT FILE_TRGET_SEQ FROM TB_FILE_RELATION WHERE FILE_TRGET_SE = #{fileTrgetSe}) AD
-					ON AA.CNSLT_SEQ = AD.FILE_TRGET_SEQ
+				LEFT OUTER JOIN (SELECT DISTINCT FILE_TRGET_SEQ FROM TB_FILE_RELATION WHERE FILE_TRGET_SE = #{fileTrgetSe}) AF
+					ON AA.CNSLT_SEQ = AF.FILE_TRGET_SEQ
 	</sql>
 	
 	<select id="getCnsltCnt" parameterType="hashMap" resultType="int" >
@@ -77,12 +80,15 @@
 				,AA.NM
 				,AA.TEL1
 				,AA.TEL2
-				,REGEXP_REPLACE(AA.TEL2, '(\\d{3})(\\d{4})(\\d{4})', '$1-$2-$3') AS PHONE
+				,CASE WHEN LENGTH(AA.TEL2) = 11 THEN CONCAT(SUBSTRING(AA.TEL2, 1, 3), '-', SUBSTRING(AA.TEL2, 4, 4), '-', SUBSTRING(AA.TEL2, 8, 4)) ELSE AA.TEL2 END AS PHONE
+				,AA.EMAIL
+				,AA.COMP_NM
 				,AA.SERVICE_CD
 				,AB.SERVICE_NM
 				,AA.PRODUCT_NO
 				,AD.PRODUCT_NM
-				,AA.HOPE_DAY
+				,DATE_FORMAT(AA.HOPE_DAY, '%Y-%m-%d') AS HOPE_DAY
+				,AA.HOPE_TIME
 				,AA.INQRY_CN
 				,DATE_FORMAT(AA.REG_DT, '%Y-%m-%d') AS REG_DT
 				,CASE WHEN AA.ANSWER_DT IS NOT NULL THEN DATE_FORMAT(AA.ANSWER_DT, '%Y-%m-%d') ELSE NULL END AS ANSWER_DT
@@ -119,12 +125,15 @@
 			NM
 			,TEL1
 			,TEL2
+			,EMAIL
+			,COMP_NM
 			,ZIP
 			,ADRES1
 			,ADRES2
 			,SERVICE_CD
 			,PRODUCT_NO
 			,HOPE_DAY
+			,HOPE_TIME
 			,INQRY_CN
 			,REG_DT
 			,PW
@@ -132,20 +141,65 @@
 			,REQ_TYPE
 		)VALUES(
 			#{nm}
-			,#{tel1}
-			,#{tel2}
+			,SUBSTR(REPLACE(#{tel2}, '-', ''), 1, 3)
+			,SUBSTR(REPLACE(#{tel2}, '-', ''), 4)
+			,#{email}
+			,#{compNm}
 			,#{zip}
 			,#{adres1}
 			,#{adres2}
 			,#{serviceCd}
 			,#{productNo}
 			,#{hopeDay}
+			,#{hopeTime}
 			,#{inqryCn}
 			,NOW()
 			,#{pw}
 			,'001'
 			,#{reqType}
-		);	
+		);
 	</insert>
+
+	<!-- 상담 정보 수정 (관리자용) -->
+	<update id="setCnsltInfoUpd" parameterType="hashMap">
+		UPDATE TB_CONSULTATION
+		SET
+			NM = #{nm}
+			,TEL1 = #{tel1}
+			,TEL2 = #{tel2}
+			,EMAIL = #{email}
+			,COMP_NM = #{compNm}
+			,SERVICE_CD = #{serviceCd}
+			,PRODUCT_NO = #{productNo}
+			,HOPE_DAY = #{hopeDay}
+			,HOPE_TIME = #{hopeTime}
+			,INQRY_CN = #{inqryCn}
+			,REQ_TYPE = #{reqType}
+		WHERE CNSLT_SEQ = #{cnsltSeq}
+	</update>
+
+	<!-- 서비스명으로 서비스 코드 조회 -->
+	<select id="getServiceCdByName" parameterType="string" resultType="string">
+		SELECT SERVICE_CD
+		FROM TB_CATEGORY
+		WHERE SERVICE_NM LIKE CONCAT('%', #{serviceNm}, '%')
+		  AND USE_YN = 'Y'
+		ORDER BY
+			CASE WHEN SERVICE_NM = #{serviceNm} THEN 0 ELSE 1 END,
+			SERVICE_CD
+		LIMIT 1
+	</select>
+
+	<!-- 상품명으로 상품 번호 조회 -->
+	<select id="getProductNoByName" parameterType="string" resultType="int">
+		SELECT PRODUCT_NO
+		FROM TB_PRODUCT
+		WHERE PRODUCT_NM LIKE CONCAT('%', #{productNm}, '%')
+		  AND DEL_YN = 'N'
+		ORDER BY
+			CASE WHEN PRODUCT_NM = #{productNm} THEN 0 ELSE 1 END,
+			PRODUCT_NO
+		LIMIT 1
+	</select>
 
 </mapper>

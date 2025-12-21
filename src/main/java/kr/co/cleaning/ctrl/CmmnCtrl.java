@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.cleaning.core.config.SessionCmn;
+import kr.co.cleaning.core.config.KFException;
 import kr.co.cleaning.svc.CmmnSvc;
 
 @Controller
@@ -49,29 +50,44 @@ public class CmmnCtrl {
 		res.sendRedirect("/apage/");
 	}
 
-	@PostMapping("/fileUpload.do")
-	public String fileUpload(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap,@RequestParam("files") List<MultipartFile> files, ModelMap modelMap) throws Exception {
+    @PostMapping("/fileUpload.do")
+    public String fileUpload(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap,@RequestParam("files") List<MultipartFile> files, ModelMap modelMap) throws Exception {
+        if (!sessionCmn.isLogon()) {
+            throw new KFException("잘못된 접근 입니다. 로그인 정보가 없습니다.", 901);
+        }
         modelMap.addAllAttributes(svc.setFileUpload(paramMap,files));
-		return "jsonView";
-	}
+        return "jsonView";
+    }
 
-	@RequestMapping("/fileView.do")
-	public String fileView(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
-		modelMap.addAllAttributes(svc.getFileView(paramMap));
-		return "downloadView";
-	}
+    @RequestMapping("/fileView.do")
+    public String fileView(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
+        modelMap.addAllAttributes(svc.getFileView(paramMap));
+        return "downloadView";
+    }
 
-	@PostMapping("/fileDel.do")
-	public String fileDel(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
-		modelMap.addAllAttributes(svc.setFileDel(paramMap));
-		return "jsonView";
-	}
+    @RequestMapping("/fileThumbView.do")
+    public String fileThumbView(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
+        modelMap.addAllAttributes(svc.getFileThumbView(paramMap));
+        return "downloadView";
+    }
 
-	@PostMapping("/editorImgUploader.do")
-	public String editorImgUploader(HttpServletRequest req ,HttpServletResponse res,@RequestParam("files") List<MultipartFile> files, ModelMap modelMap) throws Exception {
-		modelMap.addAllAttributes(svc.setEditorImgUploader(files));
-		return "jsonView";
-	}
+    @PostMapping("/fileDel.do")
+    public String fileDel(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
+        if (!sessionCmn.isLogon()) {
+            throw new KFException("잘못된 접근 입니다. 로그인 정보가 없습니다.", 901);
+        }
+        modelMap.addAllAttributes(svc.setFileDel(paramMap));
+        return "jsonView";
+    }
+
+    @PostMapping("/editorImgUploader.do")
+    public String editorImgUploader(HttpServletRequest req ,HttpServletResponse res,@RequestParam("files") List<MultipartFile> files, ModelMap modelMap) throws Exception {
+        if (!sessionCmn.isLogon()) {
+            throw new KFException("잘못된 접근 입니다. 로그인 정보가 없습니다.", 901);
+        }
+        modelMap.addAllAttributes(svc.setEditorImgUploader(files));
+        return "jsonView";
+    }
 
 	@GetMapping("/editorFileView.do")
 	public String editorFileView(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {

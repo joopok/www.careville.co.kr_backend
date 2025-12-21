@@ -1,47 +1,28 @@
+<!-- All styles now in careville-admin.css -->
 
-	<style>
-	button.dropdown-toggle{padding-top: 13px;padding-left:0px;}
-	button.dropdown-toggle,
-	button.dropdown-toggle:hover,
-	button.dropdown-toggle:active,
-	button.dropdown-toggle:focus{background-color: transparent !important;}
-	button.dropdown-toggle span{margin-left:0px !important;}
-	p.col-red{margin-bottom:15px !important;}
-	</style>
-	<div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="carda">
-                <div class="body">
-					<form id="form_validation">
-					
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <p class="font-bold col-red">
-									관리자 계정을 삭제하면 시스템 접근 권한이 완전히 제거됩니다.
-									<br>기존 활동 내역 또한 삭제되어 복구가 불가능 하니 주의하세요.<br>
-								</p>
-							</div>
-						</div>
-						
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>비밀번호</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">https</i>
-							        </span>
-							        <div class="form-line">
-										<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
-							            <input type="password" class="form-control" name="mngrPw" data-name="비밀번호">
-							        </div>
-							    </div>
-							</div>
-						</div>
-					
-					</form>
-                </div>
-            </div>
-        </div>
-    </div>
-		
-	<script th:src="@{/apage/js/admin.js}"></script>
+<form id="form_validation">
+	<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
+
+	<div class="cv-alert-danger">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+			<line x1="12" y1="9" x2="12" y2="13"></line>
+			<line x1="12" y1="17" x2="12.01" y2="17"></line>
+		</svg>
+		<span class="cv-alert-danger-text">
+			<strong>주의!</strong> 관리자 계정을 삭제하면 시스템 접근 권한이 완전히 제거됩니다.<br>
+			기존 활동 내역 또한 삭제되어 복구가 불가능합니다.
+		</span>
+	</div>
+
+	<div class="cv-form-group">
+		<label class="cv-form-label">비밀번호 확인</label>
+		<div class="cv-input-group">
+			<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+			</svg>
+			<input type="password" class="cv-form-input" name="mngrPw" data-name="비밀번호" placeholder="삭제 확인을 위해 비밀번호 입력">
+		</div>
+	</div>
+</form>

@@ -1,241 +1,798 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
-	<head>
-	<title>:: 상품 상세 ::</title>
-	<style>
-	.product-info-table th {background-color:#f5f5f5; width:20%;}
-	.product-info-table td {padding:10px;}
-	.price-info {font-size:18px; font-weight:bold;}
-	.discount-info {color:#ff5722; font-weight:bold;}
-	.service-includes {background-color:#f9f9f9; padding:15px; border-radius:5px; margin-top:10px;}
-	.service-includes h5 {margin-top:0; color:#333;}
-	.service-includes ul {margin-bottom:0;}
-	</style>
-	</head>
-	<body>
-<div layout:fragment="content">
-	<section class="content">
-    <div class="container-fluid">
-        <div class="block-header">
-            <h2>상품 관리</h2>
-        </div>
+<head>
+<title>상품 상세</title>
+<style>
+/* Image Section */
+.cv-image-section {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
 
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="header">
-                        <h2>상품 상세정보</h2>
-                    </div>
-                    <div class="body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered product-info-table">
-                                <tbody>
-                                    <tr>
-                                        <th>상품번호</th>
-                                        <td id="productNo">-</td>
-                                        <th>카테고리</th>
-                                        <td id="serviceNm">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>상품명</th>
-                                        <td colspan="3" id="productNm">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>평형대</th>
-                                        <td id="areaType">-</td>
-                                        <th>소요시간</th>
-                                        <td id="serviceTime">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>정가</th>
-                                        <td><span id="originalPrice">-</span></td>
-                                        <th>판매가</th>
-                                        <td>
-                                            <span class="price-info" id="salePrice">-</span>
-                                            <span class="discount-info" id="discountInfo"></span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>노출여부</th>
-                                        <td id="displayYn">-</td>
-                                        <th>판매여부</th>
-                                        <td id="saleYn">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>노출순서</th>
-                                        <td id="displayOrder">-</td>
-                                        <th>등록일시</th>
-                                        <td id="regDt">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>등록자</th>
-                                        <td id="regUserId">-</td>
-                                        <th>최종 수정일시</th>
-                                        <td id="modDt">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>수정자</th>
-                                        <td colspan="3" id="modUserId">-</td>
-                                    </tr>
-                                    <tr>
-                                        <th>상품 설명</th>
-                                        <td colspan="3">
-                                            <div id="productDesc">-</div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="service-includes" id="serviceIncludesDiv" style="display:none;">
-                            <h5>서비스 포함사항</h5>
-                            <ul id="serviceIncludesList"></ul>
-                        </div>
-                        
-                        <div class="row clearfix" style="margin-top:20px;">
-                            <div class="col-xs-12 text-center">
-                                <button type="button" class="btn btn-primary waves-effect" id="btnModify">
-                                    <i class="material-icons">edit</i> 수정
-                                </button>
-                                <button type="button" class="btn btn-danger waves-effect" id="btnDelete">
-                                    <i class="material-icons">delete</i> 삭제
-                                </button>
-                                <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/product010.do'">
-                                    <i class="material-icons">list</i> 목록
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script th:inline="javascript">
-        var productNo = /*[[${param.productNo[0]}]]*/ null;
-        
-        $(document).ready(function() {
-            if (!productNo) {
-                alert('상품번호가 없습니다.');
-                location.href = '/apage/product010.do';
-                return;
-            }
-            
-            loadProductDetail();
-        });
-        
-        function loadProductDetail() {
-            $.ajax({
-                url: '/apage/product021.do',
-                type: 'POST',
-                data: { 'productNo': productNo },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.result === 'SUCCESS' && data.product) {
-                        displayProductInfo(data.product);
-                    } else {
-                        alert('상품 정보를 불러올 수 없습니다.');
-                        location.href = '/apage/product010.do';
-                    }
-                },
-                error: function() {
-                    alert('서버 오류가 발생하였습니다.');
-                    location.href = '/apage/product010.do';
-                }
-            });
-        }
-        
-        function displayProductInfo(product) {
-            $('#productNo').text(product.productNo);
-            $('#serviceNm').text(product.serviceNm || '-');
-            $('#productNm').text(product.productNm);
-            $('#areaType').text(product.areaType || '-');
-            $('#serviceTime').text(product.serviceTime || '-');
-            $('#originalPrice').text(formatPrice(product.originalPrice) + '원');
-            $('#salePrice').text(formatPrice(product.salePrice) + '원');
-            
-            if (product.discountRate > 0) {
-                $('#discountInfo').text('(' + product.discountRate + '% 할인)');
-            }
-            
-            $('#displayYn').html(product.displayYn === 'Y' 
-                ? '<span class="label label-success">노출</span>' 
-                : '<span class="label label-default">미노출</span>');
-            $('#saleYn').html(product.saleYn === 'Y' 
-                ? '<span class="label label-primary">판매</span>' 
-                : '<span class="label label-warning">미판매</span>');
-            
-            $('#displayOrder').text(product.displayOrder || '999');
-            $('#regDt').text(formatDateTime(product.regDt));
-            $('#regUserId').text(product.regUserId || '-');
-            $('#modDt').text(formatDateTime(product.modDt));
-            $('#modUserId').text(product.modUserId || '-');
-            
-            if (product.productDesc) {
-                $('#productDesc').html(product.productDesc.replace(/\n/g, '<br>'));
-            }
-            
-            if (product.serviceIncludes) {
-                try {
-                    var includes = JSON.parse(product.serviceIncludes);
-                    if (includes && includes.length > 0) {
-                        var listHtml = '';
-                        $.each(includes, function(index, item) {
-                            listHtml += '<li>' + item + '</li>';
-                        });
-                        $('#serviceIncludesList').html(listHtml);
-                        $('#serviceIncludesDiv').show();
-                    }
-                } catch(e) {
-                    console.log('서비스 포함사항 파싱 오류');
-                }
-            }
-        }
-        
-        $('#btnModify').on('click', function() {
-            location.href = '/apage/product040.do?productNo=' + productNo;
-        });
-        
-        $('#btnDelete').on('click', function() {
-            if (!confirm('정말로 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) {
-                return;
-            }
-            
-            $.ajax({
-                url: '/apage/product051.do',
-                type: 'POST',
-                data: { productNo: productNo },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.result === 'SUCCESS') {
-                        alert('삭제되었습니다.');
-                        location.href = '/apage/product010.do';
-                    } else {
-                        alert(data.msg || '삭제에 실패하였습니다.');
-                    }
-                },
-                error: function() {
-                    alert('서버 오류가 발생하였습니다.');
-                }
-            });
-        });
-        
-        function formatPrice(price) {
-            if (!price) return '0';
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-        
-        function formatDateTime(dateStr) {
-            if (!dateStr) return '-';
-            var date = new Date(dateStr);
-            var year = date.getFullYear();
-            var month = ('0' + (date.getMonth() + 1)).slice(-2);
-            var day = ('0' + date.getDate()).slice(-2);
-            var hours = ('0' + date.getHours()).slice(-2);
-            var minutes = ('0' + date.getMinutes()).slice(-2);
-            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
-        }
-    </script>
-    </section>
+.cv-image-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.cv-image-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.cv-image-section-title svg {
+    width: 20px;
+    height: 20px;
+    color: #10b981;
+}
+
+/* Main Images Display Grid (6개 대표 이미지) */
+.cv-main-images-display {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1400px) {
+    .cv-main-images-display {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cv-main-images-display {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.cv-main-image-display-item {
+    position: relative;
+    aspect-ratio: 4/3;
+    background: rgba(0,0,0,0.25);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.cv-main-image-display-item:hover {
+    border-color: rgba(16, 185, 129, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.cv-main-image-display-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.cv-main-image-display-item:hover img {
+    transform: scale(1.05);
+}
+
+.cv-main-image-number {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.8);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    z-index: 5;
+}
+
+.cv-main-image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.3);
+}
+
+.cv-main-image-placeholder svg {
+    width: 32px;
+    height: 32px;
+}
+
+/* Gallery Grid */
+.cv-gallery-display {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .cv-gallery-display { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .cv-gallery-display { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .cv-gallery-display { grid-template-columns: repeat(2, 1fr); }
+}
+
+.cv-gallery-display-item {
+    position: relative;
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.25);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.cv-gallery-display-item:hover {
+    border-color: rgba(59, 130, 246, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.cv-gallery-display-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.cv-gallery-display-item:hover img {
+    transform: scale(1.05);
+}
+
+/* List Display */
+.cv-list-display {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cv-list-display-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--cv-carbon);
+    border-radius: 8px;
+    border: 1px solid var(--cv-border);
+}
+
+.cv-list-display-item .bullet {
+    width: 8px;
+    height: 8px;
+    background: var(--cv-accent);
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.cv-list-display-item .number {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--cv-info) 0%, #2563eb 100%);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.cv-list-display-item .text {
+    font-size: 14px;
+    color: var(--cv-silver-200);
+    line-height: 1.5;
+}
+
+/* Status badges in view */
+.cv-status-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Lightbox */
+.cv-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.cv-lightbox.active {
+    display: flex;
+}
+
+.cv-lightbox-content img {
+    max-width: 90%;
+    max-height: 90vh;
+    border-radius: 8px;
+}
+
+.cv-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.cv-lightbox-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+<div layout:fragment="content">
+
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">상품 상세</h1>
+			<p class="cv-page-desc">상품 정보를 확인합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-primary" id="btnModify">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+					<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+				</svg>
+				수정
+			</button>
+			<button type="button" class="cv-btn cv-btn-danger" id="btnDelete">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="3 6 5 6 21 6"></polyline>
+					<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+				</svg>
+				삭제
+			</button>
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/product010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
+
+	<!-- View Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+
+			<!-- 상품 정보 -->
+			<div class="cv-section-title">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<circle cx="12" cy="12" r="10"></circle>
+					<line x1="12" y1="16" x2="12" y2="12"></line>
+					<line x1="12" y1="8" x2="12.01" y2="8"></line>
+				</svg>
+				상품 정보
+			</div>
+
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">상품번호</div>
+					<div class="cv-detail-value" id="productNo">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">등록일시</div>
+					<div class="cv-detail-value" id="regDt">-</div>
+				</div>
+			</div>
+
+			<!-- 기본 정보 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5);">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+					<circle cx="12" cy="7" r="4"></circle>
+				</svg>
+				기본 정보
+			</div>
+
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">카테고리</div>
+					<div class="cv-detail-value" id="serviceNm">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">상품명</div>
+					<div class="cv-detail-value" id="productNm">-</div>
+				</div>
+			</div>
+
+			<div class="cv-detail-grid cols-1">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">간단 설명</div>
+					<div class="cv-detail-value" id="shortDesc">-</div>
+				</div>
+			</div>
+
+			<div class="cv-detail-grid cols-3">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">평형대</div>
+					<div class="cv-detail-value" id="areaType">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">소요시간</div>
+					<div class="cv-detail-value" id="serviceTime">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">인기 배지</div>
+					<div class="cv-detail-value" id="popularYn">-</div>
+				</div>
+			</div>
+
+			<!-- 가격 정보 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5);">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="12" y1="1" x2="12" y2="23"></line>
+					<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+				</svg>
+				가격 정보
+			</div>
+
+			<div class="cv-detail-grid cols-3">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">정가</div>
+					<div class="cv-detail-value" id="originalPrice">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">판매가</div>
+					<div class="cv-detail-value" id="salePrice">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">할인율</div>
+					<div class="cv-detail-value" id="discountRate">-</div>
+				</div>
+			</div>
+
+			<!-- 노출 설정 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5);">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<circle cx="12" cy="12" r="10"></circle>
+					<line x1="2" y1="12" x2="22" y2="12"></line>
+					<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+				</svg>
+				노출 설정
+			</div>
+
+			<div class="cv-detail-grid cols-3">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">노출 여부</div>
+					<div class="cv-detail-value" id="displayYn">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">판매 여부</div>
+					<div class="cv-detail-value" id="saleYn">-</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">노출 순서</div>
+					<div class="cv-detail-value" id="displayOrder">-</div>
+				</div>
+			</div>
+
+			<!-- 상세 정보 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5);">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+					<polyline points="14 2 14 8 20 8"></polyline>
+					<line x1="16" y1="13" x2="8" y2="13"></line>
+					<line x1="16" y1="17" x2="8" y2="17"></line>
+				</svg>
+				상세 정보
+			</div>
+
+			<div class="cv-detail-grid cols-1">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">상품 설명</div>
+					<div class="cv-detail-value" id="productDesc" style="min-height: 100px; white-space: pre-wrap;">-</div>
+				</div>
+			</div>
+
+			<div class="cv-detail-grid cols-1" id="serviceIncludesSection" style="display:none;">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">서비스 포함사항</div>
+					<ul class="cv-list-display" id="serviceIncludesList"></ul>
+				</div>
+			</div>
+
+			<!-- 카드 표시 정보 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5); display:none;" id="featuresTitle">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+					<line x1="3" y1="9" x2="21" y2="9"></line>
+				</svg>
+				카드 표시 정보 (특징)
+			</div>
+
+			<div class="cv-detail-grid cols-1" id="featuresSection" style="display:none;">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">특징 리스트</div>
+					<ul class="cv-list-display" id="featuresList"></ul>
+				</div>
+			</div>
+
+			<!-- 서비스 효과 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5); display:none;" id="serviceEffectsTitle">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+				</svg>
+				서비스 효과
+			</div>
+
+			<div class="cv-detail-grid cols-1" id="serviceEffectsSection" style="display:none;">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">서비스 효과 리스트</div>
+					<ul class="cv-list-display" id="serviceEffectsList"></ul>
+				</div>
+			</div>
+
+			<!-- 작업 과정 -->
+			<div class="cv-section-title" style="margin-top: var(--space-5); display:none;" id="workProcessTitle">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				작업 과정
+			</div>
+
+			<div class="cv-detail-grid cols-1" id="workProcessSection" style="display:none;">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">작업 과정 리스트</div>
+					<ul class="cv-list-display" id="workProcessList"></ul>
+				</div>
+			</div>
+
+			<!-- 대표 이미지 (6개) -->
+			<div class="cv-image-section">
+				<div class="cv-image-section-header">
+					<div class="cv-image-section-title">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+							<circle cx="8.5" cy="8.5" r="1.5"></circle>
+							<polyline points="21 15 16 10 5 21"></polyline>
+						</svg>
+						대표 이미지
+					</div>
+					<span id="mainImgCount" style="font-size: 13px; color: rgba(255,255,255,0.6);">0개</span>
+				</div>
+
+				<div class="cv-main-images-display" id="mainImagesDisplay">
+					<!-- 이미지 1 -->
+					<div class="cv-main-image-display-item" id="mainImgItem1" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">1</span>
+						<img id="mainImgView1" src="" alt="대표 이미지 1">
+					</div>
+					<!-- 이미지 2 -->
+					<div class="cv-main-image-display-item" id="mainImgItem2" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">2</span>
+						<img id="mainImgView2" src="" alt="대표 이미지 2">
+					</div>
+					<!-- 이미지 3 -->
+					<div class="cv-main-image-display-item" id="mainImgItem3" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">3</span>
+						<img id="mainImgView3" src="" alt="대표 이미지 3">
+					</div>
+					<!-- 이미지 4 -->
+					<div class="cv-main-image-display-item" id="mainImgItem4" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">4</span>
+						<img id="mainImgView4" src="" alt="대표 이미지 4">
+					</div>
+					<!-- 이미지 5 -->
+					<div class="cv-main-image-display-item" id="mainImgItem5" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">5</span>
+						<img id="mainImgView5" src="" alt="대표 이미지 5">
+					</div>
+					<!-- 이미지 6 -->
+					<div class="cv-main-image-display-item" id="mainImgItem6" style="display:none;" onclick="openLightbox(this.querySelector('img').src)">
+						<span class="cv-main-image-number">6</span>
+						<img id="mainImgView6" src="" alt="대표 이미지 6">
+					</div>
+					<!-- 이미지 없음 placeholder -->
+					<div class="cv-main-image-placeholder" id="noMainImgPlaceholder" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+						<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 12px;">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+							<circle cx="8.5" cy="8.5" r="1.5"></circle>
+							<polyline points="21 15 16 10 5 21"></polyline>
+						</svg>
+						<span style="display: block; color: rgba(255,255,255,0.4);">등록된 대표 이미지가 없습니다</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 갤러리 이미지 -->
+			<div class="cv-image-section" id="gallerySection" style="display:none;">
+				<div class="cv-image-section-header">
+					<div class="cv-image-section-title">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="3" width="7" height="7"></rect>
+							<rect x="14" y="3" width="7" height="7"></rect>
+							<rect x="14" y="14" width="7" height="7"></rect>
+							<rect x="3" y="14" width="7" height="7"></rect>
+						</svg>
+						갤러리 이미지
+					</div>
+					<span id="galleryCount" style="font-size: 13px; color: rgba(255,255,255,0.6);">0개</span>
+				</div>
+
+				<div class="cv-gallery-display" id="galleryGrid"></div>
+			</div>
+
+			<!-- 버튼 -->
+			<div class="cv-btn-group">
+				<button type="button" class="cv-btn cv-btn-primary" id="btnModify2">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+					</svg>
+					수정
+				</button>
+				<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/product010.do'">
+					목록
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Lightbox Modal -->
+	<div class="cv-lightbox" id="lightbox">
+		<div class="cv-lightbox-close" onclick="closeLightbox()">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</div>
+		<div class="cv-lightbox-content">
+			<img id="lightboxImg" src="" alt="이미지 확대">
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		var productNo = /*[[${param.productNo[0]}]]*/ null;
+
+		$(document).ready(function() {
+			if (!productNo) {
+				swal({title: '상품번호가 없습니다.', type: 'warning'}, function() {
+					location.href = '/apage/product010.do';
+				});
+				return;
+			}
+			loadProductDetail();
+
+			$('#btnModify, #btnModify2').on('click', function() {
+				location.href = '/apage/product040.do?productNo=' + productNo;
+			});
+
+			$('#btnDelete').on('click', function() {
+				swal({
+					title: '정말로 삭제하시겠습니까?',
+					text: '삭제된 데이터는 복구할 수 없습니다.',
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonText: '삭제',
+					cancelButtonText: '취소',
+					closeOnConfirm: false
+				}, function(isConfirm) {
+					if (!isConfirm) return;
+
+					$.ajax({
+						url: '/apage/product051.do',
+						type: 'POST',
+						data: { productNo: productNo },
+						dataType: 'json',
+						success: function(data) {
+							if (data.result === 'SUCCESS') {
+								swal({title: '삭제되었습니다.', type: 'success'}, function() {
+									location.href = '/apage/product010.do';
+								});
+							} else {
+								swal({title: data.msg || '삭제에 실패하였습니다.', type: 'error'});
+							}
+						},
+						error: function() {
+							swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+						}
+					});
+				});
+			});
+		});
+
+		function loadProductDetail() {
+			$.ajax({
+				url: '/apage/product021.do',
+				type: 'POST',
+				data: { 'productNo': productNo },
+				dataType: 'json',
+				success: function(data) {
+					if (data.result === 'SUCCESS' && data.product) {
+						displayProductInfo(data.product);
+					} else {
+						swal({title: '상품 정보를 불러올 수 없습니다.', type: 'warning'}, function() {
+							location.href = '/apage/product010.do';
+						});
+					}
+				},
+				error: function() {
+					swal({title: '서버 오류가 발생하였습니다.', type: 'error'}, function() {
+						location.href = '/apage/product010.do';
+					});
+				}
+			});
+		}
+
+		function displayProductInfo(product) {
+			// 상품 정보
+			$('#productNo').text(product.productNo || '-');
+			$('#regDt').text(product.regDt || '-');
+
+			// 기본 정보
+			$('#serviceNm').text(product.serviceNm || '-');
+			$('#productNm').text(product.productNm || '-');
+			$('#shortDesc').text(product.shortDesc || '-');
+			$('#areaType').text(product.areaType || '-');
+			$('#serviceTime').text(product.serviceTime || '-');
+			$('#popularYn').html(product.popularYn === 'Y' ? '<span class="cv-badge cv-badge-danger">인기</span>' : '<span class="cv-badge cv-badge-secondary">일반</span>');
+
+			// 가격 정보
+			$('#originalPrice').text(formatPrice(product.originalPrice) + '원');
+			$('#salePrice').text(formatPrice(product.salePrice) + '원');
+			$('#discountRate').text((product.discountRate || 0) + '%');
+
+			// 노출 설정
+			$('#displayYn').html(product.displayYn === 'Y' ? '<span class="cv-badge cv-badge-success">노출</span>' : '<span class="cv-badge cv-badge-secondary">미노출</span>');
+			$('#saleYn').html(product.saleYn === 'Y' ? '<span class="cv-badge cv-badge-info">판매중</span>' : '<span class="cv-badge cv-badge-warning">미판매</span>');
+			$('#displayOrder').text(product.displayOrder || '999');
+
+			// 상세 정보
+			$('#productDesc').text(product.productDesc || '-');
+
+			// 리스트 섹션
+			displayListSection(product.serviceIncludes, 'serviceIncludesList', 'serviceIncludesSection', null, 'bullet');
+			displayListSection(product.features, 'featuresList', 'featuresSection', 'featuresTitle', 'bullet');
+			displayListSection(product.serviceEffects, 'serviceEffectsList', 'serviceEffectsSection', 'serviceEffectsTitle', 'bullet');
+			displayListSection(product.workProcess, 'workProcessList', 'workProcessSection', 'workProcessTitle', 'number');
+
+			// 대표 이미지 6개
+			var mainImgCount = 0;
+			for (var i = 1; i <= 6; i++) {
+				var fileSeq = product['fileSeq' + i];
+				if (fileSeq) {
+					$('#mainImgView' + i).attr('src', '/file/download.do?fileSeq=' + fileSeq);
+					$('#mainImgItem' + i).show();
+					mainImgCount++;
+				}
+			}
+			if (mainImgCount > 0) {
+				$('#mainImgCount').text(mainImgCount + '개');
+				$('#noMainImgPlaceholder').hide();
+			} else {
+				$('#mainImgCount').text('0개');
+				$('#noMainImgPlaceholder').show();
+			}
+
+			// 갤러리 이미지
+			if (product.images && product.images.length > 0) {
+				$('#gallerySection').show();
+				$('#galleryCount').text(product.images.length + '개');
+				var galleryHtml = '';
+				$.each(product.images, function(index, img) {
+					var imgUrl = '/file/download.do?fileSeq=' + img.fileSeq;
+					galleryHtml += '<div class="cv-gallery-display-item" onclick="openLightbox(\'' + imgUrl + '\')">';
+					galleryHtml += '<img src="' + imgUrl + '" alt="갤러리 이미지">';
+					galleryHtml += '</div>';
+				});
+				$('#galleryGrid').html(galleryHtml);
+			}
+		}
+
+		function displayListSection(data, listId, sectionId, titleId, type) {
+			if (!data) return;
+
+			try {
+				var items = [];
+				if (typeof data === 'string') {
+					if (data.trim().startsWith('[')) {
+						items = JSON.parse(data);
+					} else {
+						items = data.split('\n').filter(function(item) {
+							return item.trim() !== '';
+						});
+					}
+				} else if (Array.isArray(data)) {
+					items = data;
+				}
+
+				if (items && items.length > 0) {
+					var listHtml = '';
+					$.each(items, function(index, item) {
+						var strItem = String(item);
+						if (type === 'number') {
+							listHtml += '<li class="cv-list-display-item"><span class="number">' + (index + 1) + '</span><span class="text">' + strItem + '</span></li>';
+						} else {
+							listHtml += '<li class="cv-list-display-item"><span class="bullet"></span><span class="text">' + strItem + '</span></li>';
+						}
+					});
+					$('#' + listId).html(listHtml);
+					$('#' + sectionId).show();
+					if (titleId) $('#' + titleId).show();
+				}
+			} catch(e) {
+				console.error('리스트 파싱 오류:', e);
+			}
+		}
+
+		function formatPrice(price) {
+			if (!price) return '0';
+			return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
+
+		function openLightbox(url) {
+			$('#lightboxImg').attr('src', url);
+			$('#lightbox').addClass('active');
+			$('body').css('overflow', 'hidden');
+		}
+
+		function closeLightbox() {
+			$('#lightbox').removeClass('active');
+			$('body').css('overflow', '');
+		}
+
+		$(document).on('keydown', function(e) {
+			if (e.key === 'Escape') closeLightbox();
+		});
+
+		$('#lightbox').on('click', function(e) {
+			if (e.target === this) closeLightbox();
+		});
+	</script>
+
 </div>
 </body>
 </html>

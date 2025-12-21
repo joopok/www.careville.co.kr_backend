@@ -36,20 +36,28 @@ public class KFExceptionResolver extends SimpleMappingExceptionResolver {
 		String excpMethod = ex.getClass().getSimpleName();
 		String excpCdMsg = "";
 
-		if (ex instanceof DataAccessException) {
-			String sqlState = null;
+        if (ex instanceof DataAccessException) {
+            String sqlState = null;
+            String vendorMsg = null;
 
-			if (ex.getCause() instanceof java.sql.SQLException) {
-				java.sql.SQLException sqlEx = (java.sql.SQLException) ex.getCause();
-				sqlState = sqlEx.getSQLState();
-			}
+            Throwable cause = ex.getCause();
+            while (cause != null && !(cause instanceof java.sql.SQLException)) {
+                cause = cause.getCause();
+            }
+            if (cause instanceof java.sql.SQLException sqlEx) {
+                sqlState = sqlEx.getSQLState();
+                vendorMsg = sqlEx.getMessage();
+            }
 
-			SqlErrorCode codeFromState = SqlErrorCode.fromSqlState(sqlState);
-			excpCd = sqlState == null ? 99999 : SUtils.strToInt(sqlState);
-			excpCdMsg = codeFromState.name();
-			excpMsg = codeFromState.name() + " - " + codeFromState.getMessage();
+            SqlErrorCode codeFromState = SqlErrorCode.fromSqlState(sqlState);
+            excpCd = sqlState == null ? 99999 : SUtils.strToInt(sqlState);
+            excpCdMsg = codeFromState.name();
+            // 벤더 메시지를 함께 노출하여 원인 파악 용이
+            excpMsg = (vendorMsg != null && !vendorMsg.isEmpty())
+                    ? (codeFromState.name() + " - " + vendorMsg)
+                    : (codeFromState.name() + " - " + codeFromState.getMessage());
 
-		} else {
+        } else {
 			if (ex instanceof KFException) {
 				excpCd = ((KFException) ex).getCode();
 			}
@@ -88,19 +96,20 @@ public class KFExceptionResolver extends SimpleMappingExceptionResolver {
 		log.error("───── isAjax   : {}", headerMap.containsKey("x-kframe-ajax-call"));
 		log.error("───── isJson   : {}", SUtils.nvl(headerMap.get("accept")).contains("application/json"));
 
-		if (SUtils.nvl(headerMap.get("accept")).contains("application/json")) {
-			pageView = "jsonView";
+        if (SUtils.nvl(headerMap.get("accept")).contains("application/json")) {
+            pageView = "jsonView";
 
-		} else {
-			pageView = viewNm;
-			String referer = SUtils.nvl(headerMap.get("referer"), "/apage/");
+        } else {
+            // 로그인 필요 오류(901)는 로그인 페이지로 리다이렉트
+            if (excpCd == 901) {
+                mv.setViewName("redirect:/apage/");
+                return mv;
+            }
 
-			if (excpCd == 901) {
-				referer = "/apage/";
-			}
-
-			excpMap.put("backUrl", referer);
-		}
+            pageView = viewNm;
+            String referer = SUtils.nvl(headerMap.get("referer"), "/apage/");
+            excpMap.put("backUrl", referer);
+        }
 
 		mv.setViewName(pageView);
 		mv.addAllObjects(excpMap);

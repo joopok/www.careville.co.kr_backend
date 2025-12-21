@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.cleaning.svc.BoardSvc;
+import kr.co.cleaning.svc.CmmnSvc;
 
 @Controller
 public class BoardCtrl {
@@ -23,6 +24,9 @@ public class BoardCtrl {
 
 	@Autowired
 	BoardSvc svc;
+
+	@Autowired
+	CmmnSvc cmmnSvc;
 
 	@RequestMapping("/apage/board0{pageNum}.do")
 	public String pageView(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, @PathVariable String pageNum ,ModelMap modelMap) throws Exception {
@@ -36,15 +40,32 @@ public class BoardCtrl {
 
 		String pageNumber	= pageNum;
 
-		if(pageNum.equals("11")){
-	        modelMap.addAllAttributes(svc.getBoardList(req,paramMap));
+		if(pageNum.equals("10")){
+			// 목록 화면 - 초기 데이터 로드
+			modelMap.addAllAttributes(svc.getBoardList(req, paramMap));
+
+		}else if(pageNum.equals("11")){
+			// 목록 JSON (AJAX 호출용)
+			modelMap.addAllAttributes(svc.getBoardList(req,paramMap));
 			return "jsonView";
 
-		}else if(pageNum.equals("21")){
-
-		}else if(pageNum.equals("41")){
-
+		        }else if(pageNum.equals("21")){
+					modelMap.addAllAttributes(svc.getBoardView(req,paramMap));
+		
+		        }else if(pageNum.equals("30")){
+					modelMap.addAttribute("serviceCdLst"	,cmmnSvc.getServiceCdList());
+					modelMap.addAttribute("sttusCdLst"		,cmmnSvc.getCodeList("002"));
+		
+		        }else if(pageNum.equals("40")){
+					modelMap.addAllAttributes(svc.getBoardView(req,paramMap));
+		
+		        }else if(pageNum.equals("41")){
+					// 수정 처리 (AJAX)
+					modelMap.addAllAttributes(svc.setBoardUpd(req, paramMap));
+					return "jsonView";
 		}else{
+			// 기본값: 목록 화면
+			modelMap.addAllAttributes(svc.getBoardList(req, paramMap));
 			pageNumber	= "10";
 		}
 

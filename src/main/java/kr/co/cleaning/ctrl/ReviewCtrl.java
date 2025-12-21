@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +60,10 @@ public class ReviewCtrl {
 			return "jsonView";
 
 		}else if(pageNum.equals("20")){
+			// reviewSeq가 없으면 목록으로 리다이렉트
+			if(paramMap.get("reviewSeq") == null || paramMap.get("reviewSeq").toString().isEmpty()) {
+				return "redirect:/apage/review010.do";
+			}
 			modelMap.addAllAttributes(svc.getReviewView(req, paramMap));
 
 		}else if(pageNum.equals("30")){
@@ -71,6 +74,10 @@ public class ReviewCtrl {
 			return "jsonView";
 
 		}else if(pageNum.equals("40")){
+			// reviewSeq가 없으면 목록으로 리다이렉트
+			if(paramMap.get("reviewSeq") == null || paramMap.get("reviewSeq").toString().isEmpty()) {
+				return "redirect:/apage/review010.do";
+			}
 			modelMap.addAllAttributes(svc.getReviewView(req, paramMap));
 
 		}else if(pageNum.equals("41")){
@@ -79,6 +86,10 @@ public class ReviewCtrl {
 
 		}else if(pageNum.equals("42")){	// 노출 변경
 			modelMap.addAllAttributes(svc.setReviewDispUpd(req, paramMap));
+			return "jsonView";
+
+		}else if(pageNum.equals("43")){	// 일괄 노출 변경
+			modelMap.addAllAttributes(svc.setReviewDispUpdAll(req, paramMap));
 			return "jsonView";
 
 		}else if(pageNum.equals("51")){
@@ -141,15 +152,15 @@ public class ReviewCtrl {
 	 */
 	@GetMapping("/api/reviews/all")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> getAllReviewsApi(
 			HttpServletRequest req,
-			@RequestParam(required = false) String dispYn) {
+			@RequestParam(required = false) String dispYn,
+			@RequestParam(defaultValue = "20") int limit) {
 
 		try {
 			HashMap<String, Object> paramMap = new HashMap<>();
 			paramMap.put("limitStartNum", 0);
-			paramMap.put("limitViewRowCnt", 9999); // 충분히 큰 수로 설정
+			paramMap.put("limitViewRowCnt", limit); // 기본 20개 반환
 			paramMap.put("dispYn", dispYn != null ? dispYn : "Y"); // 기본적으로 노출되는 것만
 
 			Map<String, Object> result = svc.getReviewList(req, paramMap);
@@ -184,7 +195,6 @@ public class ReviewCtrl {
 	})
 	@PostMapping("/api/reviews")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> createReviewApi(
 			HttpServletRequest req,
 			@RequestBody Map<String, Object> requestBody) {
@@ -247,7 +257,6 @@ public class ReviewCtrl {
 	})
 	@PostMapping("/api/reviews/{reviewSeq}")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> updateReviewApi(HttpServletRequest req,@PathVariable int reviewSeq,@RequestBody Map<String, Object> requestBody) {
 
 		try {
@@ -327,7 +336,6 @@ public class ReviewCtrl {
 	})
 	@PostMapping("/api/reviews/{reviewSeq}/delete")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> deleteReviewApi(
 			HttpServletRequest req,
 			@PathVariable int reviewSeq,
@@ -422,7 +430,6 @@ public class ReviewCtrl {
 	})
 	@GetMapping("/api/reviews")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> getReviewListApi(
 			HttpServletRequest req,
 			@RequestParam(defaultValue = "1") int pageNum,
@@ -482,7 +489,6 @@ public class ReviewCtrl {
 	@SecurityRequirement(name = "reviewPassword")
 	@GetMapping("/api/reviews/{reviewSeq}")
 	@ResponseBody
-	@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:8080"})
 	public ResponseEntity<Map<String, Object>> getReviewDetailApi(
 			HttpServletRequest req,
 			@PathVariable int reviewSeq,

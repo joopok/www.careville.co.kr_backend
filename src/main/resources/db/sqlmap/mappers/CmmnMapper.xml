@@ -26,42 +26,46 @@
 				SERVICE_ORDER ASC
 	</select>
 	
-	<select id="getProductCdList" parameterType="string" resultType="linkedhashMapCamel" >
-		SELECT 
-				AA.SERVICE_CD  	
-				,AA.SERVICE_NM
-				,AB.PRODUCT_NO
-				,AB.PRODUCT_NM		
-		FROM 	TB_CATEGORY AA
-				JOIN TB_PRODUCT AB
-					ON AA.SERVICE_CD = AB.SERVICE_CD
-		WHERE	1 = 1
-				AND AA.USE_YN  = 'Y'
-				AND AA.DEL_YN = 'N'
-				AND AB.DISPLAY_YN = 'Y'
-				AND AB.SALE_YN  = 'Y'
-				AND AB.DEL_YN = 'N'
-		ORDER BY 
-				AA.SERVICE_ORDER 
-				,AB.PRODUCT_DESC
-	</select>
+    <select id="getProductCdList" parameterType="string" resultType="linkedhashMapCamel" >
+        SELECT
+                AA.SERVICE_CD,
+                AA.SERVICE_NM,
+                AB.PRODUCT_NO,
+                AB.PRODUCT_NM,
+                AB.SERVICE_INCLUDES,
+                AB.ORIGINAL_PRICE,
+                AB.SALE_PRICE,
+                IFNULL(AB.POPULAR_YN, 'N') AS POPULAR_YN,
+                AB.DISPLAY_ORDER
+        FROM TB_CATEGORY AA
+            JOIN TB_PRODUCT AB
+                ON AA.SERVICE_CD = AB.SERVICE_CD
+        WHERE 1 = 1
+            AND AA.USE_YN  = 'Y'
+            AND AA.DEL_YN = 'N'
+            AND AB.DISPLAY_YN = 'Y'
+            AND AB.SALE_YN  = 'Y'
+            AND AB.DEL_YN = 'N'
+        ORDER BY
+            AB.DISPLAY_ORDER ASC
+    </select>
 	
-	<select id="getFileList" parameterType="hashMap" resultType="linkedhashMapCamel">
-		SELECT 
-				A.FILE_RELATE_SEQ	
-				,A.FILE_TRGET_SE
-				,A.FILE_TRGET_SEQ
-				,A.FILE_SEQ
-				,B.FILE_REAL_NM
-				,B.FILE_SIZE
-				,B.FILE_EXTSN
-		FROM 	TB_FILE_RELATION A
-				JOIN TB_FILE B
-					ON A.FILE_RELATE_SEQ = B.FILE_SEQ
-		WHERE	1 = 1
-				AND A.FILE_TRGET_SE = #{fileTrgetSe}
-				AND A.FILE_TRGET_SEQ = #{fileTrgetSeq}
-	</select>
+    <select id="getFileList" parameterType="hashMap" resultType="linkedhashMapCamel">
+        SELECT 
+                A.FILE_RELATE_SEQ	
+                ,A.FILE_TRGET_SE
+                ,A.FILE_TRGET_SEQ
+                ,A.FILE_SEQ
+                ,B.FILE_REAL_NM
+                ,B.FILE_SIZE
+                ,B.FILE_EXTSN
+        FROM 	TB_FILE_RELATION A
+                JOIN TB_FILE B
+                    ON A.FILE_SEQ = B.FILE_SEQ
+        WHERE	1 = 1
+                AND A.FILE_TRGET_SE = #{fileTrgetSe}
+                AND A.FILE_TRGET_SEQ = #{fileTrgetSeq}
+    </select>
 	
 	<select id="getFileView" parameterType="hashMap" resultType="linkedhashMapCamel">
 		SELECT
@@ -119,8 +123,8 @@
 	<update id="setFileRelationUpdate" parameterType="hashMap">
 		UPDATE TB_FILE_RELATION
 		SET
-			FILE_SEQ	= #{fileSeq} 
-			,RGS_DT		= NOW();
+			FILE_SEQ	= #{fileSeq}
+			,RGS_DT		= NOW()
 		WHERE	1 = 1
 				AND FILE_TRGET_SE	= #{fileTrgetSe}
 				AND FILE_TRGET_SEQ	= #{fileTrgetSeq}

@@ -1,0 +1,44 @@
+# =============================================================================
+# 로컬 개발 환경 설정
+# 사용법: --spring.profiles.active=local
+# =============================================================================
+
+# 서버 포트
+server:
+  port: 8080
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+    include-binding-errors: always
+
+# 파일 업로드 경로 (로컬 개발용 - 절대 경로)
+kframe:
+  filePath: /Users/doseunghyeon/developerApp/springDev/www.careville.co.kr_backend/files
+
+# =============================================================================
+# 로컬 개발용 로깅 설정 (상세 로그 출력)
+# =============================================================================
+logging:
+  pattern:
+    console: "%clr(%5p){} %clr(%d{HH:mm:ss}){faint} %clr([%15.15t]){magenta} %clr(%-40.40logger{39}){cyan} %clr(%3L){red} %m%n"
+  level:
+    root: INFO
+    # JDBC SQL 로깅 (필요시 DEBUG로 변경)
+    jdbc: OFF
+    jdbc.sqlonly: OFF
+    jdbc.sqltiming: DEBUG      # SQL 실행 시간 로그
+    jdbc.audit: OFF
+    jdbc.resultset: OFF
+    jdbc.resultsettable: OFF   # 결과 테이블 형태 로그 (DEBUG로 변경시 활성화)
+    jdbc.connection: OFF
+    # Spring 프레임워크
+    org.springframework: INFO
+    org.springframework.web: INFO
+    org.springframework.security: OFF
+    org.mybatis: INFO
+    # 애플리케이션 로깅 (상세)
+    kr.co.cleaning: DEBUG
+    kr.co.cleaning.ctrl: DEBUG
+    kr.co.cleaning.svc: DEBUG
+    kr.co.cleaning.mapper: DEBUG

@@ -70,6 +70,18 @@
                         <span>관리자</span>
                     </a>
                 </li>
+                <li th:classappend="${#strings.contains(currentUri, '/apage/faq0')}?'active'">
+                    <a href="/apage/faq010.do">
+						<i class="material-icons">help_outline</i>
+                        <span>FAQ 관리</span>
+                    </a>
+                </li>
+                <li th:classappend="${#strings.contains(currentUri, '/apage/config0')}?'active'">
+                    <a href="/apage/config010.do">
+						<i class="material-icons">settings</i>
+                        <span>환경 설정</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- #Menu -->

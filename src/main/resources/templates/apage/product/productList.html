@@ -1,327 +1,291 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
-	<head>
-	<title>:: 상품 관리 ::</title>
-	<style>
-	[type="checkbox"] + label {height:20px; line-height:0px; padding-left:0px; width:20px; margin:0px; display:block;}
-	#templateTable{margin-bottom:0;}
-	#pagination-container{text-align: center;}
-	.price-cell{text-align:right !important;}
-	.discount-badge{background-color:#ff5722;}
-	</style>
-	<script th:src="@{/apage/js/pages/tables/jquery-datatable.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/jquery.dataTables.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.flash.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/jszip.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/pdfmake.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/vfs_fonts.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.html5.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.print.min.js}"></script>
-	</head>
-	<body>
+<head>
+<title>상품 관리</title>
+<!-- All styles now in careville-admin.css -->
+<script th:src="@{/plugins/jquery-datatable/jquery.dataTables.js}"></script>
+</head>
+<body>
 <div layout:fragment="content">
-	<section class="content">
-    <div class="container-fluid">
 
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="header">
-                        <h2>상품 목록</h2>
-                    </div>
-                    <div class="body">
-                        <!-- 검색 영역 -->
-                        <form id="searchForm" method="post" action="/apage/product010.do">
-                            <input type="hidden" name="pageNo" id="pageNo" th:value="${params != null ? (params.pageNo != null ? params.pageNo : '1') : '1'}"/>
-                            
-                            <div class="row clearfix">
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <select class="form-control" name="serviceCd" id="serviceCd">
-                                            <option value="">카테고리 전체</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <select class="form-control" name="searchType" id="searchType">
-                                            <option value="">검색구분</option>
-                                            <option value="productNo">상품번호</option>
-                                            <option value="productNm">상품명</option>
-                                        </select>
-                                    </div>
-                                </div>
-								<div class="col-sm-2">
-								    <div class="form-group">
-										<div class="form-line">
-								        	<input type="text" class="form-control" name="searchWord" id="searchWord" placeholder="검색어를 입력하세요">
-										</div>
-								    </div>
-								</div>            
-                  
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <select class="form-control" name="displayYn" id="displayYn">
-                                            <option value="">노출여부 전체</option>
-                                            <option value="Y">노출</option>
-                                            <option value="N">미노출</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <select class="form-control" name="saleYn" id="saleYn">
-                                            <option value="">판매여부 전체</option>
-                                            <option value="Y">판매</option>
-                                            <option value="N">미판매</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <!-- div class="col-sm-2">
-                                    <div class="form-group">
-                                        <select class="form-control" name="areaType" id="areaType">
-                                            <option value="">평형대 전체</option>
-                                            <option value="20-30평형">20-30평형</option>
-                                            <option value="30-40평형">30-40평형</option>
-                                            <option value="40-50평형">40-50평형</option>
-                                            <option value="50평형 이상">50평형 이상</option>
-                                        </select>
-                                    </div>
-                                </div -->
-								<div class="col-sm-2">
-	                                <button type="submit" class="btn btn-primary waves-effect">
-	                                    <i class="material-icons">add</i>
-										<span>검색</span>
-	                                </button>
-	                                <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/product030.do'">
-	                                    <i class="material-icons">insert_comment</i>
-										<span>등록</span>
-	                                </button>
-                                </div>
-                            </div>
-                        </form>
-                        
-                        <!-- 목록 테이블 -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" width="5%">번호</th>
-<!--                                        <th class="text-center" width="8%">상품번호</th>-->
-                                        <th class="text-center" width="13%">카테고리</th>
-                                        <th class="text-center">상품명</th>
-<!--                                        <th class="text-center" width="10%">평형대</th>-->
-                                        <th class="text-center" width="10%">정가</th>
-                                        <th class="text-center" width="10%">판매가</th>
-                                        <th class="text-center" width="7%">할인율</th>
-                                        <th class="text-center" width="7%">노출</th>
-                                        <th class="text-center" width="7%">판매</th>
-                                        <th class="text-center" width="10%">등록일</th>
-                                        <th class="text-center" width="10%">관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="12" class="text-center">데이터 조회 중...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="pagination-container"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script th:inline="javascript">
-        $(document).ready(function() {
-            loadCategories();
-            loadData();
-        });
-        
-        function loadCategories() {
-            $.ajax({
-                url: '/apage/product011.do',
-                type: 'POST',
-                data: {action: 'getCategories'},
-                dataType: 'json',
-                success: function(data) {
-                    if(data.categories) {
-                        var select = $('#serviceCd');
-                        $.each(data.categories, function(index, category) {
-							$('<option>').val(category.serviceCd).text(category.serviceNm).appendTo(select);
-                        });
-						select.selectpicker('refresh');
-                    }
-                }
-            });
-        }
-        
-        function loadData() {
-            var params = {
-                pageNo: $('#pageNo').val() || '1',
-                serviceCd: $('#serviceCd').val(),
-                searchType: $('#searchType').val(),
-                searchWord: $('#searchWord').val(),
-                displayYn: $('#displayYn').val(),
-                saleYn: $('#saleYn').val(),
-                areaType: $('#areaType').val()
-            };
-            
-            $.ajax({
-                url: '/apage/product011.do',
-                type: 'POST',
-                data: params,
-                dataType: 'json',
-                success: function(data) {
-                    renderTable(data);
-                    renderPagination(data.pagination);
-                },
-                error: function() {
-                    alert('데이터 조회 중 오류가 발생하였습니다.');
-                }
-            });
-        }
-        
-        function renderTable(data) {
-            var tbody = $('table tbody');
-            tbody.empty();
-            
-            if (data.list && data.list.length > 0) {
-                $.each(data.list, function(index, item) {
-                    var row = '<tr style="cursor:pointer;" onclick="location.href=\'/apage/product020.do?productNo=' + item.productNo + '\'">';
-                    row += '<td class="text-center">' + (data.rowNum - index) + '</td>';
-//                    row += '<td class="text-center">' + item.productNo + '</td>';
-                    row += '<td class="text-center">' + (item.serviceNm || '-') + '</td>';
-                    row += '<td>' + item.productNm + '</td>';
-//                    row += '<td class="text-center">' + (item.areaType || '-') + '</td>';
-                    row += '<td class="price-cell">' + formatPrice(item.originalPrice) + '원</td>';
-                    row += '<td class="price-cell"><strong>' + formatPrice(item.salePrice) + '원</strong></td>';
-                    row += '<td class="text-center">';
-                    if (item.discountRate > 0) {
-                        row += '<span class="label discount-badge">' + item.discountRate + '%</span>';
-                    } else {
-                        row += '-';
-                    }
-                    row += '</td>';
-                    row += '<td class="text-center">';
-                    if (item.displayYn === 'Y') {
-                        row += '<span class="label label-success">노출</span>';
-                    } else {
-                        row += '<span class="label label-default">미노출</span>';
-                    }
-                    row += '</td>';
-                    row += '<td class="text-center">';
-                    if (item.saleYn === 'Y') {
-                        row += '<span class="label label-primary">판매</span>';
-                    } else {
-                        row += '<span class="label label-warning">미판매</span>';
-                    }
-                    row += '</td>';
-                    row += '<td class="text-center">' + formatDate(item.regDt) + '</td>';
-                    row += '<td class="text-center" onclick="event.stopPropagation();">';
-                    row += '<button type="button" class="btn btn-xs btn-default waves-effect" onclick="location.href=\'/apage/product040.do?productNo=' + item.productNo + '\'"><i class="material-icons">edit</i></button> ';
-                    row += '<button type="button" class="btn btn-xs btn-default waves-effect" onclick="deleteProduct(' + item.productNo + ')"><i class="material-icons">delete_sweep</i></button>';
-                    row += '</td>';
-                    row += '</tr>';
-                    tbody.append(row);
-                });
-            } else {
-                tbody.append('<tr><td colspan="12" class="text-center">등록된 상품이 없습니다.</td></tr>');
-            }
-        }
-        
-        function renderPagination(pagination) {
-            if (!pagination) return;
-            
-            var container = $('#pagination-container');
-            container.empty();
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">상품 관리 <span class="count" id="totalCount"></span></h1>
+			<p class="cv-page-desc">상품 카탈로그를 관리합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<a th:href="@{/apage/product030.do}" class="cv-btn cv-btn-primary">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="12" y1="5" x2="12" y2="19"></line>
+					<line x1="5" y1="12" x2="19" y2="12"></line>
+				</svg>
+				상품 등록
+			</a>
+		</div>
+	</div>
 
-            var html = '<div class="text-center"><ul class="pagination">';
-            
-            // 이전 버튼
-            if (pagination.prev > 0) {
-                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.prev + ')"><span>&laquo;</span></a></li>';
-            } else {
-                html += '<li class="disabled"><a href="javascript:void(0);"><span>&laquo;</span></a></li>';
-            }
-            
-            // 페이지 번호
-            if (pagination.order && pagination.order.length > 0) {
-                $.each(pagination.order, function(index, pageNum) {
-                    if (pagination.currPage == pageNum) {
-                        html += '<li class="active"><a href="javascript:void(0);">' + pageNum + '</a></li>';
-                    } else {
-                        html += '<li><a href="javascript:void(0);" onclick="goPage(' + pageNum + ')">' + pageNum + '</a></li>';
-                    }
-                });
-            }
-            
-            // 다음 버튼
-            if (pagination.next > 0) {
-                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.next + ')"><span>&raquo;</span></a></li>';
-            } else {
-                html += '<li class="disabled"><a href="javascript:void(0);"><span>&raquo;</span></a></li>';
-            }
-            
-            html += '</ul></div>';
-            
-            container.html(html);
-        }
-        
-        $('#searchForm').on('submit', function(e) {
-            e.preventDefault();
-            $('#pageNo').val('1');
-            loadData();
-        });
-        
-        function deleteProduct(productNo) {
-            if (!confirm('정말로 삭제하시겠습니까?')) {
-                return;
-            }
-            
-            $.ajax({
-                url: '/apage/product051.do',
-                type: 'POST',
-                data: { productNo: productNo },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.result === 'SUCCESS') {
-                        alert(data.msg || '삭제되었습니다.');
-                        loadData();
-                    } else {
-                        alert(data.msg || '삭제에 실패하였습니다.');
-                    }
-                },
-                error: function() {
-                    alert('서버 오류가 발생하였습니다.');
-                }
-            });
-        }
-        
-        function goPage(pageNo) {
-            if (!pageNo || pageNo == 0) return false;
-            $('#pageNo').val(pageNo);
-            loadData();
-        }
-        
-        function formatPrice(price) {
-            if (!price) return '0';
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-        
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            var date = new Date(dateStr);
-            var year = date.getFullYear();
-            var month = ('0' + (date.getMonth() + 1)).slice(-2);
-            var day = ('0' + date.getDate()).slice(-2);
-            return year + '-' + month + '-' + day;
-        }
-    </script>
-    </section>
+	<!-- Search Box -->
+	<form id="searchForm" method="post" action="/apage/product010.do">
+		<input type="hidden" name="pageNo" id="pageNo" th:value="${params != null ? (params.pageNo != null ? params.pageNo : '1') : '1'}"/>
+		<div class="cv-search-box">
+			<div class="cv-search-row">
+				<div class="cv-search-field">
+					<select class="cv-search-select" name="serviceCd" id="serviceCd">
+						<option value="">전체 카테고리</option>
+					</select>
+				</div>
+				<div class="cv-search-field">
+					<select class="cv-search-select" name="searchType" id="searchType">
+						<option value="">검색 조건</option>
+						<option value="productNo">상품번호</option>
+						<option value="productNm">상품명</option>
+					</select>
+				</div>
+				<div class="cv-search-field wide">
+					<input type="text" class="cv-search-input" name="searchWord" id="searchWord" placeholder="검색어 입력...">
+				</div>
+				<div class="cv-search-field">
+					<select class="cv-search-select" name="displayYn" id="displayYn">
+						<option value="">전체 노출</option>
+						<option value="Y">노출</option>
+						<option value="N">비노출</option>
+					</select>
+				</div>
+				<div class="cv-search-field">
+					<select class="cv-search-select" name="saleYn" id="saleYn">
+						<option value="">전체 판매</option>
+						<option value="Y">판매중</option>
+						<option value="N">판매중지</option>
+					</select>
+				</div>
+				<div class="cv-search-actions">
+					<button type="submit" class="cv-btn cv-btn-primary">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="11" cy="11" r="8"></circle>
+							<path d="m21 21-4.35-4.35"></path>
+						</svg>
+						검색
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<!-- Data Table -->
+	<div class="cv-data-card">
+		<div class="cv-table-wrap">
+			<table class="cv-table" style="table-layout: fixed; width: 100%;">
+				<thead>
+					<tr>
+						<th style="width: 50px;" class="text-center">번호</th>
+						<th style="width: 100px;" class="text-center">카테고리</th>
+						<th style="width: 180px;" class="text-left">상품명</th>
+						<th style="width: 100px;" class="text-right">정가</th>
+						<th style="width: 100px;" class="text-right">판매가</th>
+						<th style="width: 70px;" class="text-center">할인율</th>
+						<th style="width: 70px;" class="text-center">노출</th>
+						<th style="width: 80px;" class="text-center">판매</th>
+						<th style="width: 100px;" class="text-center">등록일</th>
+						<th style="width: 100px;" class="text-center">관리</th>
+					</tr>
+				</thead>
+				<tbody id="dataTableBody">
+					<tr>
+						<td colspan="10" class="text-center text-muted">로딩 중...</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="pagination-container" class="cv-pagination-wrap"></div>
+	</div>
+
+<script th:inline="javascript">
+$(document).ready(function() {
+	loadCategories();
+	loadData();
+});
+
+function loadCategories() {
+	$.ajax({
+		url: '/apage/product011.do',
+		type: 'POST',
+		data: {action: 'getCategories'},
+		dataType: 'json',
+		success: function(data) {
+			if(data.categories) {
+				var select = $('#serviceCd');
+				$.each(data.categories, function(index, category) {
+					$('<option>').val(category.serviceCd).text(category.serviceNm).appendTo(select);
+				});
+			}
+		}
+	});
+}
+
+function loadData() {
+	var params = {
+		pageNo: $('#pageNo').val() || '1',
+		serviceCd: $('#serviceCd').val(),
+		searchType: $('#searchType').val(),
+		searchWord: $('#searchWord').val(),
+		displayYn: $('#displayYn').val(),
+		saleYn: $('#saleYn').val()
+	};
+
+	$.ajax({
+		url: '/apage/product011.do',
+		type: 'POST',
+		data: params,
+		dataType: 'json',
+		success: function(data) {
+			renderTable(data);
+			renderPagination(data.pagination);
+			var totalCount = data.pagination ? data.pagination.totalRowCnt || 0 : 0;
+			$('#totalCount').text('(' + totalCount + ')');
+		},
+		error: function() {
+			alert('데이터를 불러오는 중 오류가 발생했습니다');
+		}
+	});
+}
+
+function renderTable(data) {
+	var tbody = $('#dataTableBody');
+	tbody.empty();
+
+	if (data.list && data.list.length > 0) {
+		$.each(data.list, function(index, item) {
+			var row = '<tr class="clickable" onclick="location.href=\'/apage/product020.do?productNo=' + item.productNo + '\'">';
+			row += '<td class="text-center">' + (data.rowNum - index) + '</td>';
+			row += '<td class="text-center">' + (item.serviceNm || '-') + '</td>';
+			row += '<td class="text-left">' + item.productNm + '</td>';
+			row += '<td class="text-right price-cell">' + formatPrice(item.originalPrice) + '</td>';
+			row += '<td class="text-right price-cell"><strong>' + formatPrice(item.salePrice) + '</strong></td>';
+			row += '<td class="text-center">';
+			if (item.discountRate > 0) {
+				row += '<span class="discount-rate">' + item.discountRate + '%</span>';
+			} else {
+				row += '-';
+			}
+			row += '</td>';
+			row += '<td class="text-center">';
+			if (item.displayYn === 'Y') {
+				row += '<span class="cv-badge cv-badge-success">노출</span>';
+			} else {
+				row += '<span class="cv-badge cv-badge-default">비노출</span>';
+			}
+			row += '</td>';
+			row += '<td class="text-center">';
+			if (item.saleYn === 'Y') {
+				row += '<span class="cv-badge cv-badge-primary">판매중</span>';
+			} else {
+				row += '<span class="cv-badge cv-badge-warning">판매중지</span>';
+			}
+			row += '</td>';
+			row += '<td class="text-center">' + formatDate(item.regDt) + '</td>';
+			row += '<td class="text-center" onclick="event.stopPropagation();">';
+			row += '<div class="cv-actions">';
+			row += '<button type="button" class="cv-action-btn edit" onclick="location.href=\'/apage/product040.do?productNo=' + item.productNo + '\'" title="수정">';
+			row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+			row += '</button>';
+			row += '<button type="button" class="cv-action-btn delete" onclick="deleteProduct(' + item.productNo + ')" title="삭제">';
+			row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+			row += '</button>';
+			row += '</div>';
+			row += '</td>';
+			row += '</tr>';
+			tbody.append(row);
+		});
+	} else {
+		tbody.append('<tr><td colspan="10" class="text-center"><div class="cv-empty"><svg class="cv-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><p class="cv-empty-title">상품이 없습니다</p><p class="cv-empty-desc">상품을 등록해 주세요</p></div></td></tr>');
+	}
+}
+
+function renderPagination(pagination) {
+	if (!pagination) return;
+
+	var container = $('#pagination-container');
+	container.empty();
+
+	var html = '<div class="cv-pagination">';
+
+	if (pagination.prev > 0) {
+		html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pagination.prev + ')">&laquo;</a>';
+	} else {
+		html += '<span class="cv-pagination-item disabled">&laquo;</span>';
+	}
+
+	if (pagination.order && pagination.order.length > 0) {
+		$.each(pagination.order, function(index, pageNum) {
+			if (pagination.currPage == pageNum) {
+				html += '<span class="cv-pagination-item active">' + pageNum + '</span>';
+			} else {
+				html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pageNum + ')">' + pageNum + '</a>';
+			}
+		});
+	}
+
+	if (pagination.next > 0) {
+		html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pagination.next + ')">&raquo;</a>';
+	} else {
+		html += '<span class="cv-pagination-item disabled">&raquo;</span>';
+	}
+
+	html += '</div>';
+	container.html(html);
+}
+
+$('#searchForm').on('submit', function(e) {
+	e.preventDefault();
+	$('#pageNo').val('1');
+	loadData();
+});
+
+function deleteProduct(productNo) {
+	if (!confirm('이 상품을 삭제하시겠습니까?')) {
+		return;
+	}
+
+	$.ajax({
+		url: '/apage/product051.do',
+		type: 'POST',
+		data: { productNo: productNo },
+		dataType: 'json',
+		success: function(data) {
+			if (data.result === 'SUCCESS') {
+				alert(data.msg || '삭제되었습니다');
+				loadData();
+			} else {
+				alert(data.msg || '삭제에 실패했습니다');
+			}
+		},
+		error: function() {
+			alert('서버 오류가 발생했습니다');
+		}
+	});
+}
+
+function goPage(pageNo) {
+	if (!pageNo || pageNo == 0) return false;
+	$('#pageNo').val(pageNo);
+	loadData();
+}
+
+function formatPrice(price) {
+	if (!price) return '0';
+	return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function formatDate(dateStr) {
+	if (!dateStr) return '-';
+	var date = new Date(dateStr);
+	var year = date.getFullYear();
+	var month = ('0' + (date.getMonth() + 1)).slice(-2);
+	var day = ('0' + date.getDate()).slice(-2);
+	return year + '-' + month + '-' + day;
+}
+</script>
+
 </div>
 </body>
 </html>

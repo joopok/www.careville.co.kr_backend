@@ -1,108 +1,246 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>관리자 상세</title>
+<!-- All styles now in careville-admin.css -->
+<script th:src="@{/plugins/jquery-inputmask/jquery.inputmask.bundle.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
 
-	<style>
-		.input-group .form-line:after {bottom:0px;border-bottom: 1px solid #ddd;}		
-	button.dropdown-toggle{padding-top: 13px;padding-left:0px;}
-	button.dropdown-toggle,
-	button.dropdown-toggle:hover,
-	button.dropdown-toggle:active,
-	button.dropdown-toggle:focus{background-color: transparent !important;}
-	button.dropdown-toggle span{margin-left:0px !important;}
-	</style>
-	<div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="carda">
-                <div class="body">
-					<form id="form_validation">
-					
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>아이디</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">person</i>
-							        </span>
-							        <div class="form-line focused">
-							            <input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
-							            <input type="text" class="form-control" th:value="${view.mngrId}" disabled>
-							        </div>
-							    </div>
-							</div>
-						</div>
-						
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>이름</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">person</i>
-							        </span>
-							        <div class="form-line focused">
-							            <input type="text" class="form-control" name="mngrNm" data-name="이름" th:value="${view.mngrNm}" maxlength="10">
-							        </div>
-							    </div>
-							</div>
-						</div>
-						
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>별칭</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">person</i>
-							        </span>
-							        <div class="form-line focused">
-							            <input type="text" class="form-control" name="mngrNcnm" data-name="별칭" th:value="${view.mngrNcnm}" maxlength="10">
-							        </div>
-							    </div>
-							</div>
-						</div>						
-						
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>연락처</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">phone_iphone</i>
-							        </span>
-							        <div class="form-line focused">
-							            <input type="tel" class="form-control mobile-phone-number" name="mngrTel" data-name="연락처" th:value="${view.mngrTel}" placeholder="Ex: 000-0000-0000">
-							        </div>
-							    </div>
-							</div>
-						</div>						
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">관리자 상세</h1>
+			<p class="cv-page-desc">관리자 계정 정보를 확인하고 수정합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/mnger010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
 
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>등록일</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">date_range</i>
-							        </span>
-							        <div class="form-line focused">
-							            <input type="text" class="form-control" th:value="${view.rgsDt}" disabled>
-							        </div>
-							    </div>
-							</div>
+	<!-- Detail Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+			<form id="form_validation">
+				<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
+
+				<!-- Row 1: 아이디, 역할 -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">아이디</div>
+						<div class="cv-detail-value">
+							<code th:text="${view.mngrId}"></code>
 						</div>
-						
-						<div class="row clearfix">
-							<div class="col-sm-12">
-							    <b>비밀번호</b>
-							    <div class="input-group">
-							        <span class="input-group-addon">
-							            <i class="material-icons">https</i>
-							        </span>
-							        <div class="form-line">
-							            <input type="password" class="form-control" name="mngrPw" data-name="비밀번호">
-							        </div>
-							    </div>
-							</div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">역할</div>
+						<div class="cv-detail-value">
+							<span th:if="${view.mngrSeq == '1'}" class="cv-role-badge super">
+								<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+									<path d="M2 17l10 5 10-5"></path>
+									<path d="M2 12l10 5 10-5"></path>
+								</svg>
+								슈퍼관리자
+							</span>
+							<span th:unless="${view.mngrSeq == '1'}" class="cv-role-badge admin">
+								<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+									<circle cx="12" cy="7" r="4"></circle>
+								</svg>
+								관리자
+							</span>
 						</div>
-						
-					</form>
-                </div>
-            </div>
-        </div>
-    </div>
-	
-	<script th:src="@{/apage/js/admin.js}"></script>
+					</div>
+				</div>
+
+				<!-- Row 2: 이름, 별칭 (수정 가능) -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">이름</div>
+						<input type="text" class="cv-form-input" name="mngrNm" data-name="이름"
+							   th:value="${view.mngrNm}" maxlength="10" placeholder="이름 입력">
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">별칭</div>
+						<input type="text" class="cv-form-input" name="mngrNcnm" data-name="별칭"
+							   th:value="${view.mngrNcnm}" maxlength="10" placeholder="별칭 입력">
+					</div>
+				</div>
+
+				<!-- Row 3: 연락처, 상태 -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">연락처</div>
+						<input type="tel" class="cv-form-input mobile-phone-number" name="mngrTel" data-name="연락처"
+							   th:value="${view.mngrTel}" placeholder="010-0000-0000">
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">상태</div>
+						<div class="cv-detail-value">
+							<span th:if="${view.mngrSttus == 'Y'}" class="cv-status-badge active">활성</span>
+							<span th:unless="${view.mngrSttus == 'Y'}" class="cv-status-badge inactive">비활성</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Row 4: 등록일 -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">등록일</div>
+						<div class="cv-detail-value" th:text="${view.rgsDt} ?: '-'"></div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">비밀번호 (변경 시에만 입력)</div>
+						<input type="password" class="cv-form-input" name="mngrPw" data-name="비밀번호"
+							   placeholder="변경할 비밀번호 입력 (8자리 이상)">
+					</div>
+				</div>
+
+				<!-- Buttons -->
+				<div class="cv-btn-group">
+					<button type="button" class="cv-btn cv-btn-primary" id="btnUpdate">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+							<polyline points="17 21 17 13 7 13 7 21"></polyline>
+							<polyline points="7 3 7 8 15 8"></polyline>
+						</svg>
+						수정
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" id="btnPwChange" th:if="${canChangePw}">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+						비밀번호 변경
+					</button>
+					<button type="button" class="cv-btn cv-btn-danger" id="btnDelete" th:if="${ssa == 'Y'}">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="3 6 5 6 21 6"></polyline>
+							<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+						</svg>
+						삭제
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/mnger010.do'">
+						목록으로
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		var mngrSeq = /*[[${view.mngrSeq}]]*/ '';
+		var ssa = /*[[${ssa}]]*/ 'N';
+
+		$(document).ready(function() {
+			// Phone number mask
+			$('.mobile-phone-number').inputmask('999-9999-9999', { placeholder: '___-____-____'});
+
+			// Update button
+			$('#btnUpdate').on('click', function() {
+				if(!validationCheck()) return false;
+
+				$.ajax({
+					url: '/apage/mnger041.do',
+					type: 'POST',
+					data: $('#form_validation').serialize(),
+					dataType: 'json',
+					success: function(data) {
+						if(data.result === 'SUCCESS') {
+							swal({title: '수정되었습니다.', type: 'success'}, function() {
+								location.reload();
+							});
+						} else {
+							swal({title: data.msg || '수정에 실패하였습니다.', type: 'error'});
+						}
+					},
+					error: function() {
+						swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+					}
+				});
+			});
+
+			// Delete button
+			$('#btnDelete').on('click', function() {
+				if(mngrSeq === '1') {
+					swal({title: '슈퍼관리자는 삭제할 수 없습니다.', type: 'warning'});
+					return false;
+				}
+
+				swal({
+					title: '정말로 삭제하시겠습니까?',
+					text: '삭제된 데이터는 복구할 수 없습니다.',
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonText: '삭제',
+					cancelButtonText: '취소',
+					closeOnConfirm: false
+				}, function(isConfirm) {
+					if(!isConfirm) return;
+
+					$.ajax({
+						url: '/apage/mnger052.do',
+						type: 'POST',
+						data: { mngrSeq: mngrSeq },
+						dataType: 'json',
+						success: function(data) {
+							if(data.result === 'SUCCESS') {
+								swal({title: '삭제되었습니다.', type: 'success'}, function() {
+									location.href = '/apage/mnger010.do';
+								});
+							} else {
+								swal({title: data.msg || '삭제에 실패하였습니다.', type: 'error'});
+							}
+						},
+						error: function() {
+							swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+						}
+					});
+				});
+			});
+
+			// Password change button - redirect to password change page
+			$('#btnPwChange').on('click', function() {
+				location.href = '/apage/mnger043.do?mngrSeq=' + mngrSeq;
+			});
+		});
+
+		function validationCheck() {
+			var $form = $('#form_validation');
+			var mngrNm = $.trim($form.find('input[name="mngrNm"]').val());
+			var mngrTel = $.trim($form.find('input[name="mngrTel"]').val());
+			var mngrPw = $.trim($form.find('input[name="mngrPw"]').val());
+
+			if(!mngrNm) {
+				swal({title: '이름을 입력해주세요.', type: 'warning'});
+				return false;
+			}
+
+			if(mngrTel.replace(/[^0-9]/gi,'').length < 9) {
+				swal({title: '연락처를 확인해 주세요.', type: 'warning'});
+				return false;
+			}
+
+			if(mngrPw && mngrPw.length < 8) {
+				swal({title: '비밀번호는 최소 8자 이상이어야 합니다.', type: 'warning'});
+				return false;
+			}
+
+			return true;
+		}
+	</script>
+
+</div>
+</body>
+</html>

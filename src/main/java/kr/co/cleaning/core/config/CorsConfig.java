@@ -54,16 +54,34 @@ public class CorsConfig {
         // preflight 캐시 시간 (초단위)
         config.setMaxAge(3600L);
 
-        // API 경로에 대해 CORS 설정 적용
+        // API 경로에 대해서만 CORS 설정 적용 (보안 강화)
+        // 관리자 페이지(/apage/**)는 CORS에서 제외하여 외부 접근 차단
         source.registerCorsConfiguration("/api/**", config);
+
+        // 리뷰 관련
         source.registerCorsConfiguration("/reviewList.do", config);
         source.registerCorsConfiguration("/reviewView.do", config);
         source.registerCorsConfiguration("/reviewReg.do", config);
         source.registerCorsConfiguration("/reviewUpd.do", config);
         source.registerCorsConfiguration("/reviewDel.do", config);
 
-        // 모든 경로에 CORS 적용 (디버깅 및 안정성 강화)
-        source.registerCorsConfiguration("/**", config);
+        // 시공사례 관련
+        source.registerCorsConfiguration("/caseList.do", config);
+        source.registerCorsConfiguration("/caseView.do", config);
+
+        // 상담/예약 관련
+        source.registerCorsConfiguration("/cnsltReg.do", config);
+
+        // 파일 조회
+        source.registerCorsConfiguration("/fileView.do", config);
+        source.registerCorsConfiguration("/fileThumbView.do", config);
+
+        // FAQ 관련
+        source.registerCorsConfiguration("/faqList.do", config);
+
+        // Config 관련
+        source.registerCorsConfiguration("/api/v1/config", config);
+        source.registerCorsConfiguration("/api/v1/configs", config);
 
         return new CorsFilter(source);
     }

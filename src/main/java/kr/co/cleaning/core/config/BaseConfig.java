@@ -82,20 +82,7 @@ public class BaseConfig implements WebMvcConfigurer {
 		};
 	}
 
-	// JSP 기반 뷰
-	/*
-	 * @Bean
-	 * ViewResolver viewResolver() {
-	 * InternalResourceViewResolver viewResolver = new
-	 * InternalResourceViewResolver();
-	 * viewResolver.setPrefix("/WEB-INF/views/");
-	 * viewResolver.setSuffix(".jsp");
-	 * viewResolver.setOrder(2);
-	 * return viewResolver;
-	 * }
-	 */
-
-	// 컨트롤러 wiew 이름으로 등록된 빈으로 연결
+	// 컨트롤러 view 이름으로 등록된 빈으로 연결
 	@Bean
 	BeanNameViewResolver beanNameViewResolver() {
 		BeanNameViewResolver resolver = new BeanNameViewResolver();
@@ -166,7 +153,7 @@ public class BaseConfig implements WebMvcConfigurer {
 		mappings.setProperty("org.springframework.web.multipart.MultipartException", "error/defaultError");
 		statusCodes.setProperty("error/fileError", "400");
 
-		mappings.setProperty("kr.co.kcs.core.base.KFException", "error/defaultError");
+		mappings.setProperty("kr.co.cleaning.core.config.KFException", "error/defaultError");
 		statusCodes.setProperty("error/KFException", "999");
 
 		mappings.setProperty("java.lang.Exception", "error/defaultError");

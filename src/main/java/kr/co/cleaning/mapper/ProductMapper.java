@@ -29,6 +29,11 @@ public interface ProductMapper {
     Map<String, Object> selectProduct(Map<String, Object> param);
 
     /**
+     * 상품 이미지 갤러리 조회
+     */
+    List<Map<String, Object>> selectProductImages(Map<String, Object> param);
+
+    /**
      * 상품 등록
      */
     int insertProduct(Map<String, Object> param);

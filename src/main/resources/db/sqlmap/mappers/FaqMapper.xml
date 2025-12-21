@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.FaqMapper">
+
+    <!-- FAQ 목록 카운트 -->
+    <select id="selectFaqListCnt" parameterType="hashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_FAQ
+        WHERE DEL_YN = 'N'
+        <if test="displayYn != null and displayYn != ''">
+            AND DISPLAY_YN = #{displayYn}
+        </if>
+        <if test="category != null and category != ''">
+            AND CATEGORY = #{category}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (QUESTION LIKE CONCAT('%', #{keyword}, '%')
+             OR ANSWER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+    <!-- FAQ 목록 -->
+    <select id="selectFaqList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            FAQ_SEQ,
+            CATEGORY,
+            QUESTION,
+            ANSWER,
+            DISPLAY_YN,
+            DISPLAY_ORDER,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i') AS REG_DT,
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i') AS MOD_DT
+        FROM TB_FAQ
+        WHERE DEL_YN = 'N'
+        <if test="displayYn != null and displayYn != ''">
+            AND DISPLAY_YN = #{displayYn}
+        </if>
+        <if test="category != null and category != ''">
+            AND CATEGORY = #{category}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (QUESTION LIKE CONCAT('%', #{keyword}, '%')
+             OR ANSWER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY REG_DT DESC, FAQ_SEQ DESC
+        <if test="rowLimit != null">
+            LIMIT #{rowStrt}, #{rowLimit}
+        </if>
+    </select>
+
+    <!-- FAQ 단건 조회 -->
+    <select id="selectFaq" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            FAQ_SEQ,
+            CATEGORY,
+            QUESTION,
+            ANSWER,
+            DISPLAY_YN,
+            DISPLAY_ORDER,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i:%s') AS MOD_DT
+        FROM TB_FAQ
+        WHERE FAQ_SEQ = #{faqSeq}
+          AND DEL_YN = 'N'
+    </select>
+
+    <!-- FAQ 등록 -->
+    <insert id="insertFaq" parameterType="hashMap" useGeneratedKeys="true" keyProperty="faqSeq">
+        INSERT INTO TB_FAQ (
+            CATEGORY,
+            QUESTION,
+            ANSWER,
+            DISPLAY_YN,
+            DISPLAY_ORDER,
+            DEL_YN,
+            REG_DT,
+            MOD_DT
+        ) VALUES (
+            #{category},
+            #{question},
+            #{answer},
+            COALESCE(#{displayYn}, 'Y'),
+            COALESCE(#{displayOrder}, 999),
+            'N',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- FAQ 수정 -->
+    <update id="updateFaq" parameterType="hashMap">
+        UPDATE TB_FAQ
+        SET CATEGORY = #{category},
+            QUESTION = #{question},
+            ANSWER = #{answer},
+            DISPLAY_YN = #{displayYn},
+            DISPLAY_ORDER = #{displayOrder},
+            MOD_DT = NOW()
+        WHERE FAQ_SEQ = #{faqSeq}
+          AND DEL_YN = 'N'
+    </update>
+
+    <!-- FAQ 삭제(논리) -->
+    <update id="deleteFaq" parameterType="hashMap">
+        UPDATE TB_FAQ
+        SET DEL_YN = 'Y', MOD_DT = NOW()
+        WHERE FAQ_SEQ = #{faqSeq}
+    </update>
+
+</mapper>
+

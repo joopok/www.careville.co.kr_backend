@@ -8,6 +8,40 @@ $(function(){
 		});
 		listCall($f.serializeArray());
 	});
+
+	// 전체 노출 버튼
+	$('.btnDispAll').on('click',function(){
+		var dispYn = $(this).attr('data-disp');
+		var msg = dispYn === 'Y' ? '모든 비노출 리뷰를 노출로 변경하시겠습니까?' : '모든 노출 리뷰를 비노출로 변경하시겠습니까?';
+
+		swal({
+			title: msg,
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonText: '확인',
+			cancelButtonText: '취소',
+			closeOnConfirm: false
+		}, function(isConfirm){
+			if(!isConfirm) return false;
+
+			cmnAjaxFn({
+				url: '/apage/review043.do',
+				data: { 'dispYn': dispYn },
+				dataType: 'json',
+				success: function(data){
+					swal({
+						title: data.message,
+						type: 'success'
+					}, function(){
+						listCall($('#searchFrom').serializeArray());
+					});
+				},
+				error: function(xhr,status,error){
+					swal({title: "서버와의 통신이 원활하지 않습니다.",text: "잠시 후 다시 시도해 주세요.",type: "warning"});
+				}
+			});
+		});
+	});
 	
 	$('#templateTable').on('click','.templateView',function(e){
 		var inputArr	= $('#searchFrom').serializeArray();
@@ -19,25 +53,32 @@ $(function(){
 		});
 	});
 	
-	$('#templateTable').on('click','.mngrSttusChk input[type=checkbox]',function(){
-		var $input	= $(this);
-		var _val	= $input.val();
+	$('#templateTable').on('click','.badge[data-seq]',function(){
+		var $badge = $(this);
+		var reviewSeq = $badge.attr('data-seq');
+		var currentDisp = $badge.attr('data-disp');
+		var newDisp = (currentDisp === 'Y') ? 'N' : 'Y';
 
 		cmnAjaxFn({
 			url			: '/apage/review042.do'
 			,data		: {
-				'reviewSeq' : _val,
-				'dispYn'	: $input.is(':checked') ? 'Y' : 'N'
+				'reviewSeq' : reviewSeq,
+				'dispYn'	: newDisp
 			}
 			,dataType	: 'json'
 			,success	: function(data){
-//				console.log(data);
+				// 상태 토글
+				$badge.attr('data-disp', newDisp);
+				if(newDisp === 'Y') {
+					$badge.removeClass('bg-grey').addClass('bg-green').text('노출');
+				} else {
+					$badge.removeClass('bg-green').addClass('bg-grey').text('비노출');
+				}
 			}
 			,error		: function(xhr,status,error){
 				swal({title: "서버와의 통신이 원활하지 않습니다.",text: "잠시 후 다시 시도해 주세요.",type: "warning"});
 			}
 		});
-
 	});	
 	
 	
@@ -101,13 +142,15 @@ function listCall(data){
 					}},
 					{col	: 'rgsDt'		,addClass : 'tdc'},
 					{col	: 'dispYn'		,addClass : 'tdc' ,render : function(data){
-						var checked		= data.dispYn == 'Y' ? true : false;
-						var $div		= $('<div>').addClass('switch');
-						var $label		= $('<label>').addClass('mngrSttusChk').appendTo($div);
-						$('<input>').attr('type','checkbox').prop('checked',checked).val(data.reviewSeq).appendTo($label);
-						$('<span>').addClass('lever switch-col-light-blue').prop('checked',checked).appendTo($label);
-
-						return $div;						
+						var isChecked = (data.dispYn === 'Y');
+						var $badge = $('<span>')
+							.addClass('badge')
+							.addClass(isChecked ? 'bg-green' : 'bg-grey')
+							.css({'cursor': 'pointer', 'padding': '6px 12px'})
+							.attr('data-seq', data.reviewSeq)
+							.attr('data-disp', data.dispYn)
+							.text(isChecked ? '노출' : '비노출');
+						return $badge;
 					}}
 				]				
 			});

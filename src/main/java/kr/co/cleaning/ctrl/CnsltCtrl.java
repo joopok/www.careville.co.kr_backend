@@ -46,9 +46,18 @@ public class CnsltCtrl {
 			modelMap.addAllAttributes(svc.getCnsltList(req,paramMap));
 			return "jsonView";
 
-		}else if(pageNum.equals("21")){
+		}else if(pageNum.equals("20") || pageNum.equals("21")){
 			modelMap.addAllAttributes(svc.getCnsltView(req,paramMap));
+			modelMap.addAttribute("sttusCdLst", CmmnSvc.getCodeList("002"));
+			modelMap.addAttribute("searchMap", paramMap);
 			pageNumber	= "20";
+
+		}else if(pageNum.equals("30")){
+			modelMap.addAttribute("svcCdList", CmmnSvc.getServiceCdList());
+
+		}else if(pageNum.equals("40")){
+			modelMap.addAllAttributes(svc.getCnsltView(req,paramMap));
+			modelMap.addAttribute("sttusCdLst", CmmnSvc.getCodeList("002"));
 
 		}else if(pageNum.equals("41")){
 			modelMap.addAllAttributes(svc.setCnsltUpd(req,paramMap));

@@ -14,6 +14,8 @@ public interface CaseMapper {
 
 	List<HashMap<String,Object>> getCaseList(HashMap<String,Object> paramMap);
 
+	List<HashMap<String,Object>> getCaseListAll(HashMap<String,Object> paramMap);
+
 	HashMap<String,Object> getCaseView(HashMap<String,Object> paramMap);
 
 	int setCaseUpd(HashMap<String,Object> paramMap);

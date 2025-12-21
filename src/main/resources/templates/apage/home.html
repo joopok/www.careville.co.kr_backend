@@ -1,334 +1,232 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
 <head>
-<title>:: 메인페이지 ::</title>
-<link rel="stylesheet" th:href="@{plugins/morrisjs/morris.css}" />
-<script th:src="@{/plugins/jquery-countto/jquery.countTo.js}"></script>
-<script th:src="@{/plugins/raphael/raphael.min.js}"></script>
-<script th:src="@{/plugins/morrisjs/morris.js}"></script>
-<script th:src="@{/plugins/chartjs/Chart.bundle.js}"></script>
-<script th:src="@{/plugins/flot-charts/jquery.flot.js}"></script>
-<script th:src="@{/plugins/flot-charts/jquery.flot.resize.js}"></script>
-<script th:src="@{/plugins/flot-charts/jquery.flot.pie.js}"></script>
-<script th:src="@{/plugins/flot-charts/jquery.flot.categories.js}"></script>
-<script th:src="@{/plugins/flot-charts/jquery.flot.time.js}"></script>
-<script th:src="@{/plugins/jquery-sparkline/jquery.sparkline.js}"></script>
-<script th:src="@{/apage/js/pages/index.js}"></script>
+<title>대시보드</title>
+<!-- All styles now in careville-admin.css -->
 </head>
 <body>
 <div layout:fragment="content">
-	
-	<section class="content">
-	        <div class="container-fluid">
-	            <div class="block-header">
-	                <h2>DASHBOARD</h2>
-	            </div>
 
-	            <!-- Widgets -->
-	            <div class="row clearfix">
-	                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-	                    <div class="info-box bg-pink hover-expand-effect">
-	                        <div class="icon">
-	                            <i class="material-icons">playlist_add_check</i>
-	                        </div>
-	                        <div class="content">
-	                            <div class="text">NEW TASKS</div>
-	                            <div class="number count-to" data-from="0" data-to="125" data-speed="15" data-fresh-interval="20"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-	                    <div class="info-box bg-cyan hover-expand-effect">
-	                        <div class="icon">
-	                            <i class="material-icons">help</i>
-	                        </div>
-	                        <div class="content">
-	                            <div class="text">NEW TICKETS</div>
-	                            <div class="number count-to" data-from="0" data-to="257" data-speed="1000" data-fresh-interval="20"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-	                    <div class="info-box bg-light-green hover-expand-effect">
-	                        <div class="icon">
-	                            <i class="material-icons">forum</i>
-	                        </div>
-	                        <div class="content">
-	                            <div class="text">NEW COMMENTS</div>
-	                            <div class="number count-to" data-from="0" data-to="243" data-speed="1000" data-fresh-interval="20"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-	                    <div class="info-box bg-orange hover-expand-effect">
-	                        <div class="icon">
-	                            <i class="material-icons">person_add</i>
-	                        </div>
-	                        <div class="content">
-	                            <div class="text">NEW VISITORS</div>
-	                            <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	            </div>
-	            <!-- #END# Widgets -->
-	            <!-- CPU Usage -->
-	            <div class="row clearfix">
-	                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-	                    <div class="card">
-	                        <div class="header">
-	                            <div class="row clearfix">
-	                                <div class="col-xs-12 col-sm-6">
-	                                    <h2>CPU USAGE (%)</h2>
-	                                </div>
-	                                <div class="col-xs-12 col-sm-6 align-right">
-	                                    <div class="switch panel-switch-btn">
-	                                        <span class="m-r-10 font-12">REAL TIME</span>
-	                                        <label>OFF<input type="checkbox" id="realtime" checked><span class="lever switch-col-cyan"></span>ON</label>
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <ul class="header-dropdown m-r--5">
-	                                <li class="dropdown">
-	                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-	                                        <i class="material-icons">more_vert</i>
-	                                    </a>
-	                                    <ul class="dropdown-menu pull-right">
-	                                        <li><a href="javascript:void(0);">Action</a></li>
-	                                        <li><a href="javascript:void(0);">Another action</a></li>
-	                                        <li><a href="javascript:void(0);">Something else here</a></li>
-	                                    </ul>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                        <div class="body">
-	                            <div id="real_time_chart" class="dashboard-flot-chart"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	            </div>
-	            <!-- #END# CPU Usage -->
-	            <div class="row clearfix">
-	                <!-- Visitors -->
-	                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-	                    <div class="card">
-	                        <div class="body bg-pink">
-	                            <div class="sparkline" data-type="line" data-spot-Radius="4" data-highlight-Spot-Color="rgb(233, 30, 99)" data-highlight-Line-Color="#fff"
-	                                 data-min-Spot-Color="rgb(255,255,255)" data-max-Spot-Color="rgb(255,255,255)" data-spot-Color="rgb(255,255,255)"
-	                                 data-offset="90" data-width="100%" data-height="92px" data-line-Width="2" data-line-Color="rgba(255,255,255,0.7)"
-	                                 data-fill-Color="rgba(0, 188, 212, 0)">
-	                                12,10,9,6,5,6,10,5,7,5,12,13,7,12,11
-	                            </div>
-	                            <ul class="dashboard-stat-list">
-	                                <li>
-	                                    TODAY
-	                                    <span class="pull-right"><b>1 200</b> <small>USERS</small></span>
-	                                </li>
-	                                <li>
-	                                    YESTERDAY
-	                                    <span class="pull-right"><b>3 872</b> <small>USERS</small></span>
-	                                </li>
-	                                <li>
-	                                    LAST WEEK
-	                                    <span class="pull-right"><b>26 582</b> <small>USERS</small></span>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                    </div>
-	                </div>
-	                <!-- #END# Visitors -->
-	                <!-- Latest Social Trends -->
-	                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-	                    <div class="card">
-	                        <div class="body bg-cyan">
-	                            <div class="m-b--35 font-bold">LATEST SOCIAL TRENDS</div>
-	                            <ul class="dashboard-stat-list">
-	                                <li>
-	                                    #socialtrends
-	                                    <span class="pull-right">
-	                                        <i class="material-icons">trending_up</i>
-	                                    </span>
-	                                </li>
-	                                <li>
-	                                    #materialdesign
-	                                    <span class="pull-right">
-	                                        <i class="material-icons">trending_up</i>
-	                                    </span>
-	                                </li>
-	                                <li>#adminbsb</li>
-	                                <li>#freeadmintemplate</li>
-	                                <li>#bootstraptemplate</li>
-	                                <li>
-	                                    #freehtmltemplate
-	                                    <span class="pull-right">
-	                                        <i class="material-icons">trending_up</i>
-	                                    </span>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                    </div>
-	                </div>
-	                <!-- #END# Latest Social Trends -->
-	                <!-- Answered Tickets -->
-	                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-	                    <div class="card">
-	                        <div class="body bg-teal">
-	                            <div class="font-bold m-b--35">ANSWERED TICKETS</div>
-	                            <ul class="dashboard-stat-list">
-	                                <li>
-	                                    TODAY
-	                                    <span class="pull-right"><b>12</b> <small>TICKETS</small></span>
-	                                </li>
-	                                <li>
-	                                    YESTERDAY
-	                                    <span class="pull-right"><b>15</b> <small>TICKETS</small></span>
-	                                </li>
-	                                <li>
-	                                    LAST WEEK
-	                                    <span class="pull-right"><b>90</b> <small>TICKETS</small></span>
-	                                </li>
-	                                <li>
-	                                    LAST MONTH
-	                                    <span class="pull-right"><b>342</b> <small>TICKETS</small></span>
-	                                </li>
-	                                <li>
-	                                    LAST YEAR
-	                                    <span class="pull-right"><b>4 225</b> <small>TICKETS</small></span>
-	                                </li>
-	                                <li>
-	                                    ALL
-	                                    <span class="pull-right"><b>8 752</b> <small>TICKETS</small></span>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                    </div>
-	                </div>
-	                <!-- #END# Answered Tickets -->
-	            </div>
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">대시보드</h1>
+			<p class="cv-page-desc">안녕하세요! 관리자 현황입니다.</p>
+		</div>
+	</div>
 
-	            <div class="row clearfix">
-	                <!-- Task Info -->
-	                <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-	                    <div class="card">
-	                        <div class="header">
-	                            <h2>TASK INFOS</h2>
-	                            <ul class="header-dropdown m-r--5">
-	                                <li class="dropdown">
-	                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-	                                        <i class="material-icons">more_vert</i>
-	                                    </a>
-	                                    <ul class="dropdown-menu pull-right">
-	                                        <li><a href="javascript:void(0);">Action</a></li>
-	                                        <li><a href="javascript:void(0);">Another action</a></li>
-	                                        <li><a href="javascript:void(0);">Something else here</a></li>
-	                                    </ul>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                        <div class="body">
-	                            <div class="table-responsive">
-	                                <table class="table table-hover dashboard-task-infos">
-	                                    <thead>
-	                                        <tr>
-	                                            <th>#</th>
-	                                            <th>Task</th>
-	                                            <th>Status</th>
-	                                            <th>Manager</th>
-	                                            <th>Progress</th>
-	                                        </tr>
-	                                    </thead>
-	                                    <tbody>
-	                                        <tr>
-	                                            <td>1</td>
-	                                            <td>Task A</td>
-	                                            <td><span class="label bg-green">Doing</span></td>
-	                                            <td>John Doe</td>
-	                                            <td>
-	                                                <div class="progress">
-	                                                    <div class="progress-bar bg-green" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" style="width: 62%"></div>
-	                                                </div>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td>2</td>
-	                                            <td>Task B</td>
-	                                            <td><span class="label bg-blue">To Do</span></td>
-	                                            <td>John Doe</td>
-	                                            <td>
-	                                                <div class="progress">
-	                                                    <div class="progress-bar bg-blue" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
-	                                                </div>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td>3</td>
-	                                            <td>Task C</td>
-	                                            <td><span class="label bg-light-blue">On Hold</span></td>
-	                                            <td>John Doe</td>
-	                                            <td>
-	                                                <div class="progress">
-	                                                    <div class="progress-bar bg-light-blue" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" style="width: 72%"></div>
-	                                                </div>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td>4</td>
-	                                            <td>Task D</td>
-	                                            <td><span class="label bg-orange">Wait Approvel</span></td>
-	                                            <td>John Doe</td>
-	                                            <td>
-	                                                <div class="progress">
-	                                                    <div class="progress-bar bg-orange" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="width: 95%"></div>
-	                                                </div>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td>5</td>
-	                                            <td>Task E</td>
-	                                            <td>
-	                                                <span class="label bg-red">Suspended</span>
-	                                            </td>
-	                                            <td>John Doe</td>
-	                                            <td>
-	                                                <div class="progress">
-	                                                    <div class="progress-bar bg-red" role="progressbar" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100" style="width: 87%"></div>
-	                                                </div>
-	                                            </td>
-	                                        </tr>
-	                                    </tbody>
-	                                </table>
-	                            </div>
-	                        </div>
-	                    </div>
-	                </div>
-	                <!-- #END# Task Info -->
-	                <!-- Browser Usage -->
-	                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-	                    <div class="card">
-	                        <div class="header">
-	                            <h2>BROWSER USAGE</h2>
-	                            <ul class="header-dropdown m-r--5">
-	                                <li class="dropdown">
-	                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-	                                        <i class="material-icons">more_vert</i>
-	                                    </a>
-	                                    <ul class="dropdown-menu pull-right">
-	                                        <li><a href="javascript:void(0);">Action</a></li>
-	                                        <li><a href="javascript:void(0);">Another action</a></li>
-	                                        <li><a href="javascript:void(0);">Something else here</a></li>
-	                                    </ul>
-	                                </li>
-	                            </ul>
-	                        </div>
-	                        <div class="body">
-	                            <div id="donut_chart" class="dashboard-donut-chart"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	                <!-- #END# Browser Usage -->
-	            </div>
-	        </div>
-	    </section>
+	<!-- Stats Grid -->
+	<div class="cv-stats">
+		<div class="cv-stat-card slide-up">
+			<div class="cv-stat-icon purple">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+				</svg>
+			</div>
+			<div class="cv-stat-label">신규 상담</div>
+			<div class="cv-stat-value" id="statNewCnslt">-</div>
+		</div>
 
+		<div class="cv-stat-card slide-up">
+			<div class="cv-stat-icon blue">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+					<circle cx="8.5" cy="8.5" r="1.5"></circle>
+					<polyline points="21 15 16 10 5 21"></polyline>
+				</svg>
+			</div>
+			<div class="cv-stat-label">시공 사례</div>
+			<div class="cv-stat-value" id="statCase">-</div>
+		</div>
+
+		<div class="cv-stat-card slide-up">
+			<div class="cv-stat-icon amber">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+				</svg>
+			</div>
+			<div class="cv-stat-label">고객 리뷰</div>
+			<div class="cv-stat-value" id="statReview">-</div>
+		</div>
+
+		<div class="cv-stat-card slide-up">
+			<div class="cv-stat-icon green">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+				</svg>
+			</div>
+			<div class="cv-stat-label">상품</div>
+			<div class="cv-stat-value" id="statProduct">-</div>
+		</div>
+	</div>
+
+	<!-- Content Grid -->
+	<div class="content-grid">
+		<!-- Recent Activity -->
+		<div class="cv-card slide-up" style="animation-delay: 0.25s;">
+			<div class="cv-card-header">
+				<h3 class="cv-card-title">최근 활동</h3>
+				<a th:href="@{/apage/cnslt010.do}" class="cv-btn cv-btn-sm cv-btn-ghost">전체보기</a>
+			</div>
+			<div class="cv-card-body">
+				<ul class="activity-list" id="activityList">
+					<li class="activity-item">
+						<div class="activity-content">
+							<div class="activity-desc" style="color: var(--cv-silver-400);">로딩 중...</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- Quick Links -->
+		<div class="cv-card slide-up" style="animation-delay: 0.3s;">
+			<div class="cv-card-header">
+				<h3 class="cv-card-title">바로가기</h3>
+			</div>
+			<div class="cv-card-body">
+				<div class="quick-links">
+					<a th:href="@{/apage/cnslt010.do}" class="quick-link">
+						<div class="quick-link-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+							</svg>
+						</div>
+						<div class="quick-link-text">
+							<div class="quick-link-title">온라인 상담</div>
+							<div class="quick-link-desc">상담 요청 관리</div>
+						</div>
+						<svg class="quick-link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</a>
+					<a th:href="@{/apage/case010.do}" class="quick-link">
+						<div class="quick-link-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+								<circle cx="8.5" cy="8.5" r="1.5"></circle>
+								<polyline points="21 15 16 10 5 21"></polyline>
+							</svg>
+						</div>
+						<div class="quick-link-text">
+							<div class="quick-link-title">시공 사례</div>
+							<div class="quick-link-desc">포트폴리오 관리</div>
+						</div>
+						<svg class="quick-link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</a>
+					<a th:href="@{/apage/review010.do}" class="quick-link">
+						<div class="quick-link-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+							</svg>
+						</div>
+						<div class="quick-link-text">
+							<div class="quick-link-title">고객 리뷰</div>
+							<div class="quick-link-desc">고객 피드백 관리</div>
+						</div>
+						<svg class="quick-link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</a>
+					<a th:href="@{/apage/product010.do}" class="quick-link">
+						<div class="quick-link-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+							</svg>
+						</div>
+						<div class="quick-link-text">
+							<div class="quick-link-title">상품 관리</div>
+							<div class="quick-link-desc">서비스 상품 관리</div>
+						</div>
+						<svg class="quick-link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script th:inline="javascript">
+$(document).ready(function() {
+	loadDashboardData();
+});
+
+function loadDashboardData() {
+	$.ajax({
+		url: '/apage/dashboardData.do',
+		type: 'POST',
+		dataType: 'json',
+		success: function(data) {
+			if (data.result === 'SUCCESS') {
+				// 통계 데이터 렌더링
+				renderStats(data.stats);
+				// 최근 활동 렌더링
+				renderActivities(data.recentActivities);
+			} else {
+				console.error('Dashboard data load failed:', data.msg);
+			}
+		},
+		error: function(xhr, status, error) {
+			console.error('Dashboard API error:', error);
+		}
+	});
+}
+
+function renderStats(stats) {
+	if (!stats) return;
+
+	$('#statNewCnslt').text(formatNumber(stats.newCnsltCnt || 0));
+	$('#statCase').text(formatNumber(stats.caseCnt || 0));
+	$('#statReview').text(formatNumber(stats.reviewCnt || 0));
+	$('#statProduct').text(formatNumber(stats.productCnt || 0));
+}
+
+function renderActivities(activities) {
+	var container = $('#activityList');
+	container.empty();
+
+	if (!activities || activities.length === 0) {
+		container.html('<li class="activity-item"><div class="activity-content"><div class="activity-desc" style="color: var(--cv-silver-400);">최근 활동이 없습니다.</div></div></li>');
+		return;
+	}
+
+	var icons = {
+		'consultation': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+		'review': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+		'case': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>'
+	};
+
+	$.each(activities, function(index, item) {
+		var iconClass = item.icon || 'purple';
+		var iconSvg = icons[item.type] || icons['consultation'];
+
+		var html = '<li class="activity-item">';
+		html += '<div class="activity-icon ' + iconClass + '">' + iconSvg + '</div>';
+		html += '<div class="activity-content">';
+		html += '<div class="activity-title">' + escapeHtml(item.title) + '</div>';
+		html += '<div class="activity-desc">' + escapeHtml(item.desc) + '</div>';
+		html += '</div>';
+		html += '<div class="activity-time">' + escapeHtml(item.timeAgo) + '</div>';
+		html += '</li>';
+
+		container.append(html);
+	});
+}
+
+function formatNumber(num) {
+	if (!num) return '0';
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function escapeHtml(text) {
+	if (!text) return '';
+	var div = document.createElement('div');
+	div.appendChild(document.createTextNode(text));
+	return div.innerHTML;
+}
+</script>
 
 </div>
 </body>

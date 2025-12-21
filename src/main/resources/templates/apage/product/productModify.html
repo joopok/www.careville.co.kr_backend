@@ -1,399 +1,1609 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
-	<head>
-	<title>:: 상품 수정 ::</title>
-	<style>
-	.form-group label {font-weight:600;}
-	.required-mark {color:#ff5722; margin-left:3px;}
-	.price-input {text-align:right;}
-	.service-item {margin-bottom:10px;}
-	.service-item input {margin-bottom:5px;}
-	.service-item button {margin-left:5px;}
-	.help-info {color:#999; font-size:12px; margin-top:5px;}
-	.info-text {color:#666; font-size:14px;}
-	</style>
-	</head>
-	<body>
+<head>
+<title>상품 수정</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCT IMAGE UPLOAD - Modern Admin Interface
+   Clean, professional aesthetic with subtle depth
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Image Upload Section */
+.cv-image-section {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.cv-image-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.cv-image-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.cv-image-section-title svg {
+    width: 20px;
+    height: 20px;
+    color: #10b981;
+}
+
+.cv-image-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* Thumbnail Upload Area */
+.cv-thumbnail-upload {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 4/3;
+    background: rgba(0,0,0,0.3);
+    border: 2px dashed rgba(255,255,255,0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cv-thumbnail-upload:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(0,0,0,0.4);
+}
+
+.cv-thumbnail-upload.has-image {
+    border-style: solid;
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.cv-thumbnail-upload input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.cv-thumbnail-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.5);
+}
+
+.cv-thumbnail-placeholder svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+}
+
+.cv-thumbnail-placeholder span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cv-thumbnail-placeholder small {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.cv-thumbnail-preview {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.cv-thumbnail-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cv-thumbnail-preview.active {
+    display: block;
+}
+
+.cv-thumbnail-remove {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+}
+
+.cv-thumbnail-upload:hover .cv-thumbnail-remove {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Gallery Upload Grid */
+.cv-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .cv-gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cv-gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .cv-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.cv-gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.25);
+    border: 2px dashed rgba(255,255,255,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.cv-gallery-item:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(0,0,0,0.35);
+    transform: translateY(-2px);
+}
+
+.cv-gallery-item.has-image {
+    border-style: solid;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.cv-gallery-item input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.cv-gallery-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.4);
+}
+
+.cv-gallery-placeholder svg {
+    width: 28px;
+    height: 28px;
+}
+
+.cv-gallery-placeholder span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.cv-gallery-number {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+}
+
+.cv-gallery-preview {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.cv-gallery-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cv-gallery-preview.active {
+    display: block;
+}
+
+.cv-gallery-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.2s ease;
+}
+
+.cv-gallery-remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+.cv-gallery-item:hover .cv-gallery-remove {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Upload Counter */
+.cv-upload-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+}
+
+.cv-upload-counter .count {
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+.cv-upload-counter .max {
+    color: rgba(255,255,255,0.4);
+}
+
+/* Hint Text */
+.cv-image-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+}
+
+.cv-image-hint svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Existing Images List */
+.cv-existing-images {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.cv-existing-images-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 12px;
+}
+
+.cv-existing-image-item {
+    position: relative;
+    display: inline-block;
+    margin: 4px;
+}
+
+.cv-existing-image-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid rgba(59, 130, 246, 0.4);
+}
+
+.cv-existing-image-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* Main Images Grid (6개 대표 이미지) */
+.cv-main-images-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1400px) {
+    .cv-main-images-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cv-main-images-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.cv-main-image-item {
+    position: relative;
+    aspect-ratio: 4/3;
+    background: rgba(0,0,0,0.25);
+    border: 2px dashed rgba(255,255,255,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.cv-main-image-item:first-child {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.cv-main-image-item:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(0,0,0,0.35);
+    transform: translateY(-2px);
+}
+
+.cv-main-image-item.has-image {
+    border-style: solid;
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.cv-main-image-item input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.cv-main-image-number {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #34d399;
+    z-index: 5;
+}
+
+.cv-main-image-item:first-child .cv-main-image-number {
+    background: rgba(16, 185, 129, 0.4);
+    color: #fff;
+}
+
+.cv-main-image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.4);
+}
+
+.cv-main-image-placeholder svg {
+    width: 32px;
+    height: 32px;
+}
+
+.cv-main-image-preview {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.cv-main-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cv-main-image-preview.active {
+    display: block;
+}
+
+.cv-main-image-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.2s ease;
+}
+
+.cv-main-image-remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+.cv-main-image-item:hover .cv-main-image-remove {
+    opacity: 1;
+    transform: scale(1);
+}
+</style>
+</head>
+<body>
 <div layout:fragment="content">
-	<section class="content">
-    <div class="container-fluid">
-        <div class="block-header">
-            <h2>상품 관리</h2>
-        </div>
 
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="header">
-                        <h2>상품 정보 수정</h2>
-                    </div>
-                    <div class="body">
-                        <form id="productForm" method="post" action="/apage/product041.do">
-                            <input type="hidden" name="productNo" id="productNo">
-                            
-                            <div class="row clearfix">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>상품번호</label>
-                                        <p class="form-control-static info-text" id="productNoDisplay">-</p>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>등록일시</label>
-                                        <p class="form-control-static info-text" id="regDtDisplay">-</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row clearfix">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>카테고리 <span class="required-mark">*</span></label>
-                                        <select class="form-control" name="serviceCd" id="serviceCd" required>
-                                            <option value="">카테고리를 선택하세요</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>상품명 <span class="required-mark">*</span></label>
-                                        <input type="text" class="form-control" name="productNm" id="productNm" 
-                                               placeholder="예: 아파트 기본 청소" required maxlength="200">
-                                    </div>
-                                </div>
-                            </div>
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">상품 수정</h1>
+			<p class="cv-page-desc">상품 정보를 수정합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/product010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
 
-                            <div class="row clearfix">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>평형대</label>
-                                        <select class="form-control" name="areaType" id="areaType">
-                                            <option value="">선택하세요</option>
-                                            <option value="20-30평형">20-30평형</option>
-                                            <option value="30-40평형">30-40평형</option>
-                                            <option value="40-50평형">40-50평형</option>
-                                            <option value="50평형 이상">50평형 이상</option>
-                                            <option value="원룸/오피스텔">원룸/오피스텔</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>소요시간</label>
-                                        <input type="text" class="form-control" name="serviceTime" id="serviceTime" 
-                                               placeholder="예: 3-4시간" maxlength="50">
-                                    </div>
-                                </div>
-                            </div>
+	<!-- Form Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+			<form id="productForm" method="post">
+				<input type="hidden" name="productNo" id="productNo">
+				<input type="hidden" id="fileSeq1" name="fileSeq1" value="">
+				<input type="hidden" id="fileSeq2" name="fileSeq2" value="">
+				<input type="hidden" id="fileSeq3" name="fileSeq3" value="">
+				<input type="hidden" id="fileSeq4" name="fileSeq4" value="">
+				<input type="hidden" id="fileSeq5" name="fileSeq5" value="">
+				<input type="hidden" id="fileSeq6" name="fileSeq6" value="">
 
-                            <div class="row clearfix">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>정가 <span class="required-mark">*</span></label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control price-input" name="originalPrice" id="originalPrice" 
-                                                   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
-                                            <span class="input-group-addon">원</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>판매가 <span class="required-mark">*</span></label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control price-input" name="salePrice" id="salePrice" 
-                                                   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
-                                            <span class="input-group-addon">원</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>할인율</label>
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="discountRate" id="discountRate" 
-                                                   value="0" min="0" max="100" readonly>
-                                            <span class="input-group-addon">%</span>
-                                        </div>
-                                        <div class="help-info">자동 계산됩니다</div>
-                                    </div>
-                                </div>
-                            </div>
+				<!-- 상품 정보 -->
+				<div class="cv-section-title">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="12" y1="16" x2="12" y2="12"></line>
+						<line x1="12" y1="8" x2="12.01" y2="8"></line>
+					</svg>
+					상품 정보
+				</div>
 
-                            <div class="row clearfix">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>노출여부 <span class="required-mark">*</span></label>
-                                        <select class="form-control" name="displayYn" id="displayYn" required>
-                                            <option value="Y">노출</option>
-                                            <option value="N">미노출</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>판매여부 <span class="required-mark">*</span></label>
-                                        <select class="form-control" name="saleYn" id="saleYn" required>
-                                            <option value="Y">판매</option>
-                                            <option value="N">미판매</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label>노출순서</label>
-                                        <input type="number" class="form-control" name="displayOrder" id="displayOrder" 
-                                               value="999" min="0" max="9999">
-                                        <div class="help-info">숫자가 작을수록 먼저 노출됩니다</div>
-                                    </div>
-                                </div>
-                            </div>
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">상품번호</div>
+						<div class="cv-detail-value" id="productNoDisplay">-</div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">등록일시</div>
+						<div class="cv-detail-value" id="regDtDisplay">-</div>
+					</div>
+				</div>
 
-                            <div class="row clearfix">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>상품 설명</label>
-                                        <textarea class="form-control" name="productDesc" id="productDesc" 
-                                                  rows="5" placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
-                                    </div>
-                                </div>
-                            </div>
+				<!-- 기본 정보 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+						<circle cx="12" cy="7" r="4"></circle>
+					</svg>
+					기본 정보
+				</div>
 
-                            <div class="row clearfix">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>서비스 포함사항</label>
-                                        <div id="serviceIncludesContainer">
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-info waves-effect" onclick="addServiceItem()">
-                                            <i class="material-icons">add</i> 항목 추가
-                                        </button>
-                                        <div class="help-info">서비스에 포함되는 항목을 추가해주세요</div>
-                                    </div>
-                                </div>
-                            </div>
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">카테고리 <span class="required">*</span></div>
+						<select class="cv-form-select" name="serviceCd" id="serviceCd" required>
+							<option value="">카테고리를 선택하세요</option>
+						</select>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">상품명 <span class="required">*</span></div>
+						<input type="text" class="cv-form-input" name="productNm" id="productNm"
+							   placeholder="예: 에어컨 분해 세척" required maxlength="200">
+					</div>
+				</div>
 
-                            <div class="row clearfix">
-                                <div class="col-xs-12 text-center">
-                                    <button type="submit" class="btn btn-primary waves-effect">
-                                        <i class="material-icons">save</i> 수정 저장
-                                    </button>
-                                    <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/product020.do?productNo=' + $('#productNo').val()">
-                                        <i class="material-icons">cancel</i> 취소
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script th:inline="javascript">
-        var productNo = /*[[${param.productNo[0]}]]*/ null;
-        
-        $(document).ready(function() {
-            if (!productNo) {
-                alert('상품번호가 없습니다.');
-                location.href = '/apage/product010.do';
-                return;
-            }
-            
-            loadCategories();
-            loadProductDetail();
-        });
-        
-        function loadCategories() {
-            $.ajax({
-                url: '/apage/product011.do',
-                type: 'POST',
-                data: {action: 'getCategories'},
-                dataType: 'json',
-                success: function(data) {
-                    if(data.categories) {
-                        var select = $('#serviceCd');
-                        $.each(data.categories, function(index, category) {
-                            select.append('<option value="' + category.serviceCd + '">' + category.serviceNm + '</option>');
-                        });
-                    }
-                }
-            });
-        }
-        
-        function loadProductDetail() {
-            $.ajax({
-                url: '/apage/product021.do',
-                type: 'POST',
-                data: { productNo: productNo },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.result === 'SUCCESS' && data.product) {
-                        populateForm(data.product);
-                    } else {
-                        alert('상품 정보를 불러올 수 없습니다.');
-                        location.href = '/apage/product010.do';
-                    }
-                },
-                error: function() {
-                    alert('서버 오류가 발생하였습니다.');
-                    location.href = '/apage/product010.do';
-                }
-            });
-        }
-        
-        function populateForm(product) {
-            $('#productNo').val(product.productNo);
-            $('#productNoDisplay').text(product.productNo);
-            $('#regDtDisplay').text(formatDateTime(product.regDt));
-            
-            // Wait for categories to load, then select
-            setTimeout(function() {
-                $('#serviceCd').val(product.serviceCd);
-            }, 500);
-            
-            $('#productNm').val(product.productNm);
-            $('#areaType').val(product.areaType);
-            $('#serviceTime').val(product.serviceTime);
-            $('#originalPrice').val(formatPrice(product.originalPrice));
-            $('#salePrice').val(formatPrice(product.salePrice));
-            $('#discountRate').val(product.discountRate || 0);
-            $('#displayYn').val(product.displayYn);
-            $('#saleYn').val(product.saleYn);
-            $('#displayOrder').val(product.displayOrder);
-            $('#productDesc').val(product.productDesc);
-            
-            // Load service includes
-            if (product.serviceIncludes) {
-                try {
-                    var includes = JSON.parse(product.serviceIncludes);
-                    if (includes && includes.length > 0) {
-                        $('#serviceIncludesContainer').empty();
-                        $.each(includes, function(index, item) {
-                            addServiceItemWithValue(item);
-                        });
-                    } else {
-                        addServiceItem();
-                    }
-                } catch(e) {
-                    console.log('서비스 포함사항 파싱 오류');
-                    addServiceItem();
-                }
-            } else {
-                addServiceItem();
-            }
-        }
-        
-        function addServiceItem() {
-            var itemHtml = '<div class="service-item">' +
-                          '<div class="input-group">' +
-                          '<input type="text" class="form-control" name="serviceIncludes[]" placeholder="포함사항 입력">' +
-                          '<span class="input-group-btn">' +
-                          '<button type="button" class="btn btn-danger waves-effect" onclick="removeServiceItem(this)">' +
-                          '<i class="material-icons">remove</i>' +
-                          '</button>' +
-                          '</span>' +
-                          '</div>' +
-                          '</div>';
-            $('#serviceIncludesContainer').append(itemHtml);
-        }
-        
-        function addServiceItemWithValue(value) {
-            var itemHtml = '<div class="service-item">' +
-                          '<div class="input-group">' +
-                          '<input type="text" class="form-control" name="serviceIncludes[]" value="' + value + '" placeholder="포함사항 입력">' +
-                          '<span class="input-group-btn">' +
-                          '<button type="button" class="btn btn-danger waves-effect" onclick="removeServiceItem(this)">' +
-                          '<i class="material-icons">remove</i>' +
-                          '</button>' +
-                          '</span>' +
-                          '</div>' +
-                          '</div>';
-            $('#serviceIncludesContainer').append(itemHtml);
-        }
-        
-        function removeServiceItem(btn) {
-            $(btn).closest('.service-item').remove();
-        }
-        
-        function formatNumber(input) {
-            var value = input.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('ko-KR');
-                input.value = value;
-            }
-        }
-        
-        function calculateDiscount() {
-            var original = $('#originalPrice').val().replace(/[^0-9]/g, '');
-            var sale = $('#salePrice').val().replace(/[^0-9]/g, '');
-            
-            if (original && sale) {
-                original = parseInt(original);
-                sale = parseInt(sale);
-                
-                if (original > 0 && sale < original) {
-                    var discount = Math.round((original - sale) / original * 100);
-                    $('#discountRate').val(discount);
-                } else {
-                    $('#discountRate').val(0);
-                }
-            }
-        }
-        
-        function formatPrice(price) {
-            if (!price) return '0';
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-        
-        function formatDateTime(dateStr) {
-            if (!dateStr) return '-';
-            var date = new Date(dateStr);
-            var year = date.getFullYear();
-            var month = ('0' + (date.getMonth() + 1)).slice(-2);
-            var day = ('0' + date.getDate()).slice(-2);
-            var hours = ('0' + date.getHours()).slice(-2);
-            var minutes = ('0' + date.getMinutes()).slice(-2);
-            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
-        }
-        
-        $('#productForm').on('submit', function(e) {
-            e.preventDefault();
-            
-            // 서비스 포함사항 JSON 변환
-            var includes = [];
-            $('input[name="serviceIncludes[]"]').each(function() {
-                var value = $(this).val().trim();
-                if (value) {
-                    includes.push(value);
-                }
-            });
-            
-            var formData = $(this).serialize();
-            if (includes.length > 0) {
-                formData += '&serviceIncludesJson=' + encodeURIComponent(JSON.stringify(includes));
-            }
-            
-            $.ajax({
-                url: '/apage/product041.do',
-                type: 'POST',
-                data: formData,
-                dataType: 'json',
-                success: function(data) {
-                    if (data.result === 'SUCCESS') {
-                        alert('상품 정보가 수정되었습니다.');
-                        location.href = '/apage/product020.do?productNo=' + productNo;
-                    } else {
-                        alert(data.msg || '수정에 실패하였습니다.');
-                    }
-                },
-                error: function() {
-                    alert('서버 오류가 발생하였습니다.');
-                }
-            });
-        });
-    </script>
-    </section>
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">간단 설명</div>
+						<input type="text" class="cv-form-input" name="shortDesc" id="shortDesc"
+							   placeholder="예: 전문 장비로 완벽한 에어컨 분해 청소" maxlength="500">
+						<div class="cv-form-hint">상품 카드에 표시되는 짧은 설명입니다</div>
+					</div>
+				</div>
+
+				<div class="cv-detail-grid cols-3">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">평형대</div>
+						<select class="cv-form-select" name="areaType" id="areaType">
+							<option value="">선택하세요</option>
+							<option value="20-30평형">20-30평형</option>
+							<option value="30-40평형">30-40평형</option>
+							<option value="40-50평형">40-50평형</option>
+							<option value="50평형 이상">50평형 이상</option>
+							<option value="원룸/오피스텔">원룸/오피스텔</option>
+						</select>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">소요시간</div>
+						<input type="text" class="cv-form-input" name="serviceTime" id="serviceTime"
+							   placeholder="예: 1~2시간" maxlength="50">
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">인기 배지</div>
+						<select class="cv-form-select" name="popularYn" id="popularYn">
+							<option value="N">미표시</option>
+							<option value="Y">표시</option>
+						</select>
+						<div class="cv-form-hint">인기 상품 배지를 표시합니다</div>
+					</div>
+				</div>
+
+				<!-- 가격 정보 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<line x1="12" y1="1" x2="12" y2="23"></line>
+						<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+					</svg>
+					가격 정보
+				</div>
+
+				<div class="cv-detail-grid cols-3">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">정가 <span class="required">*</span></div>
+						<div class="cv-price-wrap">
+							<input type="text" class="cv-form-input" name="originalPrice" id="originalPrice"
+								   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
+							<span class="cv-price-unit">원</span>
+						</div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">판매가 <span class="required">*</span></div>
+						<div class="cv-price-wrap">
+							<input type="text" class="cv-form-input" name="salePrice" id="salePrice"
+								   placeholder="0" required onkeyup="formatNumber(this); calculateDiscount();">
+							<span class="cv-price-unit">원</span>
+						</div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">할인율</div>
+						<div class="cv-price-wrap">
+							<input type="number" class="cv-form-input" name="discountRate" id="discountRate"
+								   value="0" min="0" max="100" readonly style="background: var(--cv-graphite);">
+							<span class="cv-price-unit">%</span>
+						</div>
+						<div class="cv-form-hint">자동 계산됩니다</div>
+					</div>
+				</div>
+
+				<!-- 노출 설정 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="2" y1="12" x2="22" y2="12"></line>
+						<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+					</svg>
+					노출 설정
+				</div>
+
+				<div class="cv-detail-grid cols-3">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">노출 여부 <span class="required">*</span></div>
+						<select class="cv-form-select" name="displayYn" id="displayYn" required>
+							<option value="Y">노출</option>
+							<option value="N">미노출</option>
+						</select>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">판매 여부 <span class="required">*</span></div>
+						<select class="cv-form-select" name="saleYn" id="saleYn" required>
+							<option value="Y">판매</option>
+							<option value="N">미판매</option>
+						</select>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">노출 순서</div>
+						<input type="number" class="cv-form-input" name="displayOrder" id="displayOrder"
+							   value="999" min="0" max="9999">
+						<div class="cv-form-hint">숫자가 작을수록 먼저 노출</div>
+					</div>
+				</div>
+
+				<!-- 상세 정보 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+						<polyline points="14 2 14 8 20 8"></polyline>
+						<line x1="16" y1="13" x2="8" y2="13"></line>
+						<line x1="16" y1="17" x2="8" y2="17"></line>
+					</svg>
+					상세 정보
+				</div>
+
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">상품 설명</div>
+						<textarea class="cv-form-textarea" name="productDesc" id="productDesc"
+								  placeholder="상품에 대한 상세 설명을 입력하세요"></textarea>
+					</div>
+				</div>
+
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">서비스 포함사항</div>
+						<div class="cv-service-includes">
+							<div id="serviceIncludesContainer"></div>
+							<button type="button" class="cv-add-btn" onclick="addListItem('serviceIncludesContainer', 'serviceIncludes[]')">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+								항목 추가
+							</button>
+						</div>
+						<div class="cv-form-hint">서비스에 포함되는 항목을 추가해주세요</div>
+					</div>
+				</div>
+
+				<!-- 카드 표시 정보 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+						<line x1="3" y1="9" x2="21" y2="9"></line>
+					</svg>
+					카드 표시 정보 (특징)
+				</div>
+
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">특징 리스트</div>
+						<div class="cv-service-includes">
+							<div id="featuresContainer"></div>
+							<button type="button" class="cv-add-btn" onclick="addListItem('featuresContainer', 'features[]')">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+								항목 추가
+							</button>
+						</div>
+						<div class="cv-form-hint">상품 카드에 표시되는 주요 특징</div>
+					</div>
+				</div>
+
+				<!-- 서비스 효과 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+					</svg>
+					서비스 효과
+				</div>
+
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">서비스 효과 리스트</div>
+						<div class="cv-service-includes">
+							<div id="serviceEffectsContainer"></div>
+							<button type="button" class="cv-add-btn" onclick="addListItem('serviceEffectsContainer', 'serviceEffects[]')">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+								항목 추가
+							</button>
+						</div>
+						<div class="cv-form-hint">서비스 이용 후 기대되는 효과</div>
+					</div>
+				</div>
+
+				<!-- 작업 과정 -->
+				<div class="cv-section-title" style="margin-top: var(--space-5);">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<line x1="8" y1="6" x2="21" y2="6"></line>
+						<line x1="8" y1="12" x2="21" y2="12"></line>
+						<line x1="8" y1="18" x2="21" y2="18"></line>
+						<line x1="3" y1="6" x2="3.01" y2="6"></line>
+						<line x1="3" y1="12" x2="3.01" y2="12"></line>
+						<line x1="3" y1="18" x2="3.01" y2="18"></line>
+					</svg>
+					작업 과정
+				</div>
+
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">작업 과정 리스트</div>
+						<div class="cv-service-includes">
+							<div id="workProcessContainer"></div>
+							<button type="button" class="cv-add-btn" onclick="addListItem('workProcessContainer', 'workProcess[]')">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+								항목 추가
+							</button>
+						</div>
+						<div class="cv-form-hint">작업 진행 순서를 단계별로 입력하세요</div>
+					</div>
+				</div>
+
+				<!-- 대표 이미지 업로드 (6개) -->
+				<div class="cv-image-section">
+					<div class="cv-image-section-header">
+						<div class="cv-image-section-title">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+								<circle cx="8.5" cy="8.5" r="1.5"></circle>
+								<polyline points="21 15 16 10 5 21"></polyline>
+							</svg>
+							대표 이미지
+						</div>
+						<span class="cv-image-badge">필수 (최소 1개)</span>
+					</div>
+
+					<div class="cv-main-images-grid">
+						<!-- 대표이미지 1 -->
+						<div class="cv-main-image-item" data-index="1">
+							<input type="file" id="mainImg1" name="mainImg1" accept="image/*" onchange="handleMainImgUpload(this, 1)">
+							<div class="cv-main-image-number">1</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder1">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview1">
+								<img id="mainImgImg1" src="" alt="대표 이미지 1">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 1)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<!-- 대표이미지 2 -->
+						<div class="cv-main-image-item" data-index="2">
+							<input type="file" id="mainImg2" name="mainImg2" accept="image/*" onchange="handleMainImgUpload(this, 2)">
+							<div class="cv-main-image-number">2</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder2">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview2">
+								<img id="mainImgImg2" src="" alt="대표 이미지 2">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 2)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<!-- 대표이미지 3 -->
+						<div class="cv-main-image-item" data-index="3">
+							<input type="file" id="mainImg3" name="mainImg3" accept="image/*" onchange="handleMainImgUpload(this, 3)">
+							<div class="cv-main-image-number">3</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder3">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview3">
+								<img id="mainImgImg3" src="" alt="대표 이미지 3">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 3)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<!-- 대표이미지 4 -->
+						<div class="cv-main-image-item" data-index="4">
+							<input type="file" id="mainImg4" name="mainImg4" accept="image/*" onchange="handleMainImgUpload(this, 4)">
+							<div class="cv-main-image-number">4</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder4">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview4">
+								<img id="mainImgImg4" src="" alt="대표 이미지 4">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 4)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<!-- 대표이미지 5 -->
+						<div class="cv-main-image-item" data-index="5">
+							<input type="file" id="mainImg5" name="mainImg5" accept="image/*" onchange="handleMainImgUpload(this, 5)">
+							<div class="cv-main-image-number">5</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder5">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview5">
+								<img id="mainImgImg5" src="" alt="대표 이미지 5">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 5)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<!-- 대표이미지 6 -->
+						<div class="cv-main-image-item" data-index="6">
+							<input type="file" id="mainImg6" name="mainImg6" accept="image/*" onchange="handleMainImgUpload(this, 6)">
+							<div class="cv-main-image-number">6</div>
+							<div class="cv-main-image-placeholder" id="mainImgPlaceholder6">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-main-image-preview" id="mainImgPreview6">
+								<img id="mainImgImg6" src="" alt="대표 이미지 6">
+							</div>
+							<button type="button" class="cv-main-image-remove" onclick="removeMainImg(event, 6)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div class="cv-image-hint">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<line x1="12" y1="16" x2="12" y2="12"></line>
+							<line x1="12" y1="8" x2="12.01" y2="8"></line>
+						</svg>
+						상품 목록에 표시되는 메인 이미지입니다. 첫 번째 이미지가 대표 썸네일로 사용됩니다. 4:3 비율 권장
+					</div>
+				</div>
+
+				<!-- 갤러리 이미지 업로드 -->
+				<div class="cv-image-section">
+					<div class="cv-image-section-header">
+						<div class="cv-image-section-title">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<rect x="3" y="3" width="7" height="7"></rect>
+								<rect x="14" y="3" width="7" height="7"></rect>
+								<rect x="14" y="14" width="7" height="7"></rect>
+								<rect x="3" y="14" width="7" height="7"></rect>
+							</svg>
+							갤러리 이미지
+						</div>
+						<div class="cv-upload-counter">
+							<span class="count" id="galleryCount">0</span>
+							<span class="max">/ 10</span>
+						</div>
+					</div>
+
+					<!-- 기존 갤러리 이미지 -->
+					<div class="cv-existing-images" id="existingImagesSection" style="display: none;">
+						<div class="cv-existing-images-title">기존 업로드 이미지</div>
+						<div id="existingGallery"></div>
+					</div>
+
+					<div class="cv-gallery-grid" id="galleryGrid">
+						<!-- 10개의 갤러리 슬롯 -->
+						<div class="cv-gallery-item" data-index="0">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 0)">
+							<div class="cv-gallery-number">1</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 0)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="1">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 1)">
+							<div class="cv-gallery-number">2</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 1)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="2">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 2)">
+							<div class="cv-gallery-number">3</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 2)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="3">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 3)">
+							<div class="cv-gallery-number">4</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 3)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="4">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 4)">
+							<div class="cv-gallery-number">5</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 4)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="5">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 5)">
+							<div class="cv-gallery-number">6</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 5)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="6">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 6)">
+							<div class="cv-gallery-number">7</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 6)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="7">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 7)">
+							<div class="cv-gallery-number">8</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 7)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="8">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 8)">
+							<div class="cv-gallery-number">9</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 8)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+						<div class="cv-gallery-item" data-index="9">
+							<input type="file" name="galleryFiles" accept="image/*" onchange="handleGalleryUpload(this, 9)">
+							<div class="cv-gallery-number">10</div>
+							<div class="cv-gallery-placeholder">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="12" y1="5" x2="12" y2="19"></line>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+								</svg>
+							</div>
+							<div class="cv-gallery-preview">
+								<img src="" alt="갤러리 이미지">
+							</div>
+							<button type="button" class="cv-gallery-remove" onclick="removeGalleryImage(event, 9)">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div class="cv-image-hint">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<line x1="12" y1="16" x2="12" y2="12"></line>
+							<line x1="12" y1="8" x2="12.01" y2="8"></line>
+						</svg>
+						상품 상세 페이지에 표시되는 추가 이미지입니다. 최대 10장까지 업로드 가능합니다
+					</div>
+				</div>
+
+				<!-- 버튼 -->
+				<div class="cv-btn-group">
+					<button type="submit" class="cv-btn cv-btn-primary">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+							<polyline points="17 21 17 13 7 13 7 21"></polyline>
+							<polyline points="7 3 7 8 15 8"></polyline>
+						</svg>
+						수정 저장
+					</button>
+					<button type="button" class="cv-btn cv-btn-danger" onclick="deleteProduct()">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="3 6 5 6 21 6"></polyline>
+							<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+						</svg>
+						삭제
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" onclick="goToView()">
+						취소
+					</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		var productNo = /*[[${param.productNo[0]}]]*/ null;
+
+		$(document).ready(function() {
+			if (!productNo) {
+				swal({title: '상품번호가 없습니다.', type: 'warning'}, function() {
+					location.href = '/apage/product010.do';
+				});
+				return;
+			}
+
+			loadCategories();
+			loadProductDetail();
+		});
+
+		function loadCategories() {
+			$.ajax({
+				url: '/apage/product011.do',
+				type: 'POST',
+				data: {action: 'getCategories'},
+				dataType: 'json',
+				success: function(data) {
+					if(data.categories) {
+						var select = $('#serviceCd');
+						$.each(data.categories, function(index, category) {
+							select.append('<option value="' + category.serviceCd + '">' + category.serviceNm + '</option>');
+						});
+					}
+				}
+			});
+		}
+
+		function loadProductDetail() {
+			$.ajax({
+				url: '/apage/product021.do',
+				type: 'POST',
+				data: { productNo: productNo },
+				dataType: 'json',
+				success: function(data) {
+					if (data.result === 'SUCCESS' && data.product) {
+						populateForm(data.product);
+					} else {
+						swal({title: '상품 정보를 불러올 수 없습니다.', type: 'warning'}, function() {
+							location.href = '/apage/product010.do';
+						});
+					}
+				},
+				error: function() {
+					swal({title: '서버 오류가 발생하였습니다.', type: 'error'}, function() {
+						location.href = '/apage/product010.do';
+					});
+				}
+			});
+		}
+
+		function populateForm(product) {
+			$('#productNo').val(product.productNo);
+			$('#productNoDisplay').text(product.productNo);
+			$('#regDtDisplay').text(formatDateTime(product.regDt));
+
+			setTimeout(function() {
+				$('#serviceCd').val(product.serviceCd);
+			}, 500);
+
+			$('#productNm').val(product.productNm);
+			$('#shortDesc').val(product.shortDesc || '');
+			$('#areaType').val(product.areaType);
+			$('#serviceTime').val(product.serviceTime);
+			$('#popularYn').val(product.popularYn || 'N');
+			$('#originalPrice').val(formatPrice(product.originalPrice));
+			$('#salePrice').val(formatPrice(product.salePrice));
+			$('#discountRate').val(product.discountRate || 0);
+			$('#displayYn').val(product.displayYn);
+			$('#saleYn').val(product.saleYn);
+			$('#displayOrder').val(product.displayOrder);
+			$('#productDesc').val(product.productDesc);
+
+			// 대표 이미지 6개 미리보기
+			for (var i = 1; i <= 6; i++) {
+				var fileSeq = product['fileSeq' + i];
+				if (fileSeq) {
+					$('#fileSeq' + i).val(fileSeq);
+					$('#mainImgImg' + i).attr('src', '/file/download.do?fileSeq=' + fileSeq);
+					$('#mainImgPreview' + i).addClass('active');
+					$('#mainImgPlaceholder' + i).hide();
+					$('.cv-main-image-item[data-index="' + i + '"]').addClass('has-image');
+				}
+			}
+
+			// 갤러리 이미지 표시
+			if (product.images && product.images.length > 0) {
+				$('#existingImagesSection').show();
+				var galleryHtml = '';
+				$.each(product.images, function(index, img) {
+					galleryHtml += '<div class="cv-existing-image-item" data-file-seq="' + img.fileSeq + '">' +
+						'<img src="/file/download.do?fileSeq=' + img.fileSeq + '" alt="갤러리">' +
+						'</div>';
+				});
+				$('#existingGallery').html(galleryHtml);
+			}
+
+			// JSON 필드들 파싱
+			parseAndPopulateList(product.serviceIncludes, 'serviceIncludesContainer', 'serviceIncludes[]');
+			parseAndPopulateList(product.features, 'featuresContainer', 'features[]');
+			parseAndPopulateList(product.serviceEffects, 'serviceEffectsContainer', 'serviceEffects[]');
+			parseAndPopulateList(product.workProcess, 'workProcessContainer', 'workProcess[]');
+		}
+
+		function parseAndPopulateList(jsonStr, containerId, inputName) {
+			var container = $('#' + containerId);
+			container.empty();
+
+			if (jsonStr) {
+				try {
+					var items = JSON.parse(jsonStr);
+					if (items && items.length > 0) {
+						$.each(items, function(index, item) {
+							addListItemWithValue(containerId, inputName, item);
+						});
+						return;
+					}
+				} catch(e) {}
+			}
+			addListItem(containerId, inputName);
+		}
+
+		function addListItem(containerId, inputName) {
+			var placeholder = '항목 입력';
+			if (inputName === 'serviceIncludes[]') placeholder = '포함사항 입력';
+			else if (inputName === 'features[]') placeholder = '특징 입력';
+			else if (inputName === 'serviceEffects[]') placeholder = '효과 입력';
+			else if (inputName === 'workProcess[]') placeholder = '과정 입력';
+
+			var itemHtml = '<div class="cv-service-item">' +
+				'<input type="text" class="cv-form-input" name="' + inputName + '" placeholder="' + placeholder + '">' +
+				'<button type="button" class="cv-service-remove" onclick="removeListItem(this)">' +
+				'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+				'<line x1="18" y1="6" x2="6" y2="18"></line>' +
+				'<line x1="6" y1="6" x2="18" y2="18"></line>' +
+				'</svg>' +
+				'</button>' +
+				'</div>';
+			$('#' + containerId).append(itemHtml);
+		}
+
+		function addListItemWithValue(containerId, inputName, value) {
+			var placeholder = '항목 입력';
+			if (inputName === 'serviceIncludes[]') placeholder = '포함사항 입력';
+			else if (inputName === 'features[]') placeholder = '특징 입력';
+			else if (inputName === 'serviceEffects[]') placeholder = '효과 입력';
+			else if (inputName === 'workProcess[]') placeholder = '과정 입력';
+
+			var escapedValue = $('<div>').text(value).html();
+			var itemHtml = '<div class="cv-service-item">' +
+				'<input type="text" class="cv-form-input" name="' + inputName + '" value="' + escapedValue + '" placeholder="' + placeholder + '">' +
+				'<button type="button" class="cv-service-remove" onclick="removeListItem(this)">' +
+				'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+				'<line x1="18" y1="6" x2="6" y2="18"></line>' +
+				'<line x1="6" y1="6" x2="18" y2="18"></line>' +
+				'</svg>' +
+				'</button>' +
+				'</div>';
+			$('#' + containerId).append(itemHtml);
+		}
+
+		function removeListItem(btn) {
+			$(btn).closest('.cv-service-item').remove();
+		}
+
+		// 대표 이미지 업로드 핸들러 (6개)
+		function handleMainImgUpload(input, index) {
+			if (input.files && input.files[0]) {
+				var file = input.files[0];
+
+				// 파일 크기 체크 (10MB)
+				if (file.size > 10 * 1024 * 1024) {
+					swal({title: '파일 크기는 10MB 이하여야 합니다.', type: 'warning'});
+					input.value = '';
+					return;
+				}
+
+				var reader = new FileReader();
+				var $item = $('.cv-main-image-item[data-index="' + index + '"]');
+
+				reader.onload = function(e) {
+					$('#mainImgImg' + index).attr('src', e.target.result);
+					$('#mainImgPreview' + index).addClass('active');
+					$('#mainImgPlaceholder' + index).hide();
+					$item.addClass('has-image');
+					// 새 파일 업로드 시 기존 fileSeq 초기화
+					$('#fileSeq' + index).val('');
+				};
+				reader.readAsDataURL(file);
+			}
+		}
+
+		// 대표 이미지 삭제 (6개)
+		function removeMainImg(event, index) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var $item = $('.cv-main-image-item[data-index="' + index + '"]');
+			$('#mainImg' + index).val('');
+			$('#fileSeq' + index).val('');
+			$('#mainImgImg' + index).attr('src', '');
+			$('#mainImgPreview' + index).removeClass('active');
+			$('#mainImgPlaceholder' + index).show();
+			$item.removeClass('has-image');
+		}
+
+		// 갤러리 이미지 업로드 핸들러
+		function handleGalleryUpload(input, index) {
+			if (input.files && input.files[0]) {
+				var file = input.files[0];
+
+				// 파일 크기 체크 (10MB)
+				if (file.size > 10 * 1024 * 1024) {
+					swal({title: '파일 크기는 10MB 이하여야 합니다.', type: 'warning'});
+					input.value = '';
+					return;
+				}
+
+				var reader = new FileReader();
+				var $item = $('.cv-gallery-item[data-index="' + index + '"]');
+
+				reader.onload = function(e) {
+					$item.find('.cv-gallery-preview img').attr('src', e.target.result);
+					$item.find('.cv-gallery-preview').addClass('active');
+					$item.find('.cv-gallery-placeholder').hide();
+					$item.addClass('has-image');
+					updateGalleryCount();
+				};
+				reader.readAsDataURL(file);
+			}
+		}
+
+		// 갤러리 이미지 삭제
+		function removeGalleryImage(event, index) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var $item = $('.cv-gallery-item[data-index="' + index + '"]');
+			$item.find('input[type="file"]').val('');
+			$item.find('.cv-gallery-preview img').attr('src', '');
+			$item.find('.cv-gallery-preview').removeClass('active');
+			$item.find('.cv-gallery-placeholder').show();
+			$item.removeClass('has-image');
+			updateGalleryCount();
+		}
+
+		// 갤러리 이미지 개수 업데이트
+		function updateGalleryCount() {
+			var count = $('.cv-gallery-item.has-image').length;
+			$('#galleryCount').text(count);
+		}
+
+		function formatNumber(input) {
+			var value = input.value.replace(/[^0-9]/g, '');
+			if (value) {
+				value = parseInt(value).toLocaleString('ko-KR');
+				input.value = value;
+			}
+		}
+
+		function calculateDiscount() {
+			var original = $('#originalPrice').val().replace(/[^0-9]/g, '');
+			var sale = $('#salePrice').val().replace(/[^0-9]/g, '');
+
+			if (original && sale) {
+				original = parseInt(original);
+				sale = parseInt(sale);
+
+				if (original > 0 && sale < original) {
+					var discount = Math.round((original - sale) / original * 100);
+					$('#discountRate').val(discount);
+				} else {
+					$('#discountRate').val(0);
+				}
+			}
+		}
+
+		function formatPrice(price) {
+			if (!price) return '0';
+			return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
+
+		function formatDateTime(dateStr) {
+			if (!dateStr) return '-';
+			var date = new Date(dateStr);
+			var year = date.getFullYear();
+			var month = ('0' + (date.getMonth() + 1)).slice(-2);
+			var day = ('0' + date.getDate()).slice(-2);
+			var hours = ('0' + date.getHours()).slice(-2);
+			var minutes = ('0' + date.getMinutes()).slice(-2);
+			return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+		}
+
+		function collectListItems(inputName) {
+			var items = [];
+			$('input[name="' + inputName + '"]').each(function() {
+				var value = $(this).val().trim();
+				if (value) {
+					items.push(value);
+				}
+			});
+			return items;
+		}
+
+		function goToView() {
+			location.href = '/apage/product020.do?productNo=' + productNo;
+		}
+
+		function deleteProduct() {
+			swal({
+				title: '정말로 삭제하시겠습니까?',
+				text: '삭제된 데이터는 복구할 수 없습니다.',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonText: '삭제',
+				cancelButtonText: '취소',
+				closeOnConfirm: false
+			}, function(isConfirm) {
+				if (!isConfirm) return;
+
+				$.ajax({
+					url: '/apage/product051.do',
+					type: 'POST',
+					data: { productNo: productNo },
+					dataType: 'json',
+					success: function(data) {
+						if (data.result === 'SUCCESS') {
+							swal({title: '삭제되었습니다.', type: 'success'}, function() {
+								location.href = '/apage/product010.do';
+							});
+						} else {
+							swal({title: data.msg || '삭제에 실패하였습니다.', type: 'error'});
+						}
+					},
+					error: function() {
+						swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+					}
+				});
+			});
+		}
+
+		$('#productForm').on('submit', function(e) {
+			e.preventDefault();
+
+			var formData = new FormData(this);
+
+			// 리스트 항목들을 JSON으로 변환
+			var serviceIncludes = collectListItems('serviceIncludes[]');
+			var features = collectListItems('features[]');
+			var serviceEffects = collectListItems('serviceEffects[]');
+			var workProcess = collectListItems('workProcess[]');
+
+			if (serviceIncludes.length > 0) {
+				formData.append('serviceIncludesJson', JSON.stringify(serviceIncludes));
+			}
+			if (features.length > 0) {
+				formData.append('featuresJson', JSON.stringify(features));
+			}
+			if (serviceEffects.length > 0) {
+				formData.append('serviceEffectsJson', JSON.stringify(serviceEffects));
+			}
+			if (workProcess.length > 0) {
+				formData.append('workProcessJson', JSON.stringify(workProcess));
+			}
+
+			$.ajax({
+				url: '/apage/product041.do',
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'json',
+				success: function(data) {
+					if (data.result === 'SUCCESS') {
+						swal({title: '상품 정보가 수정되었습니다.', type: 'success'}, function() {
+							location.href = '/apage/product020.do?productNo=' + productNo;
+						});
+					} else {
+						swal({title: data.msg || '수정에 실패하였습니다.', type: 'error'});
+					}
+				},
+				error: function() {
+					swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+				}
+			});
+		});
+	</script>
+
 </div>
 </body>
 </html>

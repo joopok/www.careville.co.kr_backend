@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.cleaning.core.config.SessionCmn;
+import kr.co.cleaning.core.utils.AESUtil;
 import kr.co.cleaning.core.utils.PageUtil;
 import kr.co.cleaning.core.utils.SUtils;
+import kr.co.cleaning.svc.CmmnSvc;
 import kr.co.cleaning.svc.ProductSvc;
 
 /**
@@ -35,6 +38,8 @@ public class ProductCtrl {
     @Autowired
     private ProductSvc productSvc;
 
+    @Autowired
+    private CmmnSvc cmmnSvc;
 
 	@Autowired
 	SessionCmn sessionCmn;
@@ -44,35 +49,9 @@ public class ProductCtrl {
      */
     @RequestMapping("/product010.do")
     public String productList(@RequestParam Map<String, Object> param, Model model, HttpServletRequest request) {
-
-        // 페이징 처리
-        String curPage = SUtils.nvl((String)param.get("curPage"), "1");
-        int viewRowCnt = 10;
-        int viewPageCnt = 10;
-
-        param.put("curPage", curPage);
-        param.put("rowStrt", (Integer.parseInt(curPage) - 1) * viewRowCnt);
-        param.put("rowLimit", viewRowCnt);
-
-        // 상품 목록 조회
-        Map<String, Object> resultMap = productSvc.selectProductList(param);
-
-        // 페이징 설정
-        PageUtil pageUtil = new PageUtil();
-        HashMap<String, Object> pageParam = new HashMap<>();
-        pageParam.put("currPage", curPage);
-        pageUtil.setCurrPage(pageParam);
-        pageUtil.setTotalRowCnt(Integer.parseInt(resultMap.get("totCnt").toString()));
-        pageUtil.setViewRowCnt(viewRowCnt);
-        pageUtil.setViewPageCnt(viewPageCnt);
-
-        model.addAttribute("list", resultMap.get("list"));
-        model.addAttribute("pageUtil", pageUtil);
+        // 서버 렌더 단계에서는 DB 조회를 생략하고, 클라이언트에서 AJAX로 목록/카테고리를 로드합니다.
+        // 초기 파라미터만 전달해도 페이지 동작에는 문제가 없습니다.
         model.addAttribute("searchParam", param);
-
-        // 카테고리 목록 조회
-        model.addAttribute("categoryList", productSvc.selectCategoryList());
-
         return "apage/product/productList";
     }
 
@@ -109,27 +88,81 @@ public class ProductCtrl {
      * 상품 등록 처리
      */
     @PostMapping("/product031.do")
-    public ModelAndView productInsert(@RequestParam Map<String, Object> param, HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView productInsert(@RequestParam Map<String, Object> param,
+            @RequestParam(value = "mainImg1", required = false) MultipartFile mainImg1,
+            @RequestParam(value = "mainImg2", required = false) MultipartFile mainImg2,
+            @RequestParam(value = "mainImg3", required = false) MultipartFile mainImg3,
+            @RequestParam(value = "mainImg4", required = false) MultipartFile mainImg4,
+            @RequestParam(value = "mainImg5", required = false) MultipartFile mainImg5,
+            @RequestParam(value = "mainImg6", required = false) MultipartFile mainImg6,
+            @RequestParam(value = "galleryFiles", required = false) MultipartFile[] galleryFiles,
+            HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
 
         try {
             // 등록자 정보 설정
             Map<String, Object> userInfo = sessionCmn.getLogonInfo();
+            if (userInfo == null) {
+                mav.addObject("result", "FAIL");
+                mav.addObject("msg", "로그인이 필요합니다.");
+                mav.setViewName("jsonView");
+                return mav;
+            }
             param.put("regUserId", userInfo.get("mngrId"));
 
-            // 상품 등록
-            int result = productSvc.insertProduct(param);
+            // 대표 이미지 6개 업로드
+            MultipartFile[] mainImages = {mainImg1, mainImg2, mainImg3, mainImg4, mainImg5, mainImg6};
+            for (int i = 0; i < mainImages.length; i++) {
+                MultipartFile mainImg = mainImages[i];
+                if (mainImg != null && !mainImg.isEmpty()) {
+                    List<MultipartFile> fileList = new java.util.ArrayList<>();
+                    fileList.add(mainImg);
+                    HashMap<String, Object> uploadParam = new HashMap<>();
+                    HashMap<String, Object> fileResult = cmmnSvc.setFileUpload(uploadParam, fileList);
+                    if (fileResult != null && fileResult.get("fileSeq") != null) {
+                        String encryptedFileSeq = fileResult.get("fileSeq").toString();
+                        String decryptedFileSeq = AESUtil.urlDec(encryptedFileSeq);
+                        param.put("fileSeq" + (i + 1), Integer.parseInt(decryptedFileSeq));
+                        logger.debug("Main image {} uploaded - fileSeq: {}", (i + 1), decryptedFileSeq);
+                    }
+                }
+            }
 
+            // 상품 등록 (useGeneratedKeys로 productNo가 param에 설정됨)
+            int result = productSvc.insertProduct(param);
+            logger.debug("Product inserted - productNo: {}", param.get("productNo"));
+
+            // 갤러리 이미지 업로드 및 관계 등록 (최대 10개)
+            if (galleryFiles != null && galleryFiles.length > 0 && param.get("productNo") != null) {
+                int uploadedCount = 0;
+                for (MultipartFile galleryFile : galleryFiles) {
+                    if (galleryFile != null && !galleryFile.isEmpty() && uploadedCount < 10) {
+                        List<MultipartFile> galleryList = new java.util.ArrayList<>();
+                        galleryList.add(galleryFile);
+                        HashMap<String, Object> uploadParam = new HashMap<>();
+                        HashMap<String, Object> fileResult = cmmnSvc.setFileUpload(uploadParam, galleryList);
+                        if (fileResult != null && fileResult.get("fileSeq") != null) {
+                            HashMap<String, Object> relationParam = new HashMap<>();
+                            relationParam.put("fileTrgetSe", "PRODUCT");
+                            relationParam.put("fileTrgetSeq", param.get("productNo"));
+                            relationParam.put("fileSeq", fileResult.get("fileSeq"));
+                            cmmnSvc.setFileRelationInsert(relationParam);
+                            uploadedCount++;
+                            logger.debug("Gallery image {} uploaded for productNo: {}", uploadedCount, param.get("productNo"));
+                        }
+                    }
+                }
+            }
 
             mav.addObject("result", "SUCCESS");
             mav.addObject("msg", "상품이 등록되었습니다.");
             mav.addObject("redirectUrl", "/apage/product010.do");
 
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.error("상품 등록 실패: ", e);
             mav.addObject("result", "FAIL");
-            mav.addObject("msg", "상품 등록에 실패했습니다.");
+            mav.addObject("msg", "상품 등록에 실패했습니다: " + e.getMessage());
         }
 
         mav.setViewName("jsonView");
@@ -158,6 +191,13 @@ public class ProductCtrl {
      */
     @PostMapping("/product041.do")
     public ModelAndView productUpdate(@RequestParam Map<String, Object> param,
+            @RequestParam(value = "mainImg1", required = false) MultipartFile mainImg1,
+            @RequestParam(value = "mainImg2", required = false) MultipartFile mainImg2,
+            @RequestParam(value = "mainImg3", required = false) MultipartFile mainImg3,
+            @RequestParam(value = "mainImg4", required = false) MultipartFile mainImg4,
+            @RequestParam(value = "mainImg5", required = false) MultipartFile mainImg5,
+            @RequestParam(value = "mainImg6", required = false) MultipartFile mainImg6,
+            @RequestParam(value = "galleryFiles", required = false) MultipartFile[] galleryFiles,
             HttpServletRequest request, HttpServletResponse response) {
 
         ModelAndView mav = new ModelAndView();
@@ -165,20 +205,65 @@ public class ProductCtrl {
         try {
             // 수정자 정보 설정
             Map<String, Object> userInfo = sessionCmn.getLogonInfo();
+            if (userInfo == null) {
+                mav.addObject("result", "FAIL");
+                mav.addObject("msg", "로그인이 필요합니다.");
+                mav.setViewName("jsonView");
+                return mav;
+            }
             param.put("modUserId", userInfo.get("mngrId"));
+
+            // 대표 이미지 6개 업로드 (새 파일이 있는 경우)
+            MultipartFile[] mainImages = {mainImg1, mainImg2, mainImg3, mainImg4, mainImg5, mainImg6};
+            for (int i = 0; i < mainImages.length; i++) {
+                MultipartFile mainImg = mainImages[i];
+                if (mainImg != null && !mainImg.isEmpty()) {
+                    List<MultipartFile> fileList = new java.util.ArrayList<>();
+                    fileList.add(mainImg);
+                    HashMap<String, Object> uploadParam = new HashMap<>();
+                    HashMap<String, Object> fileResult = cmmnSvc.setFileUpload(uploadParam, fileList);
+                    if (fileResult != null && fileResult.get("fileSeq") != null) {
+                        String encryptedFileSeq = fileResult.get("fileSeq").toString();
+                        String decryptedFileSeq = AESUtil.urlDec(encryptedFileSeq);
+                        param.put("fileSeq" + (i + 1), Integer.parseInt(decryptedFileSeq));
+                        logger.debug("Main image {} updated - fileSeq: {}", (i + 1), decryptedFileSeq);
+                    }
+                }
+            }
 
             // 상품 수정
             int result = productSvc.updateProduct(param);
 
+            // 갤러리 이미지 추가 업로드 (최대 10개)
+            if (galleryFiles != null && galleryFiles.length > 0 && param.get("productNo") != null) {
+                int uploadedCount = 0;
+                for (MultipartFile galleryFile : galleryFiles) {
+                    if (galleryFile != null && !galleryFile.isEmpty() && uploadedCount < 10) {
+                        List<MultipartFile> galleryList = new java.util.ArrayList<>();
+                        galleryList.add(galleryFile);
+                        HashMap<String, Object> uploadParam = new HashMap<>();
+                        HashMap<String, Object> fileResult = cmmnSvc.setFileUpload(uploadParam, galleryList);
+                        if (fileResult != null && fileResult.get("fileSeq") != null) {
+                            HashMap<String, Object> relationParam = new HashMap<>();
+                            relationParam.put("fileTrgetSe", "PRODUCT");
+                            relationParam.put("fileTrgetSeq", param.get("productNo"));
+                            relationParam.put("fileSeq", fileResult.get("fileSeq"));
+                            cmmnSvc.setFileRelationInsert(relationParam);
+                            uploadedCount++;
+                            logger.debug("Gallery image {} added for productNo: {}", uploadedCount, param.get("productNo"));
+                        }
+                    }
+                }
+            }
 
             mav.addObject("result", "SUCCESS");
             mav.addObject("msg", "상품이 수정되었습니다.");
             mav.addObject("redirectUrl", "/apage/product020.do?productNo=" + param.get("productNo"));
 
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.error("상품 수정 실패: ", e);
             mav.addObject("result", "FAIL");
-            mav.addObject("msg", "상품 수정에 실패했습니다.");
+            mav.addObject("msg", "상품 수정에 실패했습니다: " + e.getMessage());
         }
 
         mav.setViewName("jsonView");
@@ -196,6 +281,12 @@ public class ProductCtrl {
         try {
             // 수정자 정보 설정
             Map<String, Object> userInfo = sessionCmn.getLogonInfo();
+            if (userInfo == null) {
+                mav.addObject("result", "FAIL");
+                mav.addObject("msg", "로그인이 필요합니다.");
+                mav.setViewName("jsonView");
+                return mav;
+            }
             param.put("modUserId", userInfo.get("mngrId"));
 
             // 상품 삭제
@@ -251,6 +342,7 @@ public class ProductCtrl {
                 Map<String, Object> pagination = new HashMap<>();
                 pagination.put("currPage", curPage);
                 pagination.put("totalPage", totalPage);
+                pagination.put("totalRowCnt", totalCnt);
                 pagination.put("prev", curPage > 1 ? curPage - 1 : 0);
                 pagination.put("next", curPage < totalPage ? curPage + 1 : 0);
 

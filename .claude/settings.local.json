@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Skill(frontend-design)",
       "Bash(lsof:*)",
       "Bash(npm run dev:*)",
       "WebFetch(domain:ontotalcare.co.kr)",
@@ -46,7 +47,30 @@
       "Bash(git remote:*)",
       "Bash(/usr/libexec/java_home:*)",
       "Bash(export JAVA_HOME=\"/usr/local/opt/openjdk@17\")",
-      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")"
+      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
+      "Bash(brew list:*)",
+      "Bash(export JAVA_HOME=\"/usr/local/opt/openjdk@17\" export PATH=\"$JAVA_HOME/bin:$PATH\" java:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" java:*)",
+      "Bash(xargs kill:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" ./mvnw spring-boot:run:*)",
+      "Bash(cat:*)",
+      "Skill(frontend-design-pro)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" ./mvnw clean compile:*)",
+      "Bash(export PATH=\"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:$PATH\":*)",
+      "Bash(export PATH=\"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:$PATH\":*)",
+      "Bash(/bin/bash:*)",
+      "Bash(export PATH=\"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:/usr/local/opt/openjdk@17/bin:$PATH\")",
+      "Bash(kill:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" ./mvnw:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" ./mvnw clean package:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" ./mvnw:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" ./mvnw clean compile:*)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" ./mvnw compile:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(xargs:*)",
+      "Bash(mysql:*)",
+      "WebFetch(domain:cdn.jsdelivr.net)"
     ],
     "deny": [],
     "ask": []

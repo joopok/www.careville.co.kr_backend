@@ -146,6 +146,12 @@
 		SET		DISP_YN = #{dispYn}
 		WHERE	REVIEW_SEQ = #{reviewSeq}
 	</update>
+
+	<update id="setReviewDispUpdAll" parameterType="hashMap">
+		UPDATE 	TB_REVIEW
+		SET		DISP_YN = #{dispYn}
+		WHERE	DISP_YN != #{dispYn}
+	</update>
 	
 	<delete id="setReviewDel" parameterType="hashMap">
 		DELETE FROM TB_REVIEW

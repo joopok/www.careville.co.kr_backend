@@ -2,6 +2,7 @@ package kr.co.cleaning.svc;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,11 +78,13 @@ public class BoardSvc{
 		return returnMap;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	public HashMap<String,Object> setBoardUpd(HttpServletRequest req,HashMap<String,Object> paramMap) throws Exception {
 
 		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
 
-		paramMap.put("answerId", sessionCmn.get("mngrId"));
+		Map<String, Object> sessionMap = sessionCmn.getLogonInfo();
+		paramMap.put("answerId", sessionMap != null ? SUtils.nvl(sessionMap.get("mngrId")) : "admin");
 
 		int boardCnt	= mapper.setBoardUpd(paramMap);
 
@@ -99,7 +102,7 @@ public class BoardSvc{
 
 		int boardCnt	= mapper.setBoardReg(paramMap);
 
-		paramMap.put("fileTrgetSeq", SUtils.strToInt(paramMap.get("boardSeq")));
+		paramMap.put("fileTrgetSeq", SUtils.strToInt(paramMap.get("BOARD_SEQ")));
 
 		int isnertCnt	= cmmnSvc.setFileRelationInsert(paramMap);
 

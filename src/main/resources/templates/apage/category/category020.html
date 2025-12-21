@@ -1,111 +1,150 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
 <head>
-<title>:: 서비스 카테고리 상세 ::</title>
+<title>카테고리 상세</title>
+<!-- All styles now in careville-admin.css -->
 </head>
 <body>
 <div layout:fragment="content">
-	<section class="content">
-        <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="card">
-                        <div class="header">
-                            <h2>서비스 카테고리 상세</h2>
-                        </div>
-                        <div class="body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <colgroup>
-                                        <col style="width:20%">
-                                        <col style="width:30%">
-                                        <col style="width:20%">
-                                        <col style="width:30%">
-                                    </colgroup>
-                                    <tbody>
-                                        <tr>
-                                            <th class="bg-grey">서비스 코드</th>
-                                            <td><code th:text="${detail.serviceCd}"></code></td>
-                                            <th class="bg-grey">서비스명</th>
-                                            <td th:text="${detail.serviceNm}"></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="bg-grey">정렬 순서</th>
-                                            <td th:text="${detail.serviceOrder}"></td>
-                                            <th class="bg-grey">사용여부</th>
-                                            <td>
-                                                <span class="label" th:classappend="${detail.useYn == 'Y' ? 'bg-green' : 'bg-grey'}"
-                                                      th:text="${detail.useYn == 'Y' ? '사용' : '미사용'}"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th class="bg-grey">등록자</th>
-                                            <td th:text="${detail.regUserId} ?: '-'"></td>
-                                            <th class="bg-grey">등록일시</th>
-                                            <td th:text="${detail.regDt} ?: '-'"></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="bg-grey">수정자</th>
-                                            <td th:text="${detail.modUserId} ?: '-'"></td>
-                                            <th class="bg-grey">수정일시</th>
-                                            <td th:text="${detail.modDt} ?: '-'"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
 
-                            <div class="row clearfix m-t-20">
-                                <div class="col-xs-12 text-center">
-                                    <button type="button" class="btn btn-primary waves-effect"
-                                            th:attr="data-servicecd=${detail.serviceCd}"
-                                            onclick="location.href='/apage/category040.do?serviceCd='+this.dataset.servicecd">
-                                        <i class="material-icons">edit</i>
-                                        <span>수정</span>
-                                    </button>
-                                    <button type="button" class="btn btn-danger waves-effect"
-                                            th:attr="data-servicecd=${detail.serviceCd}"
-                                            onclick="deleteServiceCategory(this.dataset.servicecd)">
-                                        <i class="material-icons">delete</i>
-                                        <span>삭제</span>
-                                    </button>
-                                    <button type="button" class="btn btn-default waves-effect"
-                                            onclick="location.href='/apage/category010.do'">
-                                        <i class="material-icons">list</i>
-                                        <span>목록</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">카테고리 상세</h1>
+			<p class="cv-page-desc">서비스 카테고리 상세 정보</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/category010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
 
-        <script th:inline="javascript">
-            function deleteServiceCategory(serviceCd) {
-                if (!confirm('정말로 삭제하시겠습니까?')) {
-                    return;
-                }
+	<!-- Detail Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
 
-                $.ajax({
-                    url: '/apage/category051.do',
-                    type: 'POST',
-                    data: { serviceCd: serviceCd },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data && data.result === 'SUCCESS') {
-                            alert(data.msg);
-                            location.href = '/apage/category010.do';
-                        } else {
-                            alert(data.msg || '삭제에 실패하였습니다.');
-                        }
-                    },
-                    error: function() {
-                        alert('서버 오류가 발생하였습니다.');
-                    }
-                });
-            }
-        </script>
-    </section>
+			<!-- Row 1: 서비스 코드, 서비스명 -->
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">서비스 코드</div>
+					<div class="cv-detail-value">
+						<code th:text="${detail.serviceCd}"></code>
+					</div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">서비스명</div>
+					<div class="cv-detail-value" th:text="${detail.serviceNm}"></div>
+				</div>
+			</div>
+
+			<!-- Row 2: 정렬 순서, 사용여부 -->
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">정렬 순서</div>
+					<div class="cv-detail-value" th:text="${detail.serviceOrder}"></div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">사용 여부</div>
+					<div class="cv-detail-value">
+						<span class="cv-badge"
+							th:classappend="${detail.useYn == 'Y'} ? 'cv-badge-success' : 'cv-badge-default'"
+							th:text="${detail.useYn == 'Y'} ? '사용' : '미사용'"></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row 3: 등록자, 등록일시 -->
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">등록자</div>
+					<div class="cv-detail-value" th:text="${detail.regUserId} ?: '-'"></div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">등록일시</div>
+					<div class="cv-detail-value" th:text="${detail.regDt} ?: '-'"></div>
+				</div>
+			</div>
+
+			<!-- Row 4: 수정자, 수정일시 -->
+			<div class="cv-detail-grid">
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">수정자</div>
+					<div class="cv-detail-value" th:text="${detail.modUserId} ?: '-'"></div>
+				</div>
+				<div class="cv-detail-item">
+					<div class="cv-detail-label">수정일시</div>
+					<div class="cv-detail-value" th:text="${detail.modDt} ?: '-'"></div>
+				</div>
+			</div>
+
+			<!-- Buttons -->
+			<div class="cv-btn-group">
+				<button type="button" class="cv-btn cv-btn-primary"
+						th:attr="data-servicecd=${detail.serviceCd}"
+						onclick="location.href='/apage/category040.do?serviceCd='+this.dataset.servicecd">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+					</svg>
+					수정
+				</button>
+				<button type="button" class="cv-btn cv-btn-danger"
+						th:attr="data-servicecd=${detail.serviceCd}"
+						onclick="deleteServiceCategory(this.dataset.servicecd)">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<polyline points="3 6 5 6 21 6"></polyline>
+						<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+					</svg>
+					삭제
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		function deleteServiceCategory(serviceCd) {
+			swal({
+				title: '정말로 삭제하시겠습니까?',
+				text: '삭제된 데이터는 복구할 수 없습니다.',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonText: '삭제',
+				cancelButtonText: '취소',
+				closeOnConfirm: false
+			}, function(isConfirm) {
+				if (!isConfirm) return;
+
+				$.ajax({
+					url: '/apage/category051.do',
+					type: 'POST',
+					data: { serviceCd: serviceCd },
+					dataType: 'json',
+					success: function(data) {
+						if (data && data.result === 'SUCCESS') {
+							swal({title: data.msg, type: 'success'}, function() {
+								location.href = '/apage/category010.do';
+							});
+						} else {
+							swal({title: data.msg || '삭제에 실패하였습니다.', type: 'error'});
+						}
+					},
+					error: function() {
+						swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+					}
+				});
+			});
+		}
+	</script>
+
 </div>
 </body>
 </html>

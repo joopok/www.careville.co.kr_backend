@@ -1,114 +1,165 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
 <head>
-<title>:: 작업후기 등록 ::</title>
-<style>
-.star-rating {font-size: 24px; color: #ddd;}
-.star-rating .material-icons {cursor: pointer;}
-.star-rating .material-icons.active {color: #ffd700;}
-</style>
+<title>고객리뷰 등록</title>
+<!-- All styles now in careville-admin.css -->
 <script th:src="@{/apage/js/review030.js}"></script>
 <script th:src="@{/plugins/jquery-inputmask/jquery.inputmask.bundle.js}"></script>
 </head>
 <body>
 <div layout:fragment="content">
-	<section class="content">
-        <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="card">
-                        <div class="header">
-                            <h2>작업후기 등록</h2>
-                        </div>
-                        <div class="body">
-                            <form id="reviewForm">
-                                <div class="row clearfix">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>작성자명 <span class="text-danger">*</span></label>
-                                            <div class="form-line">
-                                                <input type="text" id="reviewNm" name="reviewNm" class="form-control" placeholder="작성자 이름을 입력하세요" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>서비스 종류 <span class="text-danger">*</span></label>
-                                            <select id="serviceCd" name="serviceCd" class="form-control show-tick" required>
-                                                <option value="">선택하세요</option>
-                                                <option th:each="code : ${svcCdList}" th:value="${code.serviceCd}" th:text="${code.serviceNm}"></option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row clearfix">
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label>별점 <span class="text-danger">*</span></label>
-                                            <div class="star-rating" id="starRating">
-                                                <i class="material-icons" data-value="1">star_border</i>
-                                                <i class="material-icons" data-value="2">star_border</i>
-                                                <i class="material-icons" data-value="3">star_border</i>
-                                                <i class="material-icons" data-value="4">star_border</i>
-                                                <i class="material-icons" data-value="5">star_border</i>
-                                            </div>
-                                            <input type="hidden" id="starRate" name="starRate" value="5">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label>서비스 받은 날짜</label>
-                                            <div class="form-line">
-                                                <input type="text" id="svcDate" name="svcDate" class="form-control" placeholder="20250101">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label>노출 여부</label>
-                                            <div class="switch">
-                                                <label>비노출<input type="checkbox" id="dispYn" name="dispYn" checked><span class="lever"></span>노출</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row clearfix">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label>후기 내용 <span class="text-danger">*</span></label>
-                                            <div class="form-line">
-                                                <textarea id="reviewCn" name="reviewCn" class="form-control" rows="10" placeholder="후기 내용을 입력하세요" required></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row clearfix">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>비밀번호 (수정/삭제시 필요)</label>
-                                            <div class="form-line">
-                                                <input type="password" id="pw" name="pw" class="form-control" placeholder="비밀번호를 입력하세요">
-                                            </div>
-                                            <small class="text-muted">비밀번호를 입력하지 않으면 관리자만 수정/삭제 가능합니다.</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <button type="button" class="btn btn-primary waves-effect" onclick="saveReview()">
-                                        <i class="material-icons">save</i>
-                                        <span>저장</span>
-                                    </button>
-                                    <button type="button" class="btn btn-default waves-effect" onclick="location.href='/apage/review010.do'">
-                                        <i class="material-icons">cancel</i>
-                                        <span>취소</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">고객리뷰 등록</h1>
+			<p class="cv-page-desc">새로운 고객 리뷰를 등록합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/review010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
+
+	<!-- Form Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+			<form id="reviewForm">
+
+				<!-- 작성자명, 서비스 종류 -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">작성자명 <span class="required">*</span></div>
+						<input type="text" class="cv-form-input" id="reviewNm" name="reviewNm"
+							   placeholder="작성자 이름을 입력하세요" required>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">서비스 종류 <span class="required">*</span></div>
+						<select id="serviceCd" name="serviceCd" class="cv-form-select" required>
+							<option value="">선택하세요</option>
+							<option th:each="code : ${svcCdList}" th:value="${code.serviceCd}" th:text="${code.serviceNm}"></option>
+						</select>
+					</div>
+				</div>
+
+				<!-- 별점, 서비스 날짜, 노출 여부 -->
+				<div class="cv-detail-grid cols-3">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">별점 <span class="required">*</span></div>
+						<div class="cv-star-rating" id="starRating">
+							<svg class="star active" data-value="1" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+							</svg>
+							<svg class="star active" data-value="2" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+							</svg>
+							<svg class="star active" data-value="3" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+							</svg>
+							<svg class="star active" data-value="4" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+							</svg>
+							<svg class="star active" data-value="5" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+							</svg>
+						</div>
+						<input type="hidden" id="starRate" name="starRate" value="5">
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">서비스 받은 날짜</div>
+						<input type="text" class="cv-form-input" id="svcDate" name="svcDate" placeholder="20250101">
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">노출 여부</div>
+						<div class="cv-toggle-wrap">
+							<span class="cv-toggle-label">비노출</span>
+							<div class="cv-toggle active" id="dispToggle"></div>
+							<span class="cv-toggle-label active">노출</span>
+							<input type="hidden" id="dispYn" name="dispYn" value="Y">
+						</div>
+					</div>
+				</div>
+
+				<!-- 후기 내용 -->
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">후기 내용 <span class="required">*</span></div>
+						<textarea id="reviewCn" name="reviewCn" class="cv-form-textarea"
+								  placeholder="후기 내용을 입력하세요" required></textarea>
+					</div>
+				</div>
+
+				<!-- 비밀번호 -->
+				<div class="cv-detail-grid">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">비밀번호 (수정/삭제시 필요)</div>
+						<input type="password" class="cv-form-input" id="pw" name="pw"
+							   placeholder="비밀번호를 입력하세요">
+						<div class="cv-form-hint">비밀번호를 입력하지 않으면 관리자만 수정/삭제 가능합니다.</div>
+					</div>
+				</div>
+
+				<!-- 버튼 -->
+				<div class="cv-btn-group">
+					<button type="button" class="cv-btn cv-btn-primary" onclick="saveReview()">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+							<polyline points="17 21 17 13 7 13 7 21"></polyline>
+							<polyline points="7 3 7 8 15 8"></polyline>
+						</svg>
+						등록
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/review010.do'">
+						취소
+					</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		$(document).ready(function() {
+			// Star Rating Handler
+			$('#starRating .star').on('click', function() {
+				var value = $(this).data('value');
+				$('#starRate').val(value);
+
+				$('#starRating .star').each(function(index) {
+					if (index < value) {
+						$(this).addClass('active');
+					} else {
+						$(this).removeClass('active');
+					}
+				});
+			});
+
+			// Toggle Handler
+			$('#dispToggle').on('click', function() {
+				$(this).toggleClass('active');
+				var isActive = $(this).hasClass('active');
+				$('#dispYn').val(isActive ? 'Y' : 'N');
+
+				// Update labels
+				$(this).prev('.cv-toggle-label').toggleClass('active', !isActive);
+				$(this).next('.cv-toggle-label').toggleClass('active', isActive);
+			});
+
+			// Date mask
+			if ($.fn.inputmask) {
+				$('#svcDate').inputmask('99999999', {placeholder: ''});
+			}
+		});
+	</script>
+
 </div>
 </body>
 </html>

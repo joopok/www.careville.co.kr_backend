@@ -1,108 +1,96 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
 	<head>
-	<title>:: 서비스 카테고리 관리 ::</title>
-	<style>
-	[type="checkbox"] + label {height:20px; line-height:0px; padding-left:0px; width:20px; margin:0px; display:block;}
-	#templateTable{margin-bottom:0;}
-	#pagination-container{text-align: center;}
-	</style>
-	<script th:src="@{/apage/js/pages/tables/jquery-datatable.js}"></script>
+	<title>카테고리</title>
 	<script th:src="@{/plugins/jquery-datatable/jquery.dataTables.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.flash.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/jszip.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/pdfmake.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/vfs_fonts.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.html5.min.js}"></script>
-	<script th:src="@{/plugins/jquery-datatable/extensions/export/buttons.print.min.js}"></script>
 	</head>
 	<body>
 <div layout:fragment="content">
-	<section class="content">
-    <div class="container-fluid">
 
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="header">
-                        <h2>서비스 카테고리 목록 <small id="totalCount"></small></h2>
-                        <ul class="header-dropdown m-r--5">
-                            <li>
-                                <button type="button" class="btn btn-primary waves-effect" onclick="location.href='/apage/category030.do'">
-                                    <i class="material-icons">add</i>
-                                    <span>등록</span>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="body">
-                        <!-- 검색 영역 -->
-                        <form id="searchForm" method="post" action="/apage/category010.do">
-                            <input type="hidden" name="pageNo" id="pageNo" th:value="${params != null ? (params.pageNo != null ? params.pageNo : '1') : '1'}"/>
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">카테고리 <span class="count" id="totalCount"></span></h1>
+			<p class="cv-page-desc">서비스 카테고리를 관리합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<a th:href="@{/apage/category030.do}" class="cv-btn cv-btn-primary">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="12" y1="5" x2="12" y2="19"></line>
+					<line x1="5" y1="12" x2="19" y2="12"></line>
+				</svg>
+				카테고리 등록
+			</a>
+		</div>
+	</div>
 
-                            <div class="row clearfix m-b-20">
-                                <div class="col-sm-3">
-                                    <select class="form-control" name="searchType" id="searchType">
-                                        <option value="">검색조건 선택</option>
-                                        <option value="serviceCd">서비스코드</option>
-                                        <option value="serviceNm">서비스명</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <div class="form-line">
-                                            <input type="text" class="form-control" name="searchWord" id="searchWord" placeholder="검색어 입력">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2">
-                                    <select class="form-control" name="useYn" id="useYn">
-                                        <option value="">사용여부 전체</option>
-                                        <option value="Y">사용</option>
-                                        <option value="N">미사용</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-4">
-                                    <button type="submit" class="btn btn-primary waves-effect">
-                                        <i class="material-icons">search</i>
-                                        <span>검색</span>
-                                    </button>
-                                    <button type="button" class="btn btn-default waves-effect" onclick="resetSearch()">
-                                        <i class="material-icons">refresh</i>
-                                        <span>초기화</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+	<!-- Search Box -->
+	<form id="searchForm" method="post" action="/apage/category010.do">
+		<input type="hidden" name="pageNo" id="pageNo" th:value="${params != null ? (params.pageNo != null ? params.pageNo : '1') : '1'}"/>
+		<div class="cv-search-box">
+			<div class="cv-search-row">
+				<div class="cv-search-field">
+					<select name="searchType" id="searchType" class="cv-search-select">
+						<option value="">전체 항목</option>
+						<option value="serviceCd">서비스 코드</option>
+						<option value="serviceNm">서비스명</option>
+					</select>
+				</div>
+				<div class="cv-search-field wide">
+					<input type="text" name="searchWord" id="searchWord" class="cv-search-input" placeholder="검색어 입력...">
+				</div>
+				<div class="cv-search-field">
+					<select name="useYn" id="useYn" class="cv-search-select">
+						<option value="">전체 상태</option>
+						<option value="Y">활성</option>
+						<option value="N">비활성</option>
+					</select>
+				</div>
+				<div class="cv-search-actions">
+					<button type="submit" class="cv-btn cv-btn-primary">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="11" cy="11" r="8"></circle>
+							<path d="m21 21-4.35-4.35"></path>
+						</svg>
+						검색
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" onclick="resetSearch()">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+							<path d="M21 3v5h-5"></path>
+							<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+							<path d="M8 16H3v5"></path>
+						</svg>
+						초기화
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
 
-                        <!-- 목록 테이블 -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" width="8%">번호</th>
-                                        <th class="text-center" width="12%">서비스코드</th>
-                                        <th class="text-center">서비스명</th>
-                                        <th class="text-center" width="10%">정렬순서</th>
-                                        <th class="text-center" width="10%">사용여부</th>
-                                        <th class="text-center" width="13%">등록일</th>
-                                        <th class="text-center" width="12%">관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="7" class="text-center">데이터 조회 중...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="pagination-container"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- Data Table -->
+	<div class="cv-data-card">
+		<div class="cv-table-wrap">
+			<table class="cv-table">
+				<thead>
+					<tr>
+						<th style="width: 60px;">번호</th>
+						<th style="width: 120px;">코드</th>
+						<th class="text-left">서비스명</th>
+						<th style="width: 80px;">순서</th>
+						<th style="width: 90px;">상태</th>
+						<th style="width: 110px;">등록일</th>
+						<th style="width: 100px;">관리</th>
+					</tr>
+				</thead>
+				<tbody id="dataTableBody">
+					<tr>
+						<td colspan="7" class="text-center text-muted">로딩 중...</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="pagination-container" class="cv-pagination-wrap"></div>
+	</div>
 
     <script th:inline="javascript">
         $(document).ready(function() {
@@ -126,44 +114,49 @@
                     renderTable(data);
                     renderPagination(data.pagination);
 
-                    // 총 개수 표시
                     var totalCount = data.pagination ? data.pagination.totalRowCnt || 0 : 0;
-                    $('#totalCount').text('(총 ' + totalCount + '건)');
+                    $('#totalCount').text('(' + totalCount + ')');
                 },
                 error: function() {
-                    alert('데이터 조회 중 오류가 발생하였습니다.');
+                    alert('데이터를 불러오는 중 오류가 발생했습니다');
                 }
             });
         }
 
         function renderTable(data) {
-            var tbody = $('table tbody');
+            var tbody = $('#dataTableBody');
             tbody.empty();
 
             if (data.list && data.list.length > 0) {
                 $.each(data.list, function(index, item) {
-                    var row = '<tr style="cursor:pointer;" onclick="location.href=\'/apage/category020.do?serviceCd=' + item.serviceCd + '\'">';
-                    row += '<td class="text-center">' + (data.rowNum - index) + '</td>';
-                    row += '<td class="text-center"><code>' + item.serviceCd + '</code></td>';
-                    row += '<td>' + item.serviceNm + '</td>';
-                    row += '<td class="text-center">' + item.serviceOrder + '</td>';
-                    row += '<td class="text-center">';
+                    var row = '<tr class="clickable" onclick="location.href=\'/apage/category020.do?serviceCd=' + item.serviceCd + '\'">';
+                    row += '<td>' + (data.rowNum - index) + '</td>';
+                    row += '<td><span class="cv-code">' + item.serviceCd + '</span></td>';
+                    row += '<td class="text-left">' + item.serviceNm + '</td>';
+                    row += '<td>' + item.serviceOrder + '</td>';
+                    row += '<td>';
                     if (item.useYn === 'Y') {
-                        row += '<span class="label bg-green">사용</span>';
+                        row += '<span class="cv-badge cv-badge-success">활성</span>';
                     } else {
-                        row += '<span class="label bg-grey">미사용</span>';
+                        row += '<span class="cv-badge cv-badge-default">비활성</span>';
                     }
                     row += '</td>';
-                    row += '<td class="text-center">' + item.regDt + '</td>';
-                    row += '<td class="text-center" onclick="event.stopPropagation();">';
-                    row += '<button type="button" class="btn btn-xs btn-primary waves-effect" onclick="location.href=\'/apage/category040.do?serviceCd=' + item.serviceCd + '\'" title="수정"><i class="material-icons">edit</i></button> ';
-                    row += '<button type="button" class="btn btn-xs btn-danger waves-effect" onclick="deleteServiceCategory(\'' + item.serviceCd + '\')" title="삭제"><i class="material-icons">delete</i></button>';
+                    row += '<td>' + item.regDt + '</td>';
+                    row += '<td onclick="event.stopPropagation();">';
+                    row += '<div class="cv-actions">';
+                    row += '<button type="button" class="cv-action-btn edit" onclick="location.href=\'/apage/category040.do?serviceCd=' + item.serviceCd + '\'" title="수정">';
+                    row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+                    row += '</button>';
+                    row += '<button type="button" class="cv-action-btn delete" onclick="deleteCategory(\'' + item.serviceCd + '\')" title="삭제">';
+                    row += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+                    row += '</button>';
+                    row += '</div>';
                     row += '</td>';
                     row += '</tr>';
                     tbody.append(row);
                 });
             } else {
-                tbody.append('<tr><td colspan="7" class="text-center">등록된 데이터가 없습니다.</td></tr>');
+                tbody.append('<tr><td colspan="7"><div class="cv-empty"><svg class="cv-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg><p class="cv-empty-title">카테고리가 없습니다</p><p class="cv-empty-desc">카테고리를 등록해 주세요</p></div></td></tr>');
             }
         }
 
@@ -173,35 +166,34 @@
             var container = $('#pagination-container');
             container.empty();
 
-            var html = '<div class="text-center"><ul class="pagination">';
+            var html = '<div class="cv-pagination">';
 
-            // 이전 버튼
+            // Prev
             if (pagination.prev > 0) {
-                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.prev + ')"><span>&laquo;</span></a></li>';
+                html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pagination.prev + ')">&laquo;</a>';
             } else {
-                html += '<li class="disabled"><a href="javascript:void(0);"><span>&laquo;</span></a></li>';
+                html += '<span class="cv-pagination-item disabled">&laquo;</span>';
             }
 
-            // 페이지 번호
+            // Page numbers
             if (pagination.order && pagination.order.length > 0) {
                 $.each(pagination.order, function(index, pageNum) {
                     if (pagination.currPage == pageNum) {
-                        html += '<li class="active"><a href="javascript:void(0);">' + pageNum + '</a></li>';
+                        html += '<span class="cv-pagination-item active">' + pageNum + '</span>';
                     } else {
-                        html += '<li><a href="javascript:void(0);" onclick="goPage(' + pageNum + ')">' + pageNum + '</a></li>';
+                        html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pageNum + ')">' + pageNum + '</a>';
                     }
                 });
             }
 
-            // 다음 버튼
+            // Next
             if (pagination.next > 0) {
-                html += '<li><a href="javascript:void(0);" onclick="goPage(' + pagination.next + ')"><span>&raquo;</span></a></li>';
+                html += '<a href="javascript:void(0);" class="cv-pagination-item" onclick="goPage(' + pagination.next + ')">&raquo;</a>';
             } else {
-                html += '<li class="disabled"><a href="javascript:void(0);"><span>&raquo;</span></a></li>';
+                html += '<span class="cv-pagination-item disabled">&raquo;</span>';
             }
 
-            html += '</ul></div>';
-
+            html += '</div>';
             container.html(html);
         }
 
@@ -211,8 +203,8 @@
             loadData();
         });
 
-        function deleteServiceCategory(serviceCd) {
-            if (!confirm('정말로 삭제하시겠습니까?')) {
+        function deleteCategory(serviceCd) {
+            if (!confirm('이 카테고리를 삭제하시겠습니까?')) {
                 return;
             }
 
@@ -223,14 +215,14 @@
                 dataType: 'json',
                 success: function(data) {
                     if (data.result === 'SUCCESS') {
-                        alert(data.msg || '삭제되었습니다.');
+                        alert(data.msg || '삭제되었습니다');
                         loadData();
                     } else {
-                        alert(data.msg || '삭제에 실패하였습니다.');
+                        alert(data.msg || '삭제에 실패했습니다');
                     }
                 },
                 error: function() {
-                    alert('서버 오류가 발생하였습니다.');
+                    alert('서버 오류가 발생했습니다');
                 }
             });
         }
@@ -249,7 +241,6 @@
             loadData();
         }
     </script>
-    </section>
 </div>
 </body>
 </html>

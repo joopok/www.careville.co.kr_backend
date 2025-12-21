@@ -1,98 +1,768 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-	<title>:: Careville ::</title>
 	<meta charset="UTF-8">
-	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sign In | Careville Admin</title>
-	
+
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
-	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext}" />
-	<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" />
-	<link rel="stylesheet" th:href="@{/plugins/bootstrap/css/bootstrap.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/node-waves/waves.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/animate-css/animate.css}" />
-	<link rel="stylesheet" th:href="@{/plugins/sweetalert/sweetalert.css}" />
-	<link rel="stylesheet" th:href="@{/apage/css/style.css}" />
 
-	<!-- 로그인 영역 중앙 배치 스타일 -->
+	<!-- Premium Fonts -->
+	<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+	<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+
 	<style>
-		body.login-page {
-			max-width: none !important;
-			margin: 0 !important;
-			padding: 0 !important;
-			min-height: 100vh;
-			display: flex !important;
-			justify-content: center;
-			align-items: center;
-			background-color: #00BCD4;
+		/* ========== CSS Variables ========== */
+		:root {
+			/* Brand Colors - Extracted from cityscape */
+			--sunset-gold: #d4a574;
+			--sunset-amber: #c48b5c;
+			--sky-warm: #e8d5c4;
+			--lake-blue: #4a6d7c;
+			--lake-deep: #2d4a56;
+			--city-dark: #1a1a1a;
+			--city-shadow: #0d0d0d;
+
+			/* Careville Brand */
+			--cv-green: #2d5a4a;
+			--cv-gold: #c9a962;
+
+			/* UI Colors */
+			--glass-bg: rgba(255, 255, 255, 0.08);
+			--glass-border: rgba(255, 255, 255, 0.12);
+			--glass-hover: rgba(255, 255, 255, 0.15);
+			--text-primary: #ffffff;
+			--text-secondary: rgba(255, 255, 255, 0.7);
+			--text-muted: rgba(255, 255, 255, 0.5);
+			--error: #ff6b6b;
+			--error-bg: rgba(255, 107, 107, 0.15);
+
+			/* Typography */
+			--font-display: 'Clash Display', sans-serif;
+			--font-body: 'Satoshi', 'Pretendard', sans-serif;
+
+			/* Spacing */
+			--radius-sm: 8px;
+			--radius: 16px;
+			--radius-lg: 24px;
+			--radius-xl: 32px;
 		}
 
-		.login-box {
-			width: 100%;
-			max-width: 360px;
-			padding: 0 15px;
+		/* ========== Reset & Base ========== */
+		*, *::before, *::after {
 			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
 		}
 
-		/* 모바일 반응형 */
-		@media (max-width: 480px) {
-			.login-box {
-				padding: 0 20px;
+		html, body {
+			height: 100%;
+		}
+
+		body {
+			font-family: var(--font-body);
+			background: var(--city-dark);
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			overflow: hidden;
+		}
+
+		/* ========== Main Container ========== */
+		.login-container {
+			position: relative;
+			width: 100%;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* ========== Background Image ========== */
+		.background-layer {
+			position: absolute;
+			inset: 0;
+			z-index: 0;
+		}
+
+		.background-image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: center;
+			animation: slowZoom 30s ease-in-out infinite alternate;
+		}
+
+		@keyframes slowZoom {
+			0% { transform: scale(1); }
+			100% { transform: scale(1.08); }
+		}
+
+		/* Background Overlays */
+		.background-overlay {
+			position: absolute;
+			inset: 0;
+		}
+
+		.overlay-gradient {
+			background:
+				linear-gradient(135deg, rgba(0,0,0,0.4) 0%, transparent 50%),
+				linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+		}
+
+		.overlay-vignette {
+			background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+		}
+
+		/* Animated light streaks */
+		.light-streaks {
+			position: absolute;
+			inset: 0;
+			overflow: hidden;
+			opacity: 0.3;
+		}
+
+		.light-streak {
+			position: absolute;
+			width: 2px;
+			height: 100px;
+			background: linear-gradient(to bottom, transparent, var(--sunset-gold), transparent);
+			animation: streak 8s ease-in-out infinite;
+		}
+
+		.light-streak:nth-child(1) { left: 20%; animation-delay: 0s; }
+		.light-streak:nth-child(2) { left: 40%; animation-delay: 2s; }
+		.light-streak:nth-child(3) { left: 60%; animation-delay: 4s; }
+		.light-streak:nth-child(4) { left: 80%; animation-delay: 6s; }
+
+		@keyframes streak {
+			0%, 100% { transform: translateY(-100px); opacity: 0; }
+			50% { transform: translateY(100vh); opacity: 0.6; }
+		}
+
+		/* ========== Content Layer ========== */
+		.content-layer {
+			position: relative;
+			z-index: 10;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 32px;
+			padding: 24px;
+			width: 100%;
+			max-width: 480px;
+		}
+
+		/* ========== Brand Header ========== */
+		.brand-header {
+			text-align: center;
+			animation: fadeInDown 0.8s ease-out;
+		}
+
+		@keyframes fadeInDown {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.brand-logo {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 72px;
+			height: 72px;
+			background: linear-gradient(135deg, var(--cv-green), var(--lake-deep));
+			border-radius: var(--radius);
+			margin-bottom: 20px;
+			box-shadow:
+				0 8px 32px rgba(0, 0, 0, 0.4),
+				0 0 0 1px rgba(255, 255, 255, 0.1);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.brand-logo::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+		}
+
+		.brand-logo-text {
+			font-family: var(--font-display);
+			font-size: 24px;
+			font-weight: 600;
+			color: var(--cv-gold);
+			letter-spacing: -0.02em;
+			position: relative;
+			z-index: 1;
+		}
+
+		.brand-name {
+			font-family: var(--font-display);
+			font-size: 32px;
+			font-weight: 600;
+			color: var(--text-primary);
+			letter-spacing: 0.15em;
+			text-transform: uppercase;
+			margin-bottom: 8px;
+			text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+		}
+
+		.brand-tagline {
+			font-size: 13px;
+			font-weight: 500;
+			color: var(--text-secondary);
+			letter-spacing: 0.3em;
+			text-transform: uppercase;
+		}
+
+		/* ========== Glass Card ========== */
+		.login-card {
+			width: 100%;
+			background: var(--glass-bg);
+			backdrop-filter: blur(24px);
+			-webkit-backdrop-filter: blur(24px);
+			border: 1px solid var(--glass-border);
+			border-radius: var(--radius-xl);
+			padding: 40px;
+			box-shadow:
+				0 32px 64px rgba(0, 0, 0, 0.4),
+				inset 0 1px 0 rgba(255, 255, 255, 0.1);
+			animation: fadeInUp 0.8s ease-out 0.2s both;
+		}
+
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.card-header {
+			text-align: center;
+			margin-bottom: 32px;
+		}
+
+		.card-title {
+			font-family: var(--font-display);
+			font-size: 24px;
+			font-weight: 600;
+			color: var(--text-primary);
+			margin-bottom: 8px;
+		}
+
+		.card-subtitle {
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		/* ========== Form Styles ========== */
+		.login-form {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+		}
+
+		.form-group {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.form-label {
+			font-size: 12px;
+			font-weight: 600;
+			color: var(--text-secondary);
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+		}
+
+		.form-input {
+			width: 100%;
+			height: 52px;
+			padding: 0 20px;
+			font-family: var(--font-body);
+			font-size: 15px;
+			color: var(--text-primary);
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: var(--radius);
+			outline: none;
+			transition: all 0.3s ease;
+		}
+
+		.form-input::placeholder {
+			color: var(--text-muted);
+		}
+
+		.form-input:hover {
+			background: rgba(255, 255, 255, 0.08);
+			border-color: rgba(255, 255, 255, 0.15);
+		}
+
+		.form-input:focus {
+			background: rgba(255, 255, 255, 0.1);
+			border-color: var(--cv-gold);
+			box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.15);
+		}
+
+		/* ========== Checkbox ========== */
+		.form-options {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.checkbox-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			cursor: pointer;
+		}
+
+		.checkbox-input {
+			display: none;
+		}
+
+		.checkbox-custom {
+			width: 20px;
+			height: 20px;
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.2s ease;
+		}
+
+		.checkbox-input:checked + .checkbox-custom {
+			background: var(--cv-green);
+			border-color: var(--cv-green);
+		}
+
+		.checkbox-custom svg {
+			width: 12px;
+			height: 12px;
+			color: var(--text-primary);
+			opacity: 0;
+			transform: scale(0.5);
+			transition: all 0.2s ease;
+		}
+
+		.checkbox-input:checked + .checkbox-custom svg {
+			opacity: 1;
+			transform: scale(1);
+		}
+
+		.checkbox-label {
+			font-size: 13px;
+			color: var(--text-secondary);
+			user-select: none;
+		}
+
+		/* ========== Submit Button ========== */
+		.submit-btn {
+			width: 100%;
+			height: 52px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			font-family: var(--font-body);
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--city-dark);
+			background: linear-gradient(135deg, var(--cv-gold), var(--sunset-amber));
+			border: none;
+			border-radius: var(--radius);
+			cursor: pointer;
+			transition: all 0.3s ease;
+			margin-top: 8px;
+			position: relative;
+			overflow: hidden;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+		}
+
+		.submit-btn::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		.submit-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 24px rgba(201, 169, 98, 0.4);
+		}
+
+		.submit-btn:hover::before {
+			opacity: 1;
+		}
+
+		.submit-btn:active {
+			transform: translateY(0);
+		}
+
+		.submit-btn svg {
+			width: 18px;
+			height: 18px;
+			transition: transform 0.3s ease;
+		}
+
+		.submit-btn:hover svg {
+			transform: translateX(4px);
+		}
+
+		/* Loading State */
+		.submit-btn.loading {
+			pointer-events: none;
+		}
+
+		.submit-btn.loading .btn-content {
+			opacity: 0;
+		}
+
+		.submit-btn.loading::after {
+			content: '';
+			position: absolute;
+			width: 22px;
+			height: 22px;
+			border: 2px solid transparent;
+			border-top-color: var(--city-dark);
+			border-radius: 50%;
+			animation: spin 0.7s linear infinite;
+		}
+
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+
+		/* ========== Error Message ========== */
+		.error-message {
+			display: none;
+			align-items: center;
+			gap: 10px;
+			padding: 14px 16px;
+			background: var(--error-bg);
+			border: 1px solid rgba(255, 107, 107, 0.2);
+			border-radius: var(--radius);
+			font-size: 13px;
+			color: var(--error);
+			margin-bottom: 8px;
+		}
+
+		.error-message.show {
+			display: flex;
+			animation: shake 0.4s ease;
+		}
+
+		@keyframes shake {
+			0%, 100% { transform: translateX(0); }
+			20%, 60% { transform: translateX(-6px); }
+			40%, 80% { transform: translateX(6px); }
+		}
+
+		.error-message svg {
+			flex-shrink: 0;
+		}
+
+		/* ========== Footer ========== */
+		.login-footer {
+			text-align: center;
+			animation: fadeInUp 0.8s ease-out 0.4s both;
+		}
+
+		.footer-text {
+			font-size: 12px;
+			color: var(--text-muted);
+			letter-spacing: 0.05em;
+		}
+
+		.footer-divider {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			margin-top: 24px;
+		}
+
+		.footer-divider::before,
+		.footer-divider::after {
+			content: '';
+			flex: 1;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+		}
+
+		.footer-divider span {
+			font-size: 11px;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.15em;
+		}
+
+		/* ========== Responsive ========== */
+		@media (max-width: 640px) {
+			.content-layer {
+				padding: 20px;
+				gap: 24px;
 			}
 
-			.login-box .logo a {
-				font-size: 28px !important;
+			.brand-logo {
+				width: 60px;
+				height: 60px;
+			}
+
+			.brand-logo-text {
+				font-size: 20px;
+			}
+
+			.brand-name {
+				font-size: 26px;
+			}
+
+			.login-card {
+				padding: 28px;
+				border-radius: var(--radius-lg);
+			}
+
+			.card-title {
+				font-size: 20px;
+			}
+
+			.form-input,
+			.submit-btn {
+				height: 48px;
+			}
+		}
+
+		/* ========== Floating Particles ========== */
+		.particles {
+			position: absolute;
+			inset: 0;
+			overflow: hidden;
+			pointer-events: none;
+		}
+
+		.particle {
+			position: absolute;
+			width: 4px;
+			height: 4px;
+			background: var(--sunset-gold);
+			border-radius: 50%;
+			opacity: 0;
+			animation: float 12s ease-in-out infinite;
+		}
+
+		.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+		.particle:nth-child(2) { left: 25%; animation-delay: 2s; }
+		.particle:nth-child(3) { left: 45%; animation-delay: 4s; }
+		.particle:nth-child(4) { left: 65%; animation-delay: 6s; }
+		.particle:nth-child(5) { left: 85%; animation-delay: 8s; }
+
+		@keyframes float {
+			0%, 100% {
+				transform: translateY(100vh) scale(0);
+				opacity: 0;
+			}
+			10% {
+				opacity: 0.8;
+				transform: translateY(80vh) scale(1);
+			}
+			90% {
+				opacity: 0.3;
+				transform: translateY(-10vh) scale(0.5);
 			}
 		}
 	</style>
 
 	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
-	<script th:src="@{/plugins/bootstrap/js/bootstrap.js}"></script>
-	<script th:src="@{/plugins/node-waves/waves.js}"></script>
 	<script th:src="@{/plugins/sweetalert/sweetalert.min.js}"></script>
-	<script th:src="@{/plugins/jquery-validation/jquery.validate.js}"></script>
-	<script th:src="@{/apage/js/admin.js}"></script>
-	<script th:src="@{/apage/js/pages/examples/sign-in.js}"></script>
-	<script th:src="@{/apage/js/common.js}"></script>
-	<script th:src="@{/apage/js/signIn.js}"></script>
 </head>
-<body class="login-page">
-    <div class="login-box">
-        <div class="logo">
-            <a href="javascript:void(0);">주식회사 케어빌 <b>Careville</b></a>
-        </div>
-        <div class="card">
-            <div class="body">
-                <div class="msg">Sign in to start your session</div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="material-icons">person</i>
-                    </span>
-                    <div class="form-line">
-                        <input type="text" class="form-control" name="mngrId" placeholder="User ID" required autofocus>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="material-icons">lock</i>
-                    </span>
-                    <div class="form-line">
-                        <input type="password" class="form-control" name="mngrPw" placeholder="Password" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-8 p-t-5">
-                        <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-pink">
-                        <label for="rememberme">Remember Me</label>
-                    </div>
-                    <div class="col-xs-4">
-                        <button class="btn btn-block bg-pink waves-effect" type="submit" id="submit">SIGN IN</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<body>
+	<div class="login-container">
+		<!-- Background Layer -->
+		<div class="background-layer">
+			<img th:src="@{/apage/images/login-bg.jpg}" alt="" class="background-image">
+			<div class="background-overlay overlay-gradient"></div>
+			<div class="background-overlay overlay-vignette"></div>
 
+			<!-- Animated Elements -->
+			<div class="light-streaks">
+				<div class="light-streak"></div>
+				<div class="light-streak"></div>
+				<div class="light-streak"></div>
+				<div class="light-streak"></div>
+			</div>
+
+			<div class="particles">
+				<div class="particle"></div>
+				<div class="particle"></div>
+				<div class="particle"></div>
+				<div class="particle"></div>
+				<div class="particle"></div>
+			</div>
+		</div>
+
+		<!-- Content Layer -->
+		<div class="content-layer">
+			<!-- Brand Header -->
+			<div class="brand-header">
+				<div class="brand-logo">
+					<span class="brand-logo-text">CV</span>
+				</div>
+				<h1 class="brand-name">Careville</h1>
+				<p class="brand-tagline">A Living Space Care Company</p>
+			</div>
+
+			<!-- Login Card -->
+			<div class="login-card">
+				<div class="card-header">
+					<h2 class="card-title">관리자 로그인</h2>
+					<p class="card-subtitle">계정 정보를 입력해주세요</p>
+				</div>
+
+				<!-- Error Message -->
+				<div class="error-message" id="errorMessage">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="12" y1="8" x2="12" y2="12"></line>
+						<line x1="12" y1="16" x2="12.01" y2="16"></line>
+					</svg>
+					<span id="errorText">아이디 또는 비밀번호가 올바르지 않습니다.</span>
+				</div>
+
+				<!-- Login Form -->
+				<form id="loginForm" class="login-form">
+					<div class="form-group">
+						<label class="form-label" for="mngrId">아이디</label>
+						<input
+							type="text"
+							id="mngrId"
+							name="mngrId"
+							class="form-input"
+							placeholder="관리자 아이디를 입력하세요"
+							required
+							autocomplete="username"
+							autofocus
+						>
+					</div>
+
+					<div class="form-group">
+						<label class="form-label" for="mngrPw">비밀번호</label>
+						<input
+							type="password"
+							id="mngrPw"
+							name="mngrPw"
+							class="form-input"
+							placeholder="비밀번호를 입력하세요"
+							required
+							autocomplete="current-password"
+						>
+					</div>
+
+					<div class="form-options">
+						<label class="checkbox-wrapper">
+							<input type="checkbox" name="rememberme" id="rememberme" class="checkbox-input">
+							<span class="checkbox-custom">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+									<polyline points="20 6 9 17 4 12"></polyline>
+								</svg>
+							</span>
+							<span class="checkbox-label">로그인 상태 유지</span>
+						</label>
+					</div>
+
+					<button type="submit" id="submitBtn" class="submit-btn">
+						<span class="btn-content">
+							<span>로그인</span>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<line x1="5" y1="12" x2="19" y2="12"></line>
+								<polyline points="12 5 19 12 12 19"></polyline>
+							</svg>
+						</span>
+					</button>
+				</form>
+			</div>
+
+			<!-- Footer -->
+			<div class="login-footer">
+				<div class="footer-divider">
+					<span>Admin Portal</span>
+				</div>
+				<p class="footer-text" style="margin-top: 16px;">&copy; 2024 Careville. All rights reserved.</p>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function() {
+			$('#loginForm').on('submit', function(e) {
+				e.preventDefault();
+
+				const $btn = $('#submitBtn');
+				const $error = $('#errorMessage');
+
+				$error.removeClass('show');
+				$btn.addClass('loading');
+
+				const data = {
+					mngrId: $('#mngrId').val(),
+					mngrPw: $('#mngrPw').val()
+				};
+
+				$.ajax({
+					url: '/apage/signInChk.do',
+					type: 'POST',
+					data: data,
+					dataType: 'json',
+					success: function(response) {
+						// 백엔드는 isSignIn 필드를 반환함
+						if (response.isSignIn === true) {
+							window.location.href = '/apage/home.do';
+						} else {
+							$error.find('#errorText').text(response.message || '아이디 또는 비밀번호가 올바르지 않습니다.');
+							$error.addClass('show');
+							$btn.removeClass('loading');
+						}
+					},
+					error: function(xhr) {
+						let errorMsg = '오류가 발생했습니다. 다시 시도해주세요.';
+						if (xhr.responseJSON && xhr.responseJSON.excpMsg) {
+							errorMsg = xhr.responseJSON.excpMsg;
+						} else if (xhr.responseJSON && xhr.responseJSON.message) {
+							errorMsg = xhr.responseJSON.message;
+						}
+						$error.find('#errorText').text(errorMsg);
+						$error.addClass('show');
+						$btn.removeClass('loading');
+					}
+				});
+			});
+
+			$('.form-input').on('focus', function() {
+				$('#errorMessage').removeClass('show');
+			});
+
+			$('.form-input').on('keypress', function(e) {
+				if (e.which === 13) {
+					$('#loginForm').submit();
+				}
+			});
+		});
+	</script>
 </body>
 </html>

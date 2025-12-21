@@ -97,7 +97,7 @@ public class CategorySvc {
 
             // 세션에서 사용자 ID 가져오기
             Map<String, Object> logonInfo = sessionCmn.getLogonInfo();
-            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("USER_ID")) : "admin";
+            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("mngrId")) : "admin";
             params.put("regUserId", userId);
 
             // 등록 처리
@@ -130,7 +130,7 @@ public class CategorySvc {
         try {
             // 세션에서 사용자 ID 가져오기
             Map<String, Object> logonInfo = sessionCmn.getLogonInfo();
-            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("USER_ID")) : "admin";
+            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("mngrId")) : "admin";
             params.put("modUserId", userId);
 
             // 수정 처리
@@ -163,7 +163,7 @@ public class CategorySvc {
         try {
             // 세션에서 사용자 ID 가져오기
             Map<String, Object> logonInfo = sessionCmn.getLogonInfo();
-            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("USER_ID")) : "admin";
+            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("mngrId")) : "admin";
 
             Map<String, Object> params = new HashMap<>();
             params.put("serviceCd", serviceCd);
@@ -205,7 +205,7 @@ public class CategorySvc {
 
         try {
             Map<String, Object> logonInfo = sessionCmn.getLogonInfo();
-            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("USER_ID")) : "admin";
+            String userId = logonInfo != null ? SUtils.nvl(logonInfo.get("mngrId")) : "admin";
 
             int updateCount = 0;
             for (Map<String, Object> item : list) {

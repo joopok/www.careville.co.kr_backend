@@ -39,6 +39,9 @@
 				,AA.CASE_CN
 				,AA.REG_NM
 				,AA.FILE_SEQ
+				,AA.FILE_SEQ AS VIEW_FILE_SEQ
+				,AA.FILE_SEQ2
+				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
 				,AA.HASHTAG
 				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
@@ -55,10 +58,41 @@
 				AND AA.SERVICE_CD = #{serviceCd}
 			</if>
 		ORDER BY
-				AA.CASE_SEQ DESC
+				AA.RGS_DT DESC, AA.CASE_SEQ DESC
 		LIMIT	#{limitStartNum} , #{limitViewRowCnt}
 	</select>
-	
+
+	<!-- API용 전체 목록 조회 (페이징 없음, 등록일 내림차순) -->
+	<select id="getCaseListAll" parameterType="hashMap" resultType="hashMapCamel">
+		SELECT
+				AA.CASE_SEQ
+				,AA.SERVICE_CD
+				,AB.SERVICE_NM
+				,AA.CASE_SJ
+				,AA.CASE_CN
+				,AA.REG_NM
+				,AA.FILE_SEQ
+				,AA.FILE_SEQ AS VIEW_FILE_SEQ
+				,AA.FILE_SEQ2
+				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
+				,AA.HASHTAG
+				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
+		FROM	TB_CASE AA
+				LEFT OUTER JOIN TB_CATEGORY AB
+					ON AA.SERVICE_CD = AB.SERVICE_CD
+		WHERE	1 = 1
+			<if test="serviceCd != null and serviceCd != ''">
+				AND AA.SERVICE_CD = #{serviceCd}
+			</if>
+			<if test="limit != null">
+		ORDER BY AA.RGS_DT DESC, AA.CASE_SEQ DESC
+		LIMIT	#{limit}
+			</if>
+			<if test="limit == null">
+		ORDER BY AA.RGS_DT DESC, AA.CASE_SEQ DESC
+			</if>
+	</select>
+
 	<select id="getCaseView" parameterType="hashMap" resultType="hashMapCamel" >
 		SELECT
 				AA.CASE_SEQ
@@ -68,6 +102,9 @@
 				,AA.CASE_CN
 				,AA.REG_NM
 				,AA.FILE_SEQ
+				,AA.FILE_SEQ AS VIEW_FILE_SEQ
+				,AA.FILE_SEQ2
+				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
 				,AA.HASHTAG
 				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
@@ -83,7 +120,8 @@
 				CASE_SJ		= #{caseSj}
 				,CASE_CN	= #{caseCn}
 				,REG_NM		= #{regNm}
-				,FILE_SEQ	= #{fileSeq}
+				,FILE_SEQ	= NULLIF(#{fileSeq}, '')
+				,FILE_SEQ2	= NULLIF(#{fileSeq2}, '')
 				,HASHTAG	= #{hashtag}
 				,SERVICE_CD	= #{serviceCd}
 		WHERE 	CASE_SEQ 	= #{caseSeq}
@@ -95,14 +133,16 @@
 			,CASE_CN
 			,REG_NM
 			,FILE_SEQ
+			,FILE_SEQ2
 			,HASHTAG
 			,RGS_DT
-			,SERVICE_CD 	
+			,SERVICE_CD
 		)VALUES(
 			#{caseSj}
 			,#{caseCn}
 			,#{regNm}
-			,#{fileSeq}
+			,NULLIF(#{fileSeq}, '')
+			,NULLIF(#{fileSeq2}, '')
 			,#{hashtag}
 			,NOW()
 			,#{serviceCd}

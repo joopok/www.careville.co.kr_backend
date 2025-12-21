@@ -25,11 +25,26 @@ public class DownloadView extends AbstractView {
     @Override
 	public void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        File file		= new File(SUtils.nvl(model.get("filePath")));
+        String filePath = SUtils.nvl(model.get("filePath"));
         String fileName = SUtils.nvl(model.get("fileName"));
 
+        // 파일 경로가 비어있으면 404 반환 (DB에 파일 정보가 없는 경우)
+        if (SUtils.isNvl(filePath)) {
+            log.debug("[DownloadView] Empty file path requested");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setContentType("text/plain; charset=UTF-8");
+            response.getWriter().write("file not found");
+            return;
+        }
+
+        File file = new File(filePath);
+
         if(!file.exists() || !file.isFile()){
-            throw new FileNotFoundException("file not found error.");
+            log.warn("[DownloadView] File not found. path={}, name={}", file.getAbsolutePath(), fileName);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setContentType("text/plain; charset=UTF-8");
+            response.getWriter().write("file not found");
+            return;
         }
 
         String mimeType = request.getServletContext().getMimeType(file.getAbsolutePath());

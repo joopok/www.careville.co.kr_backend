@@ -73,15 +73,38 @@ public class CmmnSvc{
 		return returnMap;
 	}
 
-	public HashMap<String,Object> getFileView(HashMap<String,Object> paramMap) throws Exception {
+    public HashMap<String,Object> getFileView(HashMap<String,Object> paramMap) throws Exception {
 
 		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
 
-		paramMap.put("fileSeq", AESUtil.urlDec(SUtils.nvl(paramMap.get("viewFileSeq"))));
+		// viewFileSeq가 없으면 빈 결과 반환
+		String viewFileSeq = SUtils.nvl(paramMap.get("viewFileSeq"));
+		if (SUtils.isNvl(viewFileSeq)) {
+			returnMap.put("filePath", "");
+			returnMap.put("fileName", "");
+			return returnMap;
+		}
+
+		String decryptedSeq = AESUtil.urlDec(viewFileSeq);
+
+		// 복호화 실패 또는 빈 값이면 빈 결과 반환
+		if (SUtils.isNvl(decryptedSeq)) {
+			returnMap.put("filePath", "");
+			returnMap.put("fileName", "");
+			return returnMap;
+		}
+
+		paramMap.put("fileSeq", decryptedSeq);
 
 		HashMap<String,Object> fileMap		= mapper.getFileView(paramMap);
 
-		if(fileMap == null) throw new KFException("파일을 찾을 수 없습니다.");
+		// 파일 정보가 없으면 빈 결과 반환 (예외 대신 graceful 처리)
+		if(fileMap == null || fileMap.isEmpty()) {
+			log.warn("파일 정보를 찾을 수 없습니다. fileSeq: {}", decryptedSeq);
+			returnMap.put("filePath", "");
+			returnMap.put("fileName", "");
+			return returnMap;
+		}
 
 		returnMap.put("filePath", SUtils.nvl(fileMap.get("fileFullPath")));
 		returnMap.put("fileName", SUtils.nvl(fileMap.get("fileRealNm")));
@@ -89,11 +112,18 @@ public class CmmnSvc{
 		return returnMap;
 	}
 
-	public HashMap<String,Object> setFileDel(HashMap<String,Object> paramMap) throws Exception {
+    public HashMap<String,Object> setFileDel(HashMap<String,Object> paramMap) throws Exception {
 
 		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
 
-		paramMap.put("fileSeq", AESUtil.urlDec(SUtils.nvl(paramMap.get("viewFileSeq"))));
+		// viewFileSeq가 없으면 삭제 실패 반환
+		String viewFileSeq = SUtils.nvl(paramMap.get("viewFileSeq"));
+		if (SUtils.isNvl(viewFileSeq)) {
+			returnMap.put("isDel", false);
+			return returnMap;
+		}
+
+		paramMap.put("fileSeq", AESUtil.urlDec(viewFileSeq));
 
 		HashMap<String,Object> fileMap		= mapper.getFileView(paramMap);
 		String path							= SUtils.nvl(fileMap.get("fileFullPath"));
@@ -107,10 +137,73 @@ public class CmmnSvc{
 			returnMap.put("isDel"	,false);
 		}
 
-		return returnMap;
-	}
+        return returnMap;
+    }
 
-	public int setFileRelationInsert(HashMap<String,Object> paramMap) throws Exception {
+    public HashMap<String,Object> getFileThumbView(HashMap<String,Object> paramMap) throws Exception {
+
+        HashMap<String,Object> returnMap = new HashMap<>();
+        String viewSeqEnc = SUtils.nvl(paramMap.get("viewFileSeq"));
+
+        // viewFileSeq가 없으면 빈 결과 반환 (예외 대신 graceful 처리)
+        if (SUtils.isNvl(viewSeqEnc)) {
+            returnMap.put("filePath", "");
+            returnMap.put("fileName", "");
+            return returnMap;
+        }
+
+        HashMap<String,Object> q = new HashMap<>();
+        String decryptedSeq = AESUtil.urlDec(viewSeqEnc);
+
+        // 복호화 실패 또는 빈 값이면 빈 결과 반환
+        if (SUtils.isNvl(decryptedSeq)) {
+            returnMap.put("filePath", "");
+            returnMap.put("fileName", "");
+            return returnMap;
+        }
+
+        q.put("fileSeq", decryptedSeq);
+
+        HashMap<String,Object> fileMap = mapper.getFileView(q);
+
+        // 파일 정보가 없으면 빈 결과 반환 (예외 대신 graceful 처리)
+        if (fileMap == null || fileMap.isEmpty()) {
+            log.warn("파일 정보를 찾을 수 없습니다. fileSeq: {}", decryptedSeq);
+            returnMap.put("filePath", "");
+            returnMap.put("fileName", "");
+            return returnMap;
+        }
+
+        String basePath = SUtils.nvl(fileMap.get("filePath"));
+        String fake = SUtils.nvl(fileMap.get("fileFakeNm"));
+        int w = SUtils.strToInt(paramMap.get("w"), 480);
+
+        String thumbFullPath = fileUtil.generateThumbnailIfNotExists(basePath, fake, w);
+
+        returnMap.put("filePath", thumbFullPath);
+        returnMap.put("fileName", SUtils.nvl(fileMap.get("fileRealNm")));
+        return returnMap;
+    }
+
+    /**
+     * 파일 SEQ로 직접 삭제 (레거시 데이터 정리용)
+     * 관계 없이 단독으로 등록된 파일도 안전하게 삭제한다.
+     */
+    public void setFileDelBySeq(Integer fileSeq) throws Exception {
+        if (fileSeq == null) return;
+
+        HashMap<String,Object> q = new HashMap<>();
+        q.put("fileSeq", fileSeq);
+
+        HashMap<String,Object> fileMap = mapper.getFileView(q);
+        if (fileMap == null || fileMap.isEmpty()) return;
+
+        String path = SUtils.nvl(fileMap.get("fileFullPath"));
+        mapper.setFileDel(q);
+        fileUtil.deleteFile(new File(path));
+    }
+
+    public int setFileRelationInsert(HashMap<String,Object> paramMap) throws Exception {
 
 		String fileArr					= SUtils.nvl(paramMap.get("fileArr"));
 		String fileSeq					= SUtils.nvl(paramMap.get("fileSeq"));
@@ -120,19 +213,51 @@ public class CmmnSvc{
 		int cnt							= 0;
 		HashMap<String,Object> forMap	= null;
 
-		if(fileArry != null && !fileArry[0].equals("")) {
-			for(String s: fileArry){
-				forMap	= new HashMap<>();
-				forMap.put("fileTrgetSe"	,fileTrgetSe);
-				forMap.put("fileTrgetSeq"	,fileTrgetSeq);
-				forMap.put("fileSeq"		,s);
+        if(fileArry != null && !fileArry[0].equals("")) {
+            for(String s: fileArry){
+                forMap	= new HashMap<>();
+                forMap.put("fileTrgetSe"	,fileTrgetSe);
+                forMap.put("fileTrgetSeq"	,fileTrgetSeq);
+                String toStore = s != null && s.matches("\\d+") ? s : AESUtil.urlDec(s);
+                forMap.put("fileSeq"		,toStore);
 
-				cnt	+= mapper.setFileRelationInsert(forMap);
-			}
-		}
+                cnt	+= mapper.setFileRelationInsert(forMap);
+            }
+        }
 
-		return cnt;
-	}
+        return cnt;
+    }
+
+    /**
+     * 대상의 기존 파일 관계만 초기화(삭제)하고, 전달된 배열로 재삽입한다.
+     * 물리 파일은 삭제하지 않는다.
+     */
+    public int resetFileRelations(HashMap<String,Object> paramMap) throws Exception {
+        String fileArr = SUtils.nvl(paramMap.get("fileArr"));
+        String fileSeq = SUtils.nvl(paramMap.get("fileSeq"));
+        String[] fileArray = fileArr.equals("") ? fileSeq.split(",") : fileArr.split(",");
+        String fileTrgetSe = SUtils.nvl(paramMap.get("fileTrgetSe"));
+        int fileTrgetSeq = SUtils.strToInt(paramMap.get("fileTrgetSeq"));
+
+        // 기존 관계만 삭제(파일은 보존)
+        HashMap<String,Object> delParam = new HashMap<>();
+        delParam.put("fileTrgetSe", fileTrgetSe);
+        delParam.put("fileTrgetSeq", fileTrgetSeq);
+        mapper.setFileRelationDelSecond(delParam);
+
+        int cnt = 0;
+        if (fileArray != null && fileArray.length > 0 && !fileArray[0].equals("")) {
+            for (String s : fileArray) {
+                HashMap<String,Object> forMap = new HashMap<>();
+                forMap.put("fileTrgetSe", fileTrgetSe);
+                forMap.put("fileTrgetSeq", fileTrgetSeq);
+                String toStore = s != null && s.matches("\\d+") ? s : AESUtil.urlDec(s);
+                forMap.put("fileSeq", toStore);
+                cnt += mapper.setFileRelationInsert(forMap);
+            }
+        }
+        return cnt;
+    }
 
 	public int setFileRelationUpdate(HashMap<String,Object> paramMap) throws Exception {
 
@@ -144,16 +269,17 @@ public class CmmnSvc{
 		int cnt							= 0;
 		HashMap<String,Object> forMap	= null;
 
-		if(fileArry != null && !fileArry[0].equals("")) {
-			for(String s: fileArry){
-				forMap	= new HashMap<>();
-				forMap.put("fileTrgetSe"	,fileTrgetSe);
-				forMap.put("fileTrgetSeq"	,fileTrgetSeq);
-				forMap.put("fileSeq"		,s);
+        if(fileArry != null && !fileArry[0].equals("")) {
+            for(String s: fileArry){
+                forMap	= new HashMap<>();
+                forMap.put("fileTrgetSe"	,fileTrgetSe);
+                forMap.put("fileTrgetSeq"	,fileTrgetSeq);
+                String toStore = s != null && s.matches("\\d+") ? s : AESUtil.urlDec(s);
+                forMap.put("fileSeq"		,toStore);
 
-				cnt	+= mapper.setFileRelationUpdate(forMap);
-			}
-		}
+                cnt	+= mapper.setFileRelationUpdate(forMap);
+            }
+        }
 
 		return cnt;
 	}
@@ -229,21 +355,28 @@ public class CmmnSvc{
 		return returnMap;
 	}
 
-	public HashMap<String,Object> getEditorFileView(HashMap<String,Object> paramMap) throws Exception {
+    public HashMap<String,Object> getEditorFileView(HashMap<String,Object> paramMap) throws Exception {
 
-		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
-		StringBuffer str					= new StringBuffer();
-		str.append(fileUtil.getFilePath());
-		str.append("/editor/");
-		str.append(SUtils.nvl(paramMap.get("a")));
-		str.append("/");
-		str.append(SUtils.nvl(paramMap.get("b")));
+        HashMap<String,Object> returnMap	= new HashMap<String, Object>();
+        String a = SUtils.nvl(paramMap.get("a"));
+        String b = SUtils.nvl(paramMap.get("b"));
 
-		returnMap.put("filePath", str.toString());
-		returnMap.put("fileName", SUtils.nvl("aa"));
+        // 안전 검증: a는 yyyyMM(숫자 6자리), b는 안전한 파일명만 허용
+        if (!a.matches("^\\d{6}$")) {
+            throw new KFException("잘못된 파일 경로 요청입니다.");
+        }
+        if (!b.matches("^[A-Za-z0-9][A-Za-z0-9._-]*$")) {
+            throw new KFException("잘못된 파일명 요청입니다.");
+        }
 
-		return returnMap;
-	}
+        String base = fileUtil.getFilePath();
+        String path = SUtils.normalizePath(base + "/editor/" + a + "/" + b);
+
+        returnMap.put("filePath", path);
+        returnMap.put("fileName", b);
+
+        return returnMap;
+    }
 
 
 }

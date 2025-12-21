@@ -1,139 +1,879 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>상담 상세</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONSULTATION DETAIL - Premium Admin Design
+   Refined minimalism with clear information hierarchy
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-	<style>
-	.form-group .form-line:after{border-bottom-color:#ddd;}
-	button.dropdown-toggle{padding-top: 13px;padding-left:0px;}
-	button.dropdown-toggle,
-	button.dropdown-toggle:hover,
-	button.dropdown-toggle:active,
-	button.dropdown-toggle:focus{background-color: transparent !important;}
-	button.dropdown-toggle span{margin-left:0px !important;}
-	</style>
-	<div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="carda">
-                <div class="body">
-					<div class="row clearfix">
-					    <div class="col-md-6">
-							<div class="form-group form-float">
-							    <div class="form-line">
-							        <input type="hidden" name="cnsltSeq" th:value="${view.cnsltSeq}">
-							        <input type="text" class="form-control" name="nm" th:value="${view.nm}" readonly>
-							        <label class="form-label">이름</label>
-							    </div>
-							</div>
-					    </div>
-						<div class="col-sm-6">
-							<div class="form-group form-float">
-							    <div class="form-line focused">
-									<select class="form-control" id="sttusCd" name="sttusCd">
-	                                    <option value="">상태</option>
-										<option th:each="s : ${sttusCdLst}"
-										        th:value="${s.code}"
-										        th:text="${s.codeNm}"
-												th:selected="${s.code == view.sttusCd}">
-										</option>
-	                                </select>
-									<label class="form-label">상태</label>
-								</div>
-							</div>		
-						</div>
-					</div>							
-					
-					<div class="row clearfix">
-					    <div class="col-md-6">
-							<div class="form-group form-float">
-							    <div class="form-line">
-							        <input type="text" class="form-control" name="tel1" th:value="${view.tel1}" readonly>
-							        <label class="form-label">전화번호</label>
-							    </div>
-							</div>
-					    </div>
-					    <div class="col-md-6">
-							<div class="form-group form-float">
-							    <div class="form-line">
-							        <input type="text" class="form-control" name="tel2" th:value="${view.phone}" readonly>
-							        <label class="form-label">휴대번호</label>
-							    </div>
-							</div>
-					    </div>
-					</div>
-					
-					<div class="row clearfix">
-					    <div class="col-md-6" th:if="${view.reqType == '001'}">
-	                        <div class="form-group form-float">
-	                            <div class="form-line">
-	                                <input type="text" class="form-control" name="serviceCd" th:value="${view.serviceNm}" readonly>
-	                                <label class="form-label">상담 서비스</label>
-	                            </div>
-	                        </div>
-						</div>
-					    <div class="col-md-6" th:if="${view.reqType == '002'}">
-	                        <div class="form-group form-float">
-	                            <div class="form-line">
-	                                <input type="text" class="form-control" name="productNo" th:value="${view.productNm}" readonly>
-	                                <label class="form-label">예약 상품</label>
-	                            </div>
-	                        </div>
-						</div>
-						<div class="col-md-6">								
-	                        <div class="form-group form-float">
-	                            <div class="form-line">
-	                                <input type="text" class="form-control" name="hopeDay" th:value="${view.hopeDay}" readonly>
-	                                <label class="form-label" th:if="${view.reqType == '001'}">상담 희망일</label>
-	                                <label class="form-label" th:if="${view.reqType == '002'}">예약 희망일</label>
-	                            </div>
-	                        </div>
-						</div>
-					</div>				
-							
-					<div class="form-group form-float">
-					    <div class="form-line">
-					        <input type="text" class="form-control" name="adres" th:value="${view.adres}" readonly>
-					        <label class="form-label">주소</label>
-					    </div>
-					</div>
-											
-					<div class="form-group form-float">
-                        <div class="form-line">
-                            <textarea name="inqryCn" cols="30" rows="5" class="form-control no-resize" aria-required="true" aria-invalid="false" th:text="${view.inqryCn}" readonly></textarea>
-                            <label class="form-label">내용</label>
-                        </div>
-                    </div>
-					
+/* Page Header */
+.cnslt-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 32px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid rgba(255,255,255,0.06);
+}
 
-                    <div class="form-group form-float">
-                        <div class="form-line">
-                            <input type="text" class="form-control" name="regDt" th:value="${view.regDt}" readonly>
-                            <label class="form-label">등록일</label>
-                        </div>
-                    </div>
-                </div>
-				
-				<!-- div class="body">
-				    <table class="table table-striped">
-				        <thead>
-				            <tr>
-				                <th>No.</th>
-				                <th>파일명</th>
-				                <th>확장자</th>
-				                <th>사이즈</th>
-				            </tr>
-				        </thead>
-				        <tbody>
-				            <tr th:each="item,stat : ${filesLst}">
-				                <td th:text="${stat.index +1}"></td>
-				                <td><a th:href="@{/fileView.do(viewFileSeq=${item.viewfileseq})}" th:text="${item.fileRealNm}"></a></td>
-				                <td th:text="${item.fileExtsn}"></td>
-				                <td th:text="${item.fileSize}"></td>
-				            </tr>
-							<tr th:if="${#lists.isEmpty(filesLst)}">
-							    <td colspan="4">등록된 파일이 없습니다.</td>
-							</tr>									
-				        </tbody>
-				    </table>
-				</div -->				
-            </div>
-        </div>
-    </div>
-	
-	<script th:src="@{/apage/js/admin.js}"></script>
+.cnslt-header-left {
+	flex: 1;
+}
+
+.cnslt-title {
+	font-size: 28px;
+	font-weight: 700;
+	color: #fff;
+	margin: 0 0 8px 0;
+	letter-spacing: -0.5px;
+}
+
+.cnslt-subtitle {
+	font-size: 14px;
+	color: rgba(255,255,255,0.5);
+	margin: 0;
+}
+
+.cnslt-header-right {
+	display: flex;
+	gap: 12px;
+}
+
+/* Type Badge (상담/예약) */
+.type-indicator {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: 50px;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+}
+
+.type-indicator.consultation {
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+	border: 1px solid rgba(59, 130, 246, 0.3);
+	color: #60a5fa;
+}
+
+.type-indicator.reservation {
+	background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+	border: 1px solid rgba(168, 85, 247, 0.3);
+	color: #c084fc;
+}
+
+.type-indicator svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* Info Sections */
+.info-section {
+	background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+	border: 1px solid rgba(255,255,255,0.06);
+	border-radius: 16px;
+	margin-bottom: 24px;
+	overflow: hidden;
+}
+
+.section-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 20px 24px;
+	background: rgba(255,255,255,0.02);
+	border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.section-icon {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 12px;
+	background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+	border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.section-icon svg {
+	width: 20px;
+	height: 20px;
+	color: #34d399;
+}
+
+.section-icon.service {
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+	border-color: rgba(59, 130, 246, 0.2);
+}
+
+.section-icon.service svg {
+	color: #60a5fa;
+}
+
+.section-icon.inquiry {
+	background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(249, 115, 22, 0.05));
+	border-color: rgba(249, 115, 22, 0.2);
+}
+
+.section-icon.inquiry svg {
+	color: #fb923c;
+}
+
+.section-icon.status {
+	background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+	border-color: rgba(168, 85, 247, 0.2);
+}
+
+.section-icon.status svg {
+	color: #c084fc;
+}
+
+.section-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: #fff;
+	margin: 0;
+}
+
+.section-body {
+	padding: 24px;
+}
+
+/* Info Grid */
+.info-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 20px;
+}
+
+.info-grid.cols-3 {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.info-grid.cols-1 {
+	grid-template-columns: 1fr;
+}
+
+@media (max-width: 768px) {
+	.info-grid,
+	.info-grid.cols-3 {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Info Item */
+.info-item {
+	position: relative;
+}
+
+.info-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: rgba(255,255,255,0.45);
+	text-transform: uppercase;
+	letter-spacing: 0.8px;
+	margin-bottom: 10px;
+}
+
+.info-label svg {
+	width: 14px;
+	height: 14px;
+	opacity: 0.7;
+}
+
+.info-value {
+	font-size: 15px;
+	color: #fff;
+	padding: 14px 16px;
+	background: rgba(0,0,0,0.2);
+	border: 1px solid rgba(255,255,255,0.06);
+	border-radius: 10px;
+	min-height: 48px;
+	display: flex;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.info-value:hover {
+	border-color: rgba(255,255,255,0.12);
+	background: rgba(0,0,0,0.25);
+}
+
+.info-value.empty {
+	color: rgba(255,255,255,0.3);
+	font-style: italic;
+}
+
+.info-value.textarea {
+	min-height: 180px;
+	align-items: flex-start;
+	white-space: pre-wrap;
+	line-height: 1.7;
+	font-size: 14px;
+}
+
+.info-value a {
+	color: #60a5fa;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.info-value a:hover {
+	color: #93c5fd;
+	text-decoration: underline;
+}
+
+/* Status Select */
+.status-select-wrapper {
+	position: relative;
+}
+
+.status-select {
+	width: 100%;
+	padding: 14px 40px 14px 16px;
+	font-size: 15px;
+	color: #fff;
+	background: rgba(0,0,0,0.2);
+	border: 1px solid rgba(255,255,255,0.08);
+	border-radius: 10px;
+	cursor: pointer;
+	appearance: none;
+	transition: all 0.2s ease;
+}
+
+.status-select:hover {
+	border-color: rgba(255,255,255,0.15);
+}
+
+.status-select:focus {
+	outline: none;
+	border-color: rgba(16, 185, 129, 0.5);
+	box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.status-select option {
+	background: #1e1e2e;
+	color: #fff;
+	padding: 10px;
+}
+
+.status-select-arrow {
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	color: rgba(255,255,255,0.4);
+}
+
+/* Status Badge */
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.status-badge.pending {
+	background: rgba(251, 191, 36, 0.15);
+	border: 1px solid rgba(251, 191, 36, 0.3);
+	color: #fbbf24;
+}
+
+.status-badge.complete {
+	background: rgba(16, 185, 129, 0.15);
+	border: 1px solid rgba(16, 185, 129, 0.3);
+	color: #34d399;
+}
+
+/* Action Buttons */
+.action-bar {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 32px;
+	padding-top: 24px;
+	border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.btn-action {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 24px;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.btn-action svg {
+	width: 18px;
+	height: 18px;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, #10b981, #059669);
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+	background: rgba(255,255,255,0.06);
+	color: rgba(255,255,255,0.8);
+	border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-secondary:hover {
+	background: rgba(255,255,255,0.1);
+	color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Service & Category Cards - 분리 표시
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.service-category-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24px;
+	margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+	.service-category-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.service-card {
+	position: relative;
+	padding: 28px 24px;
+	border-radius: 16px;
+	text-align: center;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+
+.service-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0.08;
+	z-index: 0;
+}
+
+.service-card:hover {
+	transform: translateY(-4px);
+}
+
+/* 카테고리 카드 스타일 */
+.category-card {
+	background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.06) 100%);
+	border: 1px solid rgba(168, 85, 247, 0.25);
+	box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+}
+
+.category-card:hover {
+	border-color: rgba(168, 85, 247, 0.4);
+	box-shadow: 0 8px 30px rgba(168, 85, 247, 0.25);
+}
+
+.category-card .service-card-icon {
+	background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(168, 85, 247, 0.1));
+	border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.category-card .service-card-icon svg {
+	color: #c084fc;
+}
+
+.category-card .service-card-label {
+	color: rgba(192, 132, 252, 0.9);
+}
+
+.category-card .service-card-value {
+	color: #e9d5ff;
+}
+
+/* 서비스 카드 스타일 */
+.service-type-card {
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.06) 100%);
+	border: 1px solid rgba(59, 130, 246, 0.25);
+	box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.service-type-card:hover {
+	border-color: rgba(59, 130, 246, 0.4);
+	box-shadow: 0 8px 30px rgba(59, 130, 246, 0.25);
+}
+
+.service-type-card .service-card-icon {
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
+	border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.service-type-card .service-card-icon svg {
+	color: #60a5fa;
+}
+
+.service-type-card .service-card-label {
+	color: rgba(96, 165, 250, 0.9);
+}
+
+.service-type-card .service-card-value {
+	color: #bfdbfe;
+}
+
+/* 카드 내부 요소 */
+.service-card-icon {
+	width: 56px;
+	height: 56px;
+	margin: 0 auto 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 16px;
+	position: relative;
+	z-index: 1;
+}
+
+.service-card-icon svg {
+	width: 28px;
+	height: 28px;
+}
+
+.service-card-label {
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 1.2px;
+	margin-bottom: 10px;
+	position: relative;
+	z-index: 1;
+}
+
+.service-card-value {
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.3px;
+	position: relative;
+	z-index: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+	.cnslt-header {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.cnslt-header-right {
+		width: 100%;
+		justify-content: flex-end;
+	}
+
+	.action-bar {
+		flex-direction: column;
+	}
+
+	.btn-action {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.service-card-value {
+		font-size: 18px;
+	}
+}
+</style>
+</head>
+<body>
+<div layout:fragment="content">
+
+	<form id="searchMap" method="POST">
+		<th:block th:each="entry : ${searchMap}">
+			<input type="hidden" th:name="${entry.key}" th:value="${entry.value != null ? entry.value : ''}">
+		</th:block>
+	</form>
+	<input type="hidden" id="cnsltSeq" name="cnsltSeq" th:value="${view.cnsltSeq}">
+
+	<!-- Page Header -->
+	<div class="cnslt-header">
+		<div class="cnslt-header-left">
+			<h1 class="cnslt-title">상담 상세정보</h1>
+			<p class="cnslt-subtitle">
+				접수번호 #<span th:text="${view.cnsltSeq}"></span> ·
+				<span th:text="${view.regDt}"></span> 접수
+			</p>
+		</div>
+		<div class="cnslt-header-right">
+			<!-- 유형 뱃지 -->
+			<span th:if="${view.reqType == '001'}" class="type-indicator consultation">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+				</svg>
+				상담 문의
+			</span>
+			<span th:if="${view.reqType == '002'}" class="type-indicator reservation">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+					<line x1="16" y1="2" x2="16" y2="6"></line>
+					<line x1="8" y1="2" x2="8" y2="6"></line>
+					<line x1="3" y1="10" x2="21" y2="10"></line>
+				</svg>
+				예약 신청
+			</span>
+
+			<button type="button" class="btn-action btn-secondary" id="btnList">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="19" y1="12" x2="5" y2="12"></line>
+					<polyline points="12 19 5 12 12 5"></polyline>
+				</svg>
+				목록
+			</button>
+		</div>
+	</div>
+
+	<!-- Section 1: 고객 정보 -->
+	<div class="info-section">
+		<div class="section-header">
+			<div class="section-icon">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+					<circle cx="12" cy="7" r="4"></circle>
+				</svg>
+			</div>
+			<h2 class="section-title">고객 정보</h2>
+		</div>
+		<div class="section-body">
+			<div class="info-grid cols-3">
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+							<circle cx="12" cy="7" r="4"></circle>
+						</svg>
+						고객명
+					</div>
+					<div class="info-value" th:class="${view.nm != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.nm} ?: '정보 없음'"></div>
+				</div>
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+						</svg>
+						전화번호
+					</div>
+					<div class="info-value" th:class="${view.tel1 != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.tel1} ?: '정보 없음'"></div>
+				</div>
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+							<line x1="12" y1="18" x2="12.01" y2="18"></line>
+						</svg>
+						휴대전화
+					</div>
+					<div class="info-value" th:class="${view.phone != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.phone} ?: '정보 없음'"></div>
+				</div>
+			</div>
+
+			<div class="info-grid" style="margin-top: 20px;">
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+							<polyline points="22,6 12,13 2,6"></polyline>
+						</svg>
+						이메일
+					</div>
+					<div class="info-value" th:class="${view.email != null ? 'info-value' : 'info-value empty'}">
+						<a th:if="${view.email != null}" th:href="'mailto:' + ${view.email}" th:text="${view.email}"></a>
+						<span th:if="${view.email == null}">정보 없음</span>
+					</div>
+				</div>
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 21h18"></path>
+							<path d="M9 8h10a2 2 0 0 1 2 2v9a0 0 0 0 1 0 0H7a0 0 0 0 1 0 0v-9a2 2 0 0 1 2-2z"></path>
+							<path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+						</svg>
+						회사/기관명
+					</div>
+					<div class="info-value" th:class="${view.compNm != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.compNm} ?: '개인 고객'"></div>
+				</div>
+			</div>
+
+			<div class="info-grid cols-1" style="margin-top: 20px;">
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+							<circle cx="12" cy="10" r="3"></circle>
+						</svg>
+						주소
+					</div>
+					<div class="info-value" th:class="${view.adres != null and view.adres != ' ' ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.adres != null and view.adres != ' ' ? view.adres : '주소 정보 없음'}"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Section 2: 카테고리 & 서비스 정보 (분리 표시) -->
+	<div class="service-category-grid">
+		<!-- 카테고리 카드 -->
+		<div class="service-card category-card">
+			<div class="service-card-icon">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+				</svg>
+			</div>
+			<div class="service-card-label">카테고리</div>
+			<div class="service-card-value" th:text="${view['parsedCategoryNm'] ?: '미지정'}"></div>
+		</div>
+
+		<!-- 서비스 카드 -->
+		<div class="service-card service-type-card">
+			<div class="service-card-icon">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+				</svg>
+			</div>
+			<div class="service-card-label" th:text="${view.reqType == '001' ? '서비스' : '상품'}">서비스</div>
+			<div class="service-card-value" th:text="${view.reqType == '001' ? (view.serviceNm ?: '미선택') : (view.productNm ?: '미선택')}"></div>
+		</div>
+	</div>
+
+	<!-- Section 2-2: 희망일/시간 정보 -->
+	<div class="info-section">
+		<div class="section-header">
+			<div class="section-icon service">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+					<line x1="16" y1="2" x2="16" y2="6"></line>
+					<line x1="8" y1="2" x2="8" y2="6"></line>
+					<line x1="3" y1="10" x2="21" y2="10"></line>
+				</svg>
+			</div>
+			<h2 class="section-title">희망 일정</h2>
+		</div>
+		<div class="section-body">
+			<div class="info-grid">
+				<!-- 희망일 -->
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+							<line x1="16" y1="2" x2="16" y2="6"></line>
+							<line x1="8" y1="2" x2="8" y2="6"></line>
+							<line x1="3" y1="10" x2="21" y2="10"></line>
+						</svg>
+						희망일
+					</div>
+					<div class="info-value" th:class="${view.hopeDay != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.hopeDay} ?: '날짜 미지정'"></div>
+				</div>
+				<!-- 희망 시간대 -->
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<polyline points="12 6 12 12 16 14"></polyline>
+						</svg>
+						희망 시간대
+					</div>
+					<div class="info-value" th:class="${view.hopeTime != null ? 'info-value' : 'info-value empty'}"
+						 th:text="${view.hopeTime} ?: '시간 미지정'"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Section 3: 문의 내용 -->
+	<div class="info-section">
+		<div class="section-header">
+			<div class="section-icon inquiry">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+				</svg>
+			</div>
+			<h2 class="section-title">문의 내용</h2>
+		</div>
+		<div class="section-body">
+			<div class="info-grid cols-1">
+				<div class="info-item">
+					<div class="info-value textarea" th:class="${view.inqryCn != null ? 'info-value textarea' : 'info-value textarea empty'}"
+						 th:text="${view.inqryCn} ?: '문의 내용이 없습니다.'"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Section 4: 처리 상태 -->
+	<div class="info-section">
+		<div class="section-header">
+			<div class="section-icon status">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+					<polyline points="22 4 12 14.01 9 11.01"></polyline>
+				</svg>
+			</div>
+			<h2 class="section-title">처리 상태</h2>
+		</div>
+		<div class="section-body">
+			<div class="info-grid cols-3">
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+							<line x1="16" y1="2" x2="16" y2="6"></line>
+							<line x1="8" y1="2" x2="8" y2="6"></line>
+							<line x1="3" y1="10" x2="21" y2="10"></line>
+						</svg>
+						접수일
+					</div>
+					<div class="info-value" th:text="${view.regDt} ?: '-'"></div>
+				</div>
+				<div class="info-item" th:if="${view.answerDt != null}">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="20 6 9 17 4 12"></polyline>
+						</svg>
+						처리 완료일
+					</div>
+					<div class="info-value" th:text="${view.answerDt}"></div>
+				</div>
+				<div class="info-item">
+					<div class="info-label">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+						</svg>
+						처리 상태
+					</div>
+					<div class="status-select-wrapper">
+						<select id="sttusCd" name="sttusCd" class="status-select">
+							<option value="">상태 선택</option>
+							<option th:each="s : ${sttusCdLst}"
+									th:value="${s.code}"
+									th:text="${s.codeNm}"
+									th:selected="${s.code == view.sttusCd}">
+							</option>
+						</select>
+						<div class="status-select-arrow">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polyline points="6 9 12 15 18 9"></polyline>
+							</svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Action Buttons -->
+	<div class="action-bar">
+		<button type="button" class="btn-action btn-secondary" id="btnListBottom">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<line x1="8" y1="6" x2="21" y2="6"></line>
+				<line x1="8" y1="12" x2="21" y2="12"></line>
+				<line x1="8" y1="18" x2="21" y2="18"></line>
+				<line x1="3" y1="6" x2="3.01" y2="6"></line>
+				<line x1="3" y1="12" x2="3.01" y2="12"></line>
+				<line x1="3" y1="18" x2="3.01" y2="18"></line>
+			</svg>
+			목록으로
+		</button>
+		<button type="button" class="btn-action btn-primary" id="btnUpdate">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+				<polyline points="17 21 17 13 7 13 7 21"></polyline>
+				<polyline points="7 3 7 8 15 8"></polyline>
+			</svg>
+			상태 저장
+		</button>
+	</div>
+
+	<script th:inline="javascript">
+		var cnsltSeq = /*[[${view.cnsltSeq}]]*/ '';
+		var originalStatus = /*[[${view.sttusCd}]]*/ '';
+
+		$(document).ready(function() {
+			// 목록 버튼
+			$('#btnList, #btnListBottom').on('click', function() {
+				var $searchMap = $('#searchMap');
+				if($searchMap.find('input').length > 0) {
+					$searchMap.attr('action', '/apage/cnslt010.do');
+					$searchMap.submit();
+				} else {
+					location.href = '/apage/cnslt010.do';
+				}
+			});
+
+			// 상태 변경 버튼
+			$('#btnUpdate').on('click', function() {
+				var currentStatus = $('#sttusCd').val();
+
+				if(!currentStatus) {
+					swal({title: '상태를 선택해주세요.', type: 'warning'});
+					return false;
+				}
+
+				if(currentStatus === originalStatus) {
+					swal({title: '상태 값이 변경되지 않았습니다.', type: 'warning'});
+					return false;
+				}
+
+				$.ajax({
+					url: '/apage/cnslt041.do',
+					type: 'POST',
+					data: {
+						cnsltSeq: cnsltSeq,
+						sttusCd: currentStatus
+					},
+					dataType: 'json',
+					success: function(data) {
+						if(data.isUpd === 'Y') {
+							swal({title: '상태가 변경되었습니다.', type: 'success'}, function() {
+								originalStatus = currentStatus;
+							});
+						} else {
+							swal({title: '변경에 실패하였습니다.', type: 'error'});
+						}
+					},
+					error: function() {
+						swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+					}
+				});
+			});
+		});
+	</script>
+
+</div>
+</body>
+</html>

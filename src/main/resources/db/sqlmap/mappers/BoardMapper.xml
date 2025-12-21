@@ -79,7 +79,7 @@
 		WHERE 	BOARD_SEQ = #{boardSeq}
 	</update>
 	
-	<insert id="setBoardReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="CNSLT_SEQ">
+	<insert id="setBoardReg" parameterType="hashMap" useGeneratedKeys="true" keyProperty="BOARD_SEQ">
 		INSERT INTO TB_BOARD(
 			BOARD_GB
 			,NOTICE_YN

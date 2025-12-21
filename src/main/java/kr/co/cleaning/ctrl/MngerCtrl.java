@@ -47,6 +47,11 @@ public class MngerCtrl {
 		String pageNumber	= pageNum;
 		Map<String, Object> sessionMap		= sessionCmn.getLogonInfo();
 
+		// 방어적 null 체크 - AOP에서 체크하지만 안전성을 위해 추가
+		if (sessionMap == null) {
+			sessionMap = new HashMap<>();
+		}
+
 		if(pageNum.equals("10")){
 			modelMap.addAttribute("ssa", (SUtils.nvl(sessionMap.get("mngrSeq")).equals("1") ? "Y" : "N"));
 
@@ -54,8 +59,12 @@ public class MngerCtrl {
 			modelMap.addAllAttributes(svc.getMngerList(req,paramMap));
 			return "jsonView";
 
-		}else if(pageNum.equals("21")){
+		}else if(pageNum.equals("20") || pageNum.equals("21")){
 			modelMap.addAllAttributes(svc.getMngerView(req,paramMap));
+			modelMap.addAttribute("ssa", (SUtils.nvl(sessionMap.get("mngrSeq")).equals("1") ? "Y" : "N"));
+			String currentMngrSeq = SUtils.nvl(sessionMap.get("mngrSeq"));
+			String targetMngrSeq = SUtils.nvl(paramMap.get("mngrSeq"));
+			modelMap.addAttribute("canChangePw", currentMngrSeq.equals("1") || currentMngrSeq.equals(targetMngrSeq));
 			pageNumber	= "20";
 
 		}else if(pageNum.equals("31")){
@@ -64,6 +73,9 @@ public class MngerCtrl {
 		}else if(pageNum.equals("32")){
 			modelMap.addAllAttributes(svc.setMngerReg(req,paramMap));
 			return "jsonView";
+
+		}else if(pageNum.equals("40")){
+			modelMap.addAllAttributes(svc.getMngerView(req,paramMap));
 
 		}else if(pageNum.equals("41")){	// 전체 변경
 			modelMap.addAllAttributes(svc.setMngerUpd(req,paramMap));
@@ -74,8 +86,13 @@ public class MngerCtrl {
 			return "jsonView";
 
 		}else if(pageNum.equals("43")){ // 비밀번호 변경 view
-			paramMap.put("ssa",(SUtils.nvl(sessionMap.get("mngrSeq")).equals("1") ? "Y" : "N"));
-			modelMap.addAttribute("view", paramMap);
+			// DB에서 관리자 정보 조회
+			modelMap.addAllAttributes(svc.getMngerView(req, paramMap));
+			modelMap.addAttribute("ssa",(SUtils.nvl(sessionMap.get("mngrSeq")).equals("1") ? "Y" : "N"));
+			// 현재 로그인 사용자가 본인이거나 슈퍼관리자인 경우만 비밀번호 변경 가능
+			String currentMngrSeq = SUtils.nvl(sessionMap.get("mngrSeq"));
+			String targetMngrSeq = SUtils.nvl(paramMap.get("mngrSeq"));
+			modelMap.addAttribute("canChangePw", currentMngrSeq.equals("1") || currentMngrSeq.equals(targetMngrSeq));
 
 		}else if(pageNum.equals("44")){ // 비밀번호 변경
 			modelMap.addAllAttributes(svc.setMngrPwUpd(req,paramMap));

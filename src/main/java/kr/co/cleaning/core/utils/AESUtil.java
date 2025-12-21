@@ -28,11 +28,20 @@ public class AESUtil {
 
     public static String decrypt(String cipherText) throws Exception {
 
-    	Cipher cipher		= Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decoded		= Base64.getDecoder().decode(cipherText);
+        // 빈 문자열 또는 유효하지 않은 Base64 문자열이면 빈 문자열 반환
+        if (cipherText == null || cipherText.trim().isEmpty() || cipherText.trim().length() < 4) {
+            return "";
+        }
 
-        return new String(cipher.doFinal(decoded));
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decoded = Base64.getDecoder().decode(cipherText.trim());
+            return new String(cipher.doFinal(decoded));
+        } catch (IllegalArgumentException e) {
+            // Base64 디코딩 실패 시 빈 문자열 반환
+            return "";
+        }
     }
 
     public static String urlEnc(String plainText) throws Exception {
@@ -45,6 +54,11 @@ public class AESUtil {
     public static String urlDec(String cipherText) throws Exception {
 
         String value = SUtils.nvl(cipherText);
+
+        // 빈 문자열이면 빈 문자열 반환 (Base64 디코딩 오류 방지)
+        if (SUtils.isNvl(value)) {
+            return "";
+        }
 
         // URL 인코딩된 경우만 decode
         if (value.contains("%")) {

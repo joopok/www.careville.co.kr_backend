@@ -1,4 +1,10 @@
+# =============================================================================
+# 기본 설정 (운영 환경)
+# 로컬 개발 시: --spring.profiles.active=local 옵션 사용
+# =============================================================================
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prod}
   application:
     name: cleaning
   datasource:
@@ -8,12 +14,6 @@ spring:
     password: ${DB_PASSWORD:Chae1030!!}
     hikari:
       maximum-pool-size: 8
-  h2:
-    console:
-      enabled: false
-      path: /h2-console
-      settings:
-        web-allow-others: true
   jpa:
     defer-datasource-initialization: true
     hibernate:
@@ -31,34 +31,40 @@ mybatis:
   config-location: classpath:db/sqlmap/sql-mapper-config.xml
 
 server:
-  port: 8081
+  port: 8080
   error:
-    include-exception: true
-    include-message: always
-    include-stacktrace: always
-    include-binding-errors: always
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
     whitelabel:
       enabled: false
     path: "/error"
 
-#blue,cyan,faint,green,magenta,red,yello
+# =============================================================================
+# 운영 환경 로깅 설정 (최소화) - WARN 이상만 출력
+# 로컬에서 상세 로그 필요시 application-local.yml 사용
+# =============================================================================
 logging:
   pattern:
-    console: "%clr(%5p){} %clr(%d{HH:mm:ss}){faint} %clr([%15.15t]){magenta} %clr(%-40.40logger{39}){cyan} %clr(%3L){red} %m%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%5p] %m%n"
   level:
-    root: INFO
+    root: WARN
     jdbc: OFF
     jdbc.sqlonly: OFF
-    jdbc.sqltiming: OFF ## DEBUG 로 변경시 SQL LOG WIEW
+    jdbc.sqltiming: OFF
     jdbc.audit: OFF
     jdbc.resultset: OFF
     jdbc.resultsettable: OFF
     jdbc.connection: OFF
+    org.springframework: WARN
+    org.springframework.web: WARN
     org.springframework.security: OFF
-    # 비밀번호 검증 로깅 설정
-    kr.co.cleaning.ctrl.ReviewCtrl: OFF # API 호출 로그
-    kr.co.cleaning.svc.ReviewSvc: OFF # 비밀번호 검증 상세 로그
-    kr.co.cleaning.mapper: OFF # SQL 쿼리 로그
+    org.mybatis: WARN
+    org.apache: WARN
+    org.hibernate: WARN
+    com.zaxxer.hikari: WARN
+    kr.co.cleaning: WARN
 
 kframe:
   viewRowCnt: 10
@@ -68,7 +74,7 @@ kframe:
   aes:
     key: my-secret-cleaning-12345
     algorithm: AES
-  filePath: C:/Users/nun/Downloads/careville
+  filePath: ${FILE_PATH:/Users/doseunghyeon/developerApp/springDev/www.careville.co.kr_backend/files}
 
 # SpringDoc OpenAPI (Swagger) 설정
 springdoc:

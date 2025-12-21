@@ -22,6 +22,8 @@ public interface ReviewMapper {
 
 	int setReviewDispUpd(HashMap<String,Object> paramMap);
 
+	int setReviewDispUpdAll(HashMap<String,Object> paramMap);
+
 	int setReviewDel(HashMap<String,Object> paramMap);
 
 }

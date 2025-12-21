@@ -1,26 +1,27 @@
 $(function(){
 	// 날짜 입력 마스크
 	$("#svcDate").inputmask("99999999", {placeholder: "YYYYMMDD"});
-	
-	// 별점 클릭 이벤트
-	$("#starRating .material-icons").on("click", function() {
+
+	// 별점 클릭 이벤트 (SVG .star 사용)
+	$("#starRating .star").on("click", function() {
 		var rating = $(this).data("value");
 		$("#starRate").val(rating);
 		updateStarDisplay(rating);
 	});
-	
+
 	// 현재 별점 표시
 	var currentRating = $("#starRate").val() || 5;
 	updateStarDisplay(currentRating);
 });
 
 function updateStarDisplay(rating) {
-	$("#starRating .material-icons").each(function() {
+	// SVG 기반 별점 표시 업데이트
+	$("#starRating .star").each(function() {
 		var value = $(this).data("value");
 		if(value <= rating) {
-			$(this).text("star").addClass("active");
+			$(this).addClass("active").css("color", "var(--cv-gold, #f59e0b)");
 		} else {
-			$(this).text("star_border").removeClass("active");
+			$(this).removeClass("active").css("color", "var(--cv-silver-500, #6b7280)");
 		}
 	});
 }
@@ -48,7 +49,7 @@ function updateReview() {
 		serviceCd: $("#serviceCd").val(),
 		starRate: $("#starRate").val(),
 		svcDate: $("#svcDate").val(),
-		dispYn: $("#dispYn").is(":checked") ? "Y" : "N",
+		dispYn: $("#dispYn").val(),
 		reviewCn: $("#reviewCn").val(),
 		pw: $("#pw").val()
 	};

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.ConfigMapper">
+
+    <!-- 설정 전체 목록 -->
+    <select id="selectConfigList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            CONFIG_KEY,
+            CONFIG_VALUE,
+            CONFIG_DESC,
+            CONFIG_GROUP,
+            CONFIG_TYPE,
+            DISPLAY_ORDER,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i') AS REG_DT,
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i') AS MOD_DT
+        FROM TB_CONFIG
+        <where>
+            <if test="configGroup != null and configGroup != ''">
+                AND CONFIG_GROUP = #{configGroup}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (CONFIG_KEY LIKE CONCAT('%', #{keyword}, '%')
+                 OR CONFIG_DESC LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY CONFIG_GROUP, DISPLAY_ORDER ASC, CONFIG_KEY ASC
+    </select>
+
+    <!-- 그룹별 설정 목록 -->
+    <select id="selectConfigByGroup" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            CONFIG_KEY,
+            CONFIG_VALUE,
+            CONFIG_DESC,
+            CONFIG_GROUP,
+            CONFIG_TYPE,
+            DISPLAY_ORDER
+        FROM TB_CONFIG
+        WHERE CONFIG_GROUP = #{configGroup}
+        ORDER BY DISPLAY_ORDER ASC, CONFIG_KEY ASC
+    </select>
+
+    <!-- 설정 단건 조회 -->
+    <select id="selectConfig" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            CONFIG_KEY,
+            CONFIG_VALUE,
+            CONFIG_DESC,
+            CONFIG_GROUP,
+            CONFIG_TYPE,
+            DISPLAY_ORDER,
+            DATE_FORMAT(REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+            DATE_FORMAT(MOD_DT, '%Y-%m-%d %H:%i:%s') AS MOD_DT
+        FROM TB_CONFIG
+        WHERE CONFIG_KEY = #{configKey}
+    </select>
+
+    <!-- 설정 값만 조회 -->
+    <select id="selectConfigValue" parameterType="String" resultType="String">
+        SELECT CONFIG_VALUE
+        FROM TB_CONFIG
+        WHERE CONFIG_KEY = #{configKey}
+    </select>
+
+    <!-- 설정 등록 -->
+    <insert id="insertConfig" parameterType="hashMap">
+        INSERT INTO TB_CONFIG (
+            CONFIG_KEY,
+            CONFIG_VALUE,
+            CONFIG_DESC,
+            CONFIG_GROUP,
+            CONFIG_TYPE,
+            DISPLAY_ORDER,
+            REG_DT,
+            MOD_DT
+        ) VALUES (
+            #{configKey},
+            #{configValue},
+            #{configDesc},
+            COALESCE(#{configGroup}, 'BASIC'),
+            COALESCE(#{configType}, 'TEXT'),
+            COALESCE(#{displayOrder}, 999),
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 설정 전체 수정 -->
+    <update id="updateConfig" parameterType="hashMap">
+        UPDATE TB_CONFIG
+        SET CONFIG_VALUE = #{configValue},
+            CONFIG_DESC = #{configDesc},
+            CONFIG_GROUP = #{configGroup},
+            CONFIG_TYPE = #{configType},
+            DISPLAY_ORDER = #{displayOrder},
+            MOD_DT = NOW()
+        WHERE CONFIG_KEY = #{configKey}
+    </update>
+
+    <!-- 설정 값만 수정 -->
+    <update id="updateConfigValue" parameterType="hashMap">
+        UPDATE TB_CONFIG
+        SET CONFIG_VALUE = #{configValue},
+            MOD_DT = NOW()
+        WHERE CONFIG_KEY = #{configKey}
+    </update>
+
+    <!-- 설정 삭제 -->
+    <delete id="deleteConfig" parameterType="hashMap">
+        DELETE FROM TB_CONFIG
+        WHERE CONFIG_KEY = #{configKey}
+    </delete>
+
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.cleaning.mapper.DashboardMapper">
+
+    <!-- 신규 상담 건수 조회 (최근 30일) -->
+    <select id="getNewCnsltCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CONSULTATION
+        WHERE REG_DT >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    </select>
+
+    <!-- 시공 사례 건수 조회 -->
+    <select id="getCaseCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CASE
+    </select>
+
+    <!-- 고객 리뷰 건수 조회 -->
+    <select id="getReviewCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_REVIEW
+    </select>
+
+    <!-- 상품 건수 조회 (삭제되지 않은 상품) -->
+    <select id="getProductCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_PRODUCT
+        WHERE DEL_YN = 'N'
+    </select>
+
+    <!-- 최근 상담 목록 조회 -->
+    <select id="getRecentCnsltList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            AA.CNSLT_SEQ,
+            AA.NM,
+            AA.SERVICE_CD,
+            AB.SERVICE_NM,
+            AA.STTUS_CD,
+            AC.CODE_NM AS STTUS_NM,
+            AA.REQ_TYPE,
+            AE.CODE_NM AS REQ_TYPE_NM,
+            DATE_FORMAT(AA.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+            TIMESTAMPDIFF(MINUTE, AA.REG_DT, NOW()) AS MINUTES_AGO,
+            CASE
+                WHEN TIMESTAMPDIFF(MINUTE, AA.REG_DT, NOW()) &lt; 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, AA.REG_DT, NOW()), '분 전')
+                WHEN TIMESTAMPDIFF(HOUR, AA.REG_DT, NOW()) &lt; 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, AA.REG_DT, NOW()), '시간 전')
+                ELSE CONCAT(TIMESTAMPDIFF(DAY, AA.REG_DT, NOW()), '일 전')
+            END AS TIME_AGO
+        FROM TB_CONSULTATION AA
+            LEFT OUTER JOIN TB_CATEGORY AB ON AA.SERVICE_CD = AB.SERVICE_CD
+            LEFT OUTER JOIN TB_CMMN_CODE AC ON AA.STTUS_CD = AC.CODE AND AC.GROUP_CD = '002'
+            LEFT OUTER JOIN TB_CMMN_CODE AE ON AA.REQ_TYPE = AE.CODE AND AE.GROUP_CD = '003'
+        ORDER BY AA.REG_DT DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 최근 리뷰 목록 조회 -->
+    <select id="getRecentReviewList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            AA.REVIEW_SEQ,
+            AA.REVIEW_NM,
+            AA.STAR_RATE,
+            AA.SERVICE_CD,
+            AB.SERVICE_NM,
+            AA.DISP_YN,
+            DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d %H:%i:%s') AS RGS_DT,
+            TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()) AS MINUTES_AGO,
+            CASE
+                WHEN TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()) &lt; 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()), '분 전')
+                WHEN TIMESTAMPDIFF(HOUR, AA.RGS_DT, NOW()) &lt; 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, AA.RGS_DT, NOW()), '시간 전')
+                ELSE CONCAT(TIMESTAMPDIFF(DAY, AA.RGS_DT, NOW()), '일 전')
+            END AS TIME_AGO
+        FROM TB_REVIEW AA
+            LEFT OUTER JOIN TB_CATEGORY AB ON AA.SERVICE_CD = AB.SERVICE_CD
+        ORDER BY AA.RGS_DT DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 최근 시공 사례 목록 조회 -->
+    <select id="getRecentCaseList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            AA.CASE_SEQ,
+            AA.CASE_SJ,
+            AA.SERVICE_CD,
+            AB.SERVICE_NM,
+            DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d %H:%i:%s') AS RGS_DT,
+            TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()) AS MINUTES_AGO,
+            CASE
+                WHEN TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()) &lt; 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, AA.RGS_DT, NOW()), '분 전')
+                WHEN TIMESTAMPDIFF(HOUR, AA.RGS_DT, NOW()) &lt; 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, AA.RGS_DT, NOW()), '시간 전')
+                ELSE CONCAT(TIMESTAMPDIFF(DAY, AA.RGS_DT, NOW()), '일 전')
+            END AS TIME_AGO
+        FROM TB_CASE AA
+            LEFT OUTER JOIN TB_CATEGORY AB ON AA.SERVICE_CD = AB.SERVICE_CD
+        ORDER BY AA.RGS_DT DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 최근 상품 목록 조회 -->
+    <select id="getRecentProductList" parameterType="hashMap" resultType="hashMapCamel">
+        SELECT
+            P.PRODUCT_NO,
+            P.PRODUCT_NM,
+            P.SERVICE_CD,
+            C.SERVICE_NM,
+            P.SALE_PRICE,
+            P.DISPLAY_YN,
+            P.SALE_YN,
+            DATE_FORMAT(P.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+            TIMESTAMPDIFF(MINUTE, P.REG_DT, NOW()) AS MINUTES_AGO,
+            CASE
+                WHEN TIMESTAMPDIFF(MINUTE, P.REG_DT, NOW()) &lt; 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, P.REG_DT, NOW()), '분 전')
+                WHEN TIMESTAMPDIFF(HOUR, P.REG_DT, NOW()) &lt; 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, P.REG_DT, NOW()), '시간 전')
+                ELSE CONCAT(TIMESTAMPDIFF(DAY, P.REG_DT, NOW()), '일 전')
+            END AS TIME_AGO
+        FROM TB_PRODUCT P
+            LEFT JOIN TB_CATEGORY C ON P.SERVICE_CD = C.SERVICE_CD
+        WHERE P.DEL_YN = 'N'
+        ORDER BY P.REG_DT DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

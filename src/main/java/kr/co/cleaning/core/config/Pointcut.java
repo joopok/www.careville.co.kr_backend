@@ -18,9 +18,6 @@ public class Pointcut {
 
     @Around("execution(* kr.co.cleaning.ctrl..*.*(..)) && !within(kr.co.cleaning.ctrl.CmmnCtrl)")
     public Object aroundTransfer(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        String classMethodNm = joinPoint.getTarget().getClass().getSimpleName() + "."
-                + joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
 
         ModelMap mm = null;
@@ -46,14 +43,6 @@ public class Pointcut {
             }
         }
 
-        long start = System.currentTimeMillis();
-        Object result = joinPoint.proceed(args); // 실제 메서드 실행
-        long end = System.currentTimeMillis();
-
-        // System.err.println("「 isLogon : "+sessionCmn.isLogon()+" , "+classMethodNm+"
-        // : "+(req != null ?req.getRequestURI():"")+" 」 실행 시간 : "+(end - start)+" ms
-        // ");
-
-        return result;
+        return joinPoint.proceed(args); // 실제 메서드 실행
     }
 }
