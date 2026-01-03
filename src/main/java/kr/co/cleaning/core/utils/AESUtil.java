@@ -12,15 +12,35 @@ public class AESUtil {
 
     private static SecretKeySpec secretKey;
     private static final String ALGORITHM = "AES";
+    private static final String DEFAULT_KEY = "my-secret-cleaning-12345";
+
+    // 정적 초기화 블록 - 기본 키로 미리 초기화
+    static {
+        secretKey = new SecretKeySpec(DEFAULT_KEY.getBytes(), ALGORITHM);
+    }
 
     public AESUtil(String key) {
+        // null 또는 빈 문자열인 경우 기본값 사용
+        if (key == null || key.trim().isEmpty() || "null".equalsIgnoreCase(key)) {
+            key = DEFAULT_KEY;
+        }
         AESUtil.secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
+    }
+
+    /**
+     * secretKey가 null인 경우 기본 키로 초기화
+     */
+    private static SecretKeySpec getSecretKey() {
+        if (secretKey == null) {
+            secretKey = new SecretKeySpec(DEFAULT_KEY.getBytes(), ALGORITHM);
+        }
+        return secretKey;
     }
 
     public static String encrypt(String plainText) throws Exception {
 
     	Cipher cipher		= Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        cipher.init(Cipher.ENCRYPT_MODE, getSecretKey());
         byte[] encrypted	= cipher.doFinal(plainText.getBytes());
 
         return Base64.getEncoder().encodeToString(encrypted);
@@ -35,7 +55,7 @@ public class AESUtil {
 
         try {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            cipher.init(Cipher.DECRYPT_MODE, getSecretKey());
             byte[] decoded = Base64.getDecoder().decode(cipherText.trim());
             return new String(cipher.doFinal(decoded));
         } catch (IllegalArgumentException e) {

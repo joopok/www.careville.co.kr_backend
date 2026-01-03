@@ -1,14 +1,16 @@
 spring:
   application:
     name: cleaning
+  main:
+    lazy-initialization: true  # 메모리 절약을 위한 지연 초기화
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ksm1779?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USERNAME:ksm1779}
     password: ${DB_PASSWORD:Chae1030!!}
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
+      maximum-pool-size: 5      # 메모리 절약: 10 → 5
+      minimum-idle: 2           # 메모리 절약: 5 → 2
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
@@ -64,7 +66,7 @@ kframe:
   aes:
     key: ${AES_ENCRYPTION_KEY:my-secret-cleaning-12345}
     algorithm: AES
-  filePath: ${FILE_PATH:/home/careville/files}
+  filePath: ${FILE_PATH:/ksm1779/files}
 
 springdoc:
   api-docs:

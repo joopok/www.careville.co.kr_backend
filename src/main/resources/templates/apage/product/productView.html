@@ -699,12 +699,12 @@
 			displayListSection(product.serviceEffects, 'serviceEffectsList', 'serviceEffectsSection', 'serviceEffectsTitle', 'bullet');
 			displayListSection(product.workProcess, 'workProcessList', 'workProcessSection', 'workProcessTitle', 'number');
 
-			// 대표 이미지 6개
+			// 대표 이미지 6개 (암호화된 viewFileSeq 사용)
 			var mainImgCount = 0;
 			for (var i = 1; i <= 6; i++) {
-				var fileSeq = product['fileSeq' + i];
-				if (fileSeq) {
-					$('#mainImgView' + i).attr('src', '/file/download.do?fileSeq=' + fileSeq);
+				var viewFileSeq = product['viewFileSeq' + i];
+				if (viewFileSeq) {
+					$('#mainImgView' + i).attr('src', '/fileView.do?viewFileSeq=' + viewFileSeq);
 					$('#mainImgItem' + i).show();
 					mainImgCount++;
 				}
@@ -717,13 +717,13 @@
 				$('#noMainImgPlaceholder').show();
 			}
 
-			// 갤러리 이미지
+			// 갤러리 이미지 (암호화된 viewFileSeq 사용)
 			if (product.images && product.images.length > 0) {
 				$('#gallerySection').show();
 				$('#galleryCount').text(product.images.length + '개');
 				var galleryHtml = '';
 				$.each(product.images, function(index, img) {
-					var imgUrl = '/file/download.do?fileSeq=' + img.fileSeq;
+					var imgUrl = '/fileView.do?viewFileSeq=' + img.viewFileSeq;
 					galleryHtml += '<div class="cv-gallery-display-item" onclick="openLightbox(\'' + imgUrl + '\')">';
 					galleryHtml += '<img src="' + imgUrl + '" alt="갤러리 이미지">';
 					galleryHtml += '</div>';

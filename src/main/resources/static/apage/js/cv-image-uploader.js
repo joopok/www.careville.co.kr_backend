@@ -168,10 +168,35 @@ class CVImageUploader {
 
         fetch('/fileUpload.do', {
             method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
             body: formData
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                // HTTP 에러 상태 처리
+                return res.json().then(data => {
+                    throw new Error(data.excpMsg || data.excpCdMsg || `서버 오류 (${res.status})`);
+                }).catch(parseErr => {
+                    // JSON 파싱 실패 시
+                    if (parseErr.message && !parseErr.message.includes('서버 오류')) {
+                        throw parseErr;
+                    }
+                    throw new Error(`서버 오류 (${res.status})`);
+                });
+            }
+            return res.json();
+        })
         .then(data => {
+            // isError 필드 체크 (KFException 발생 시)
+            if (data.isError === 'true' || data.isError === true) {
+                this.removeItem(tempId);
+                var errorMsg = data.excpMsg || data.excpCdMsg || '파일 업로드에 실패했습니다.';
+                alert(errorMsg);
+                return;
+            }
+
             if (data.fileSeq) {
                 // 업로드 성공
                 const seq = Array.isArray(data.fileSeq) ? data.fileSeq[0] : data.fileSeq;
@@ -202,7 +227,7 @@ class CVImageUploader {
         .catch(err => {
             console.error('Upload error:', err);
             this.removeItem(tempId);
-            alert('파일 업로드 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
+            alert(err.message || '파일 업로드 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
         });
     }
 
@@ -215,7 +240,10 @@ class CVImageUploader {
             if (seq && !seq.startsWith('temp_')) {
                 fetch('/fileDel.do', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json'
+                    },
                     body: `viewFileSeq=${encodeURIComponent(seq)}`
                 }).catch(err => console.error('Delete error:', err));
 

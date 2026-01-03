@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.cleaning.core.utils.AESUtil;
 import kr.co.cleaning.mapper.ProductMapper;
 
 /**
@@ -15,6 +18,8 @@ import kr.co.cleaning.mapper.ProductMapper;
  */
 @Service
 public class ProductSvc {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductSvc.class);
 
     @Autowired
     private ProductMapper productMapper;
@@ -43,8 +48,35 @@ public class ProductSvc {
     public Map<String, Object> selectProduct(Map<String, Object> param) {
         Map<String, Object> product = productMapper.selectProduct(param);
         if (product != null) {
+            // fileSeq1~6을 암호화하여 viewFileSeq1~6으로 추가
+            for (int i = 1; i <= 6; i++) {
+                Object fileSeq = product.get("fileSeq" + i);
+                if (fileSeq != null && !"".equals(fileSeq.toString())) {
+                    try {
+                        String encrypted = AESUtil.urlEnc(fileSeq.toString());
+                        product.put("viewFileSeq" + i, encrypted);
+                    } catch (Exception e) {
+                        log.warn("fileSeq{} 암호화 실패: {}", i, e.getMessage());
+                    }
+                }
+            }
+
             // 이미지 갤러리 조회
             List<Map<String, Object>> images = productMapper.selectProductImages(param);
+            // 갤러리 이미지의 fileSeq도 암호화
+            if (images != null) {
+                for (Map<String, Object> img : images) {
+                    Object fileSeq = img.get("fileSeq");
+                    if (fileSeq != null && !"".equals(fileSeq.toString())) {
+                        try {
+                            String encrypted = AESUtil.urlEnc(fileSeq.toString());
+                            img.put("viewFileSeq", encrypted);
+                        } catch (Exception e) {
+                            log.warn("갤러리 fileSeq 암호화 실패: {}", e.getMessage());
+                        }
+                    }
+                }
+            }
             product.put("images", images);
         }
         return product;

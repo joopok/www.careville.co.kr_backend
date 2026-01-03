@@ -63,7 +63,7 @@
 								</svg>
 							</div>
 							<div class="cv-dropzone-text">클릭하거나 이미지를 드래그하세요</div>
-							<div class="cv-dropzone-hint">PNG, JPG, GIF (최대 10MB)</div>
+							<div class="cv-dropzone-hint">JPG, JPEG, PNG, BMP, GIF, WEBP (최대 10MB)</div>
 						</div>
 						<div class="cv-uploader-preview" id="mainPreview"></div>
 						<input type="hidden" id="mainImg" name="mainImg" th:value="${view.viewFileSeq}">
@@ -79,7 +79,7 @@
 								</svg>
 							</div>
 							<div class="cv-dropzone-text">클릭하거나 이미지를 드래그하세요</div>
-							<div class="cv-dropzone-hint">PNG, JPG, GIF (최대 10MB)</div>
+							<div class="cv-dropzone-hint">JPG, JPEG, PNG, BMP, GIF, WEBP (최대 10MB)</div>
 						</div>
 						<div class="cv-uploader-preview" id="mainPreview2"></div>
 						<input type="hidden" id="mainImg2" name="mainImg2" th:value="${view.viewFileSeq2}">
@@ -131,6 +131,14 @@
 						<div class="cv-tagsinput-wrap">
 							<input type="text" id="hashtag" name="hashtag" data-role="tagsinput" th:value="${view.hashtag}" placeholder="#현관 #화장실">
 						</div>
+					</div>
+				</div>
+
+				<!-- 면적 -->
+				<div class="cv-detail-grid cols-1">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">면적</div>
+						<input type="text" class="cv-form-input" id="areaType" name="areaType" th:value="${view.areaType}" placeholder="예: 32평, 25평형">
 					</div>
 				</div>
 

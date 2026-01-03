@@ -1292,9 +1292,10 @@
 			// 대표 이미지 6개 미리보기
 			for (var i = 1; i <= 6; i++) {
 				var fileSeq = product['fileSeq' + i];
-				if (fileSeq) {
+				var viewFileSeq = product['viewFileSeq' + i];
+				if (fileSeq && viewFileSeq) {
 					$('#fileSeq' + i).val(fileSeq);
-					$('#mainImgImg' + i).attr('src', '/file/download.do?fileSeq=' + fileSeq);
+					$('#mainImgImg' + i).attr('src', '/fileView.do?viewFileSeq=' + viewFileSeq);
 					$('#mainImgPreview' + i).addClass('active');
 					$('#mainImgPlaceholder' + i).hide();
 					$('.cv-main-image-item[data-index="' + i + '"]').addClass('has-image');
@@ -1307,7 +1308,7 @@
 				var galleryHtml = '';
 				$.each(product.images, function(index, img) {
 					galleryHtml += '<div class="cv-existing-image-item" data-file-seq="' + img.fileSeq + '">' +
-						'<img src="/file/download.do?fileSeq=' + img.fileSeq + '" alt="갤러리">' +
+						'<img src="/fileView.do?viewFileSeq=' + img.viewFileSeq + '" alt="갤러리">' +
 						'</div>';
 				});
 				$('#existingGallery').html(galleryHtml);

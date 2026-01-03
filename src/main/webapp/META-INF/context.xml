@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Tomcat Context Configuration
+  - 캐시 크기를 100MB로 증가 (기본값: 10MB)
+  - 캐시 TTL을 5초로 설정
+-->
+<Context>
+    <Resources
+        cachingAllowed="true"
+        cacheMaxSize="102400"
+        cacheTtl="5000" />
+</Context>

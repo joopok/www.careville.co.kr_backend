@@ -32,6 +32,12 @@ public class CorsConfig {
         config.addAllowedOriginPattern("http://*.cafe24.com");
         config.addAllowedOriginPattern("https://*.cafe24.com");
 
+        // Cafe24 앱 호스팅 도메인 추가 (Node.js 프론트엔드)
+        config.addAllowedOriginPattern("http://seung0910.cafe24app.com");
+        config.addAllowedOriginPattern("https://seung0910.cafe24app.com");
+        config.addAllowedOriginPattern("http://*.cafe24app.com");
+        config.addAllowedOriginPattern("https://*.cafe24app.com");
+
         // 허용할 HTTP 메서드
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");

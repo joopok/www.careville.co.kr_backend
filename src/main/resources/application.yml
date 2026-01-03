@@ -74,7 +74,7 @@ kframe:
   aes:
     key: my-secret-cleaning-12345
     algorithm: AES
-  filePath: ${FILE_PATH:/Users/doseunghyeon/developerApp/springDev/www.careville.co.kr_backend/files}
+  filePath: ${FILE_PATH:/home/ksm1779/files}
 
 # SpringDoc OpenAPI (Swagger) 설정
 springdoc:

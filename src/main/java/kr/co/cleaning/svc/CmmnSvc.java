@@ -33,6 +33,70 @@ public class CmmnSvc{
 	@Autowired
 	SessionCmn sessionCmn;
 
+	/**
+	 * 파일 경로 정규화 - 레거시 경로를 현재 설정 경로로 변환
+	 *
+	 * 예시:
+	 * /home/careville/files/202601/xxx.png → /home/ksm1779/files/202601/xxx.png
+	 * /files/202601/xxx.png → /home/ksm1779/files/202601/xxx.png
+	 * C:\Users\nun\Downloads\careville\202508\xxx.jpg → /home/ksm1779/files/202508/xxx.jpg
+	 * /ksm1779/./files/202511/xxx.png → /home/ksm1779/files/202511/xxx.png
+	 */
+	private String normalizeFilePath(String dbPath) {
+		if (dbPath == null || dbPath.isEmpty()) return dbPath;
+
+		// 현재 설정된 기본 경로: /home/ksm1779/files
+		String currentBase = fileUtil.getFilePath();
+
+		// 백슬래시를 슬래시로 변환 (Windows 경로 처리)
+		String normalizedPath = dbPath.replace("\\", "/");
+
+		// 이미 현재 경로와 같으면 변환 불필요
+		if (normalizedPath.startsWith(currentBase)) {
+			return normalizedPath;
+		}
+
+		// 레거시 경로 패턴들 → currentBase 로 변환
+		String[] legacyPaths = {
+			"/home/careville/files",
+			"/home/ksm1779/www/files",
+			"/home/ksm1779/files",
+			"/ksm1779/./files",
+			"/ksm1779/files",
+			"/files",
+			"/Users/doseunghyeon/developerApp/springDev/www.careville.co.kr_backend/files",
+			"C:/Users/nun/Downloads/careville",
+			"C:Users/nun/Downloads/careville",  // 드라이브 콜론 후 슬래시 누락된 경우
+			"C:/c/workspace/clean02/files"
+		};
+
+		for (String legacy : legacyPaths) {
+			if (normalizedPath.startsWith(legacy)) {
+				// 레거시 경로 이후 부분 (예: /202601/xxx.png)
+				String relativePath = normalizedPath.substring(legacy.length());
+				// 새 경로: /home/ksm1779/files/202601/xxx.png
+				String normalized = currentBase + relativePath;
+				log.debug("경로 변환: {} → {}", dbPath, normalized);
+				return normalized;
+			}
+		}
+
+		// 날짜 폴더 패턴 (YYYYMM) 추출 시도 - 마지막 수단
+		// 예: /any/path/202508/filename.jpg → /home/ksm1779/files/202508/filename.jpg
+		java.util.regex.Pattern datePattern = java.util.regex.Pattern.compile(".*/?(\\d{6})/([^/]+)$");
+		java.util.regex.Matcher matcher = datePattern.matcher(normalizedPath);
+		if (matcher.find()) {
+			String dateFolder = matcher.group(1);
+			String fileName = matcher.group(2);
+			String normalized = currentBase + "/" + dateFolder + "/" + fileName;
+			log.debug("날짜 패턴으로 경로 변환: {} → {}", dbPath, normalized);
+			return normalized;
+		}
+
+		log.warn("경로 정규화 실패 - 알 수 없는 형식: {}", dbPath);
+		return normalizedPath;
+	}
+
 	public List<HashMap<String,Object>> getCodeList(String groupCd) throws Exception {
 		return mapper.getCodeList(groupCd);
 	}
@@ -53,23 +117,53 @@ public class CmmnSvc{
 
 		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
 		List<String> setFileSeq				= new ArrayList<>();
+
+		log.info("┌─────────────────────────────────────────────────────────────┐");
+		log.info("│               [ 파일 업로드 및 DB 저장 시작 ]                 │");
+		log.info("└─────────────────────────────────────────────────────────────┘");
+		log.info("업로드 파일 수: {}", files != null ? files.size() : 0);
+
 		List<HashMap<String,Object>> fLst	= fileUtil.fileUpload(files,false);
 
 		if(fLst == null || fLst.size() <= 0) throw new KFException("파일을 업로드 하지 못 했습니다.");
 
+		log.info("파일 업로드 성공: {} 개 파일", fLst.size());
+
 		if(fLst.size() > 1){
 			for(HashMap<String,Object> m : fLst){
+				log.info("┌── DB INSERT 데이터 ──┐");
+				log.info("│ fileRealNm: {}", m.get("fileRealNm"));
+				log.info("│ fileFakeNm: {}", m.get("fileFakeNm"));
+				log.info("│ filePath: {}", m.get("filePath"));
+				log.info("│ fileExtsn: {}", m.get("fileExtsn"));
+				log.info("│ fileSize: {}", m.get("fileSize"));
+				log.info("└───────────────────────┘");
+
 				mapper.setFileInsert(m);
+
+				log.info("DB INSERT 완료 - FILE_SEQ: {}", m.get("FILE_SEQ"));
 				setFileSeq.add(AESUtil.urlEnc(SUtils.nvl(m.get("FILE_SEQ"))));
 			}
 			returnMap.put("fileSeq", setFileSeq);
 
 		}else{
 			HashMap<String,Object> m = fLst.get(0);
+
+			log.info("┌── DB INSERT 데이터 ──┐");
+			log.info("│ fileRealNm: {}", m.get("fileRealNm"));
+			log.info("│ fileFakeNm: {}", m.get("fileFakeNm"));
+			log.info("│ filePath: {}", m.get("filePath"));
+			log.info("│ fileExtsn: {}", m.get("fileExtsn"));
+			log.info("│ fileSize: {}", m.get("fileSize"));
+			log.info("└───────────────────────┘");
+
 			mapper.setFileInsert(m);
+
+			log.info("DB INSERT 완료 - FILE_SEQ: {}", m.get("FILE_SEQ"));
 			returnMap.put("fileSeq", AESUtil.urlEnc(SUtils.nvl(m.get("FILE_SEQ"))));
 		}
 
+		log.info("파일 업로드 및 DB 저장 완료");
 		return returnMap;
 	}
 
@@ -106,7 +200,8 @@ public class CmmnSvc{
 			return returnMap;
 		}
 
-		returnMap.put("filePath", SUtils.nvl(fileMap.get("fileFullPath")));
+		String filePath = normalizeFilePath(SUtils.nvl(fileMap.get("fileFullPath")));
+		returnMap.put("filePath", filePath);
 		returnMap.put("fileName", SUtils.nvl(fileMap.get("fileRealNm")));
 
 		return returnMap;
@@ -126,7 +221,7 @@ public class CmmnSvc{
 		paramMap.put("fileSeq", AESUtil.urlDec(viewFileSeq));
 
 		HashMap<String,Object> fileMap		= mapper.getFileView(paramMap);
-		String path							= SUtils.nvl(fileMap.get("fileFullPath"));
+		String path							= normalizeFilePath(SUtils.nvl(fileMap.get("fileFullPath")));
 
 		if(fileMap.size() > 0){
 			mapper.setFileDel(paramMap);
@@ -174,11 +269,19 @@ public class CmmnSvc{
             return returnMap;
         }
 
-        String basePath = SUtils.nvl(fileMap.get("filePath"));
+        String basePath = normalizeFilePath(SUtils.nvl(fileMap.get("filePath")));
         String fake = SUtils.nvl(fileMap.get("fileFakeNm"));
         int w = SUtils.strToInt(paramMap.get("w"), 480);
 
         String thumbFullPath = fileUtil.generateThumbnailIfNotExists(basePath, fake, w);
+
+        // 썸네일 생성 실패 시 빈 결과 반환 (원본 파일 없음 등)
+        if (thumbFullPath == null || thumbFullPath.isEmpty()) {
+            log.warn("썸네일 생성 실패 - basePath: {}, fake: {}", basePath, fake);
+            returnMap.put("filePath", "");
+            returnMap.put("fileName", "");
+            return returnMap;
+        }
 
         returnMap.put("filePath", thumbFullPath);
         returnMap.put("fileName", SUtils.nvl(fileMap.get("fileRealNm")));
@@ -198,7 +301,7 @@ public class CmmnSvc{
         HashMap<String,Object> fileMap = mapper.getFileView(q);
         if (fileMap == null || fileMap.isEmpty()) return;
 
-        String path = SUtils.nvl(fileMap.get("fileFullPath"));
+        String path = normalizeFilePath(SUtils.nvl(fileMap.get("fileFullPath")));
         mapper.setFileDel(q);
         fileUtil.deleteFile(new File(path));
     }
@@ -293,7 +396,8 @@ public class CmmnSvc{
 		mapper.setFileRelationDelSecond(paramMap);
 
 		for(HashMap<String,Object> m : delList){
-			fileUtil.deleteFile(new File(SUtils.nvl(m.get("fileFullPath"))));
+			String filePath = normalizeFilePath(SUtils.nvl(m.get("fileFullPath")));
+			fileUtil.deleteFile(new File(filePath));
 		}
 
 		returnMap.put("isDel"	,(delList.size() > 0 ? true : false));

@@ -160,7 +160,10 @@ public class ProductCtrl {
             mav.addObject("redirectUrl", "/apage/product010.do");
 
         } catch(Exception e) {
-            logger.error("상품 등록 실패: ", e);
+            // 상세 스택 트레이스 로깅 (디버깅용)
+            logger.error("상품 등록 실패 - 예외 유형: {}, 메시지: {}",
+                        e.getClass().getName(), e.getMessage());
+            logger.error("상세 스택 트레이스:", e);
             mav.addObject("result", "FAIL");
             mav.addObject("msg", "상품 등록에 실패했습니다: " + e.getMessage());
         }
@@ -213,11 +216,14 @@ public class ProductCtrl {
             }
             param.put("modUserId", userInfo.get("mngrId"));
 
-            // 대표 이미지 6개 업로드 (새 파일이 있는 경우)
+            // 대표 이미지 6개 처리
             MultipartFile[] mainImages = {mainImg1, mainImg2, mainImg3, mainImg4, mainImg5, mainImg6};
             for (int i = 0; i < mainImages.length; i++) {
                 MultipartFile mainImg = mainImages[i];
+                String paramKey = "fileSeq" + (i + 1);
+
                 if (mainImg != null && !mainImg.isEmpty()) {
+                    // 새 파일 업로드
                     List<MultipartFile> fileList = new java.util.ArrayList<>();
                     fileList.add(mainImg);
                     HashMap<String, Object> uploadParam = new HashMap<>();
@@ -225,8 +231,31 @@ public class ProductCtrl {
                     if (fileResult != null && fileResult.get("fileSeq") != null) {
                         String encryptedFileSeq = fileResult.get("fileSeq").toString();
                         String decryptedFileSeq = AESUtil.urlDec(encryptedFileSeq);
-                        param.put("fileSeq" + (i + 1), Integer.parseInt(decryptedFileSeq));
-                        logger.debug("Main image {} updated - fileSeq: {}", (i + 1), decryptedFileSeq);
+                        param.put(paramKey, Integer.parseInt(decryptedFileSeq));
+                        logger.debug("Main image {} uploaded - fileSeq: {}", (i + 1), decryptedFileSeq);
+                    }
+                } else {
+                    // 새 파일 업로드 없음 - 기존 fileSeq 값 처리
+                    String existingFileSeq = (String) param.get(paramKey);
+                    if (existingFileSeq != null && !existingFileSeq.isEmpty()) {
+                        try {
+                            // 암호화된 값이면 복호화
+                            String decrypted = AESUtil.urlDec(existingFileSeq);
+                            if (decrypted != null && !decrypted.isEmpty()) {
+                                param.put(paramKey, Integer.parseInt(decrypted));
+                                logger.debug("Main image {} preserved - fileSeq: {}", (i + 1), decrypted);
+                            }
+                        } catch (Exception e) {
+                            // 숫자 형태면 그대로 사용
+                            try {
+                                param.put(paramKey, Integer.parseInt(existingFileSeq));
+                                logger.debug("Main image {} preserved (numeric) - fileSeq: {}", (i + 1), existingFileSeq);
+                            } catch (NumberFormatException nfe) {
+                                // 파싱 실패 시 기존 값 유지를 위해 null로 설정하지 않음
+                                param.remove(paramKey);
+                                logger.debug("Main image {} fileSeq parse failed, keeping existing", (i + 1));
+                            }
+                        }
                     }
                 }
             }
@@ -261,7 +290,10 @@ public class ProductCtrl {
             mav.addObject("redirectUrl", "/apage/product020.do?productNo=" + param.get("productNo"));
 
         } catch(Exception e) {
-            logger.error("상품 수정 실패: ", e);
+            // 상세 스택 트레이스 로깅 (디버깅용)
+            logger.error("상품 수정 실패 - productNo: {}, 예외 유형: {}, 메시지: {}",
+                        param.get("productNo"), e.getClass().getName(), e.getMessage());
+            logger.error("상세 스택 트레이스:", e);
             mav.addObject("result", "FAIL");
             mav.addObject("msg", "상품 수정에 실패했습니다: " + e.getMessage());
         }

@@ -70,7 +70,19 @@
       "Bash(python3:*)",
       "Bash(xargs:*)",
       "Bash(mysql:*)",
-      "WebFetch(domain:cdn.jsdelivr.net)"
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(git checkout:*)",
+      "Bash(sshpass -p 'Chae1030!!' ssh:*)",
+      "Bash(sshpass:*)",
+      "Bash(ping:*)",
+      "Bash(export SSHPASS='Chae1030!!')",
+      "Bash(for i in 1 2 3)",
+      "Bash(do sshpass -p 'Chae1030!!' ssh -o ConnectTimeout=30 -o StrictHostKeyChecking=no -p 22 ksm1779@ksm1779.cafe24.com \"ls -la files/ && ls -la files/202601/ 2>/dev/null || echo ''202601 없음''\")",
+      "Bash(break)",
+      "Bash(done)",
+      "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" ./mvnw clean package:*)",
+      "Bash(grep:*)",
+      "Bash(sort:*)"
     ],
     "deny": [],
     "ask": []

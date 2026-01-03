@@ -43,6 +43,7 @@
 				,AA.FILE_SEQ2
 				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
 				,AA.HASHTAG
+				,AA.AREA_TYPE
 				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
 				LEFT OUTER JOIN TB_CATEGORY AB
@@ -76,6 +77,7 @@
 				,AA.FILE_SEQ2
 				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
 				,AA.HASHTAG
+				,AA.AREA_TYPE
 				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
 				LEFT OUTER JOIN TB_CATEGORY AB
@@ -106,6 +108,7 @@
 				,AA.FILE_SEQ2
 				,AA.FILE_SEQ2 AS VIEW_FILE_SEQ2
 				,AA.HASHTAG
+				,AA.AREA_TYPE
 				,DATE_FORMAT(AA.RGS_DT, '%Y-%m-%d') AS RGS_DT
 		FROM	TB_CASE AA
 				LEFT OUTER JOIN TB_CATEGORY AB
@@ -124,6 +127,7 @@
 				,FILE_SEQ2	= NULLIF(#{fileSeq2}, '')
 				,HASHTAG	= #{hashtag}
 				,SERVICE_CD	= #{serviceCd}
+				,AREA_TYPE	= #{areaType}
 		WHERE 	CASE_SEQ 	= #{caseSeq}
 	</update>
 	
@@ -137,6 +141,7 @@
 			,HASHTAG
 			,RGS_DT
 			,SERVICE_CD
+			,AREA_TYPE
 		)VALUES(
 			#{caseSj}
 			,#{caseCn}
@@ -146,6 +151,7 @@
 			,#{hashtag}
 			,NOW()
 			,#{serviceCd}
+			,#{areaType}
 		)
 	</insert>
 	

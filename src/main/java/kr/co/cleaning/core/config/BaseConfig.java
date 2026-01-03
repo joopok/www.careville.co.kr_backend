@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.CacheControl;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -55,32 +54,7 @@ public class BaseConfig implements WebMvcConfigurer {
 				.setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
 	}
 
-	@Bean
-	WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(@NonNull CorsRegistry registry) {
-				registry.addMapping("/**") // 모든 경로 허용
-						// 개발 환경
-						.allowedOriginPatterns("http://localhost:*")
-						.allowedOriginPatterns("http://127.0.0.1:*")
-						// 프로덕션 환경
-						.allowedOriginPatterns("https://*.careville.co.kr")
-						.allowedOriginPatterns("https://careville.co.kr")
-						.allowedOriginPatterns("http://careville.co.kr")
-						.allowedOriginPatterns("http://www.careville.co.kr")
-						.allowedOriginPatterns("https://www.careville.co.kr")
-						// 카페24 호스팅 환경
-						.allowedOriginPatterns("http://ksm1779.cafe24.com")
-						.allowedOriginPatterns("https://ksm1779.cafe24.com")
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
-						.allowedHeaders("*")
-						.exposedHeaders("Content-Type", "Authorization", "X-Total-Count")
-						.allowCredentials(true)
-						.maxAge(3600L); // preflight 캐시 1시간
-			}
-		};
-	}
+	// CORS 설정은 CorsConfig.java에서 관리 (중복 제거)
 
 	// 컨트롤러 view 이름으로 등록된 빈으로 연결
 	@Bean
@@ -130,7 +104,11 @@ public class BaseConfig implements WebMvcConfigurer {
 
 	// AES 암복호화 모듈
 	@Bean
-	AESUtil aesUtil(@Value("${kframe.aes.key}") String aesKey) {
+	AESUtil aesUtil(@Value("${kframe.aes.key:my-secret-cleaning-12345}") String aesKey) {
+		// null 또는 빈 문자열인 경우 기본값 사용
+		if (aesKey == null || aesKey.trim().isEmpty() || "null".equalsIgnoreCase(aesKey)) {
+			aesKey = "my-secret-cleaning-12345";
+		}
 		return new AESUtil(aesKey);
 	}
 

@@ -70,7 +70,7 @@
 			<!-- Row 3: 대표이미지1, 대표이미지2 -->
 			<div class="cv-detail-grid cols-2">
 				<div class="cv-detail-item">
-					<div class="cv-detail-label">대표이미지1</div>
+					<div class="cv-detail-label">대표이미지1(시공전)</div>
 					<div class="cv-detail-value">
 						<div th:if="${view.viewFileSeq != null and view.viewFileSeq != ''}" class="cv-image-preview">
 							<a th:href="@{|/fileView.do?viewFileSeq=${view.viewFileSeq}|}" target="_blank">
@@ -82,7 +82,7 @@
 					</div>
 				</div>
 				<div class="cv-detail-item">
-					<div class="cv-detail-label">대표이미지2</div>
+					<div class="cv-detail-label">대표이미지2(시공후)</div>
 					<div class="cv-detail-value">
 						<div th:if="${view.viewFileSeq2 != null and view.viewFileSeq2 != ''}" class="cv-image-preview">
 							<a th:href="@{|/fileView.do?viewFileSeq=${view.viewFileSeq2}|}" target="_blank">

@@ -31,6 +31,15 @@ public class CmmnCtrl {
 	@Autowired
 	SessionCmn sessionCmn;
 
+	/**
+	 * 헬스체크 엔드포인트 - 앱 시작 확인용
+	 */
+	@GetMapping("/health")
+	@org.springframework.web.bind.annotation.ResponseBody
+	public String health() {
+		return "OK - Careville Backend is running";
+	}
+
 	@GetMapping(value = {"/apage", "/apage/", "/apage/signIn.do"})
 	public String signIn(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
         if(sessionCmn.isLogon()) return "redirect:/apage/home.do";  // index 페이지로 이동
