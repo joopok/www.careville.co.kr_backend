@@ -67,16 +67,24 @@ public class MngerSvc{
 		String sessionMngrSeq			= SUtils.nvl(sessionMap.get("mngrSeq"));
 		String mngrSeq					= SUtils.nvl(paramMap.get("mngrSeq"));
 		String mngrPw					= SUtils.nvl(paramMap.get("mngrPw"));
-		HashMap<String,Object> rsMap	= mapper.getMngerView(paramMap);
-		String dbMngrPw					= SUtils.nvl(rsMap.get("mngrPw"));
-		boolean matched					= BCrypt.checkpw(mngrPw, dbMngrPw);
 
 		if(!sessionMngrSeq.equals("1") && mngrSeq.equals("1")){
 			throw new KFException("\"superadmin\"계정은 \"superadmin\"계정으로 접속 후 변경 가능합니다.");
 		}
 
-		if(!matched){
-			throw new KFException("비밀번호를 정확히 입력해 주세요.");
+		// 슈퍼관리자가 아닌 경우에만 비밀번호 검증 (슈퍼관리자는 비밀번호 없이 수정 가능)
+		if(!sessionMngrSeq.equals("1")){
+			HashMap<String,Object> rsMap	= mapper.getMngerView(paramMap);
+			String dbMngrPw					= SUtils.nvl(rsMap.get("mngrPw"));
+
+			if(dbMngrPw.isEmpty() || !BCrypt.checkpw(mngrPw, dbMngrPw)){
+				throw new KFException("비밀번호를 정확히 입력해 주세요.");
+			}
+		}
+
+		// 슈퍼관리자 계정(mngrSeq=1)의 상태는 변경 불가
+		if(mngrSeq.equals("1")){
+			paramMap.remove("mngrSttus");
 		}
 
 		paramMap.put("sessionMngrSeq", sessionMngrSeq);
@@ -123,12 +131,8 @@ public class MngerSvc{
 		String mngrSeq					= SUtils.nvl(paramMap.get("mngrSeq"));
 		String mngrPw					= SUtils.nvl(paramMap.get("mngrPw"));
 		String mngrPwUpdt				= SUtils.nvl(paramMap.get("mngrPwUpdt"));
-		String encMngrPwUpdt			= BCrypt.hashpw(mngrPwUpdt, BCrypt.gensalt());
 
-		HashMap<String,Object> rsMap	= mapper.getMngerView(paramMap);
-		String dbMngrPw					= SUtils.nvl(rsMap.get("mngrPw"));
-		boolean matched					= BCrypt.checkpw(mngrPw, dbMngrPw);
-
+		// 권한 체크를 먼저 수행
 		if(!sessionMngrSeq.equals("1") && !sessionMngrSeq.equals(mngrSeq)){
 			throw new KFException("비밀번호 변경 권한이 없습니다.");
 		}
@@ -137,11 +141,20 @@ public class MngerSvc{
 			throw new KFException("\"superadmin\"계정은 \"superadmin\"계정으로 접속 후 변경 가능합니다.");
 		}
 
-		if(!sessionMngrSeq.equals("1") && !matched){
-			throw new KFException("비밀번호를 정확히 입력해 주세요.");
+		// 슈퍼관리자가 아닌 경우에만 현재 비밀번호 검증
+		if(!sessionMngrSeq.equals("1")){
+			HashMap<String,Object> rsMap	= mapper.getMngerView(paramMap);
+			String dbMngrPw					= SUtils.nvl(rsMap.get("mngrPw"));
+
+			// DB에 비밀번호가 있고, 입력된 비밀번호와 일치하는지 확인
+			if(dbMngrPw.isEmpty() || !BCrypt.checkpw(mngrPw, dbMngrPw)){
+				throw new KFException("비밀번호를 정확히 입력해 주세요.");
+			}
 		}
 
-		paramMap.put("encMngrPw",encMngrPwUpdt);
+		// 새 비밀번호 암호화
+		String encMngrPwUpdt = BCrypt.hashpw(mngrPwUpdt, BCrypt.gensalt());
+		paramMap.put("encMngrPw", encMngrPwUpdt);
 
 		if(mapper.setMngrPwUpd(paramMap) == 0){
 			throw new KFException("수정되지 않았습니다.");

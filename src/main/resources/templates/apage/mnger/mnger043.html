@@ -1,50 +1,190 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/apage/default_layout}">
+<head>
+<title>비밀번호 변경</title>
 <!-- All styles now in careville-admin.css -->
+</head>
+<body>
+<div layout:fragment="content">
 
-<form id="form_validation">
-	<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
-
-	<div class="cv-alert-info" th:if="${view.ssa == 'Y'}">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<circle cx="12" cy="12" r="10"></circle>
-			<line x1="12" y1="16" x2="12" y2="12"></line>
-			<line x1="12" y1="8" x2="12.01" y2="8"></line>
-		</svg>
-		<span class="cv-alert-info-text">
-			슈퍼관리자 계정은 현재 비밀번호가 일치하지 않아도 비밀번호를 변경할 수 있습니다.
-		</span>
-	</div>
-
-	<div class="cv-form-group">
-		<label class="cv-form-label">현재 비밀번호</label>
-		<div class="cv-input-group">
-			<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-			</svg>
-			<input type="password" class="cv-form-input" name="mngrPw" data-name="현재 비밀번호" placeholder="현재 비밀번호 입력">
+	<!-- Page Header -->
+	<div class="cv-page-header">
+		<div class="cv-page-header-left">
+			<h1 class="cv-page-title">비밀번호 변경</h1>
+			<p class="cv-page-desc">관리자 계정 비밀번호를 변경합니다</p>
+		</div>
+		<div class="cv-page-header-right">
+			<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/mnger010.do'">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="8" y1="6" x2="21" y2="6"></line>
+					<line x1="8" y1="12" x2="21" y2="12"></line>
+					<line x1="8" y1="18" x2="21" y2="18"></line>
+					<line x1="3" y1="6" x2="3.01" y2="6"></line>
+					<line x1="3" y1="12" x2="3.01" y2="12"></line>
+					<line x1="3" y1="18" x2="3.01" y2="18"></line>
+				</svg>
+				목록
+			</button>
 		</div>
 	</div>
 
-	<div class="cv-form-group">
-		<label class="cv-form-label">변경 비밀번호</label>
-		<div class="cv-input-group">
-			<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-				<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-				<circle cx="12" cy="16" r="1"></circle>
-			</svg>
-			<input type="password" class="cv-form-input" name="mngrPwUpdt" data-name="변경 비밀번호" placeholder="새 비밀번호 입력 (8자리 이상)">
+	<!-- Password Change Card -->
+	<div class="cv-card">
+		<div class="cv-card-body">
+			<form id="form_validation">
+				<input type="hidden" name="mngrSeq" th:value="${view.mngrSeq}">
+
+				<div class="cv-alert-info" th:if="${ssa == 'Y'}">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="12" y1="16" x2="12" y2="12"></line>
+						<line x1="12" y1="8" x2="12.01" y2="8"></line>
+					</svg>
+					<span class="cv-alert-info-text">
+						슈퍼관리자 계정은 현재 비밀번호가 일치하지 않아도 비밀번호를 변경할 수 있습니다.
+					</span>
+				</div>
+
+				<!-- 관리자 정보 표시 -->
+				<div class="cv-detail-grid" style="margin-bottom: 2rem;">
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">아이디</div>
+						<div class="cv-detail-value">
+							<code th:text="${view.mngrId}"></code>
+						</div>
+					</div>
+					<div class="cv-detail-item">
+						<div class="cv-detail-label">이름</div>
+						<div class="cv-detail-value" th:text="${view.mngrNm}"></div>
+					</div>
+				</div>
+
+				<div class="cv-form-group">
+					<label class="cv-form-label">현재 비밀번호</label>
+					<div class="cv-input-group">
+						<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+						<input type="password" class="cv-form-input" name="mngrPw" data-name="현재 비밀번호" placeholder="현재 비밀번호 입력">
+					</div>
+				</div>
+
+				<div class="cv-form-group">
+					<label class="cv-form-label">변경 비밀번호</label>
+					<div class="cv-input-group">
+						<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+							<circle cx="12" cy="16" r="1"></circle>
+						</svg>
+						<input type="password" class="cv-form-input" name="mngrPwUpdt" data-name="변경 비밀번호" placeholder="새 비밀번호 입력 (8자리 이상)">
+					</div>
+				</div>
+
+				<div class="cv-form-group">
+					<label class="cv-form-label">변경 비밀번호 확인</label>
+					<div class="cv-input-group">
+						<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+							<polyline points="22 4 12 14.01 9 11.01"></polyline>
+						</svg>
+						<input type="password" class="cv-form-input" name="mngrPwUpdtChk" data-name="변경 비밀번호 확인" placeholder="새 비밀번호 다시 입력">
+					</div>
+				</div>
+
+				<!-- Buttons -->
+				<div class="cv-btn-group">
+					<button type="button" class="cv-btn cv-btn-primary" id="btnPwChange">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+						비밀번호 변경
+					</button>
+					<button type="button" class="cv-btn cv-btn-secondary" onclick="location.href='/apage/mnger010.do'">
+						취소
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 
-	<div class="cv-form-group">
-		<label class="cv-form-label">변경 비밀번호 확인</label>
-		<div class="cv-input-group">
-			<svg class="cv-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-				<polyline points="22 4 12 14.01 9 11.01"></polyline>
-			</svg>
-			<input type="password" class="cv-form-input" name="mngrPwUpdtChk" data-name="변경 비밀번호 확인" placeholder="새 비밀번호 다시 입력">
-		</div>
-	</div>
-</form>
+	<script th:inline="javascript">
+		var mngrSeq = /*[[${view.mngrSeq}]]*/ '';
+		var ssa = /*[[${ssa}]]*/ 'N';
+
+		$(document).ready(function() {
+			// Password Change button
+			$('#btnPwChange').on('click', function() {
+				var $form = $('#form_validation');
+				var mngrPw = $.trim($form.find('input[name="mngrPw"]').val());
+				var mngrPwUpdt = $.trim($form.find('input[name="mngrPwUpdt"]').val());
+				var mngrPwUpdtChk = $.trim($form.find('input[name="mngrPwUpdtChk"]').val());
+
+				// 슈퍼관리자가 아닌 경우 현재 비밀번호 필수
+				if(ssa !== 'Y' && !mngrPw) {
+					swal({title: '현재 비밀번호를 입력해주세요.', type: 'warning'});
+					return false;
+				}
+
+				if(!mngrPwUpdt) {
+					swal({title: '변경 비밀번호를 입력해주세요.', type: 'warning'});
+					return false;
+				}
+
+				if(mngrPwUpdt.length < 8) {
+					swal({title: '비밀번호는 최소 8자 이상이어야 합니다.', type: 'warning'});
+					return false;
+				}
+
+				if(!mngrPwUpdtChk) {
+					swal({title: '변경 비밀번호 확인을 입력해주세요.', type: 'warning'});
+					return false;
+				}
+
+				if(mngrPwUpdt !== mngrPwUpdtChk) {
+					swal({title: '변경 비밀번호가 일치하지 않습니다.', type: 'warning'});
+					return false;
+				}
+
+				// 자주 사용되는 비밀번호 체크
+				if(typeof isCommonPassword === 'function' && isCommonPassword(mngrPwUpdt)) {
+					swal({title: '자주 사용되는 비밀번호 패턴은 사용할 수 없습니다.', type: 'warning'});
+					return false;
+				}
+
+				$.ajax({
+					url: '/apage/mnger044.do',
+					type: 'POST',
+					data: $form.serialize(),
+					dataType: 'json',
+					success: function(data) {
+						// 에러 응답 체크 (isError가 true 또는 "true" 문자열인 경우)
+						if(data.isError === true || data.isError === 'true') {
+							swal({title: data.excpMsg || '비밀번호 변경에 실패하였습니다.', type: 'error'});
+							return;
+						}
+						// 성공 응답 체크
+						if(data.isUpd == 'Y' || data.isUpd === true) {
+							swal({title: '비밀번호가 변경되었습니다.', type: 'success'}, function() {
+								location.href = '/apage/mnger010.do';
+							});
+						} else {
+							swal({title: '비밀번호 변경에 실패하였습니다.', type: 'error'});
+						}
+					},
+					error: function(xhr) {
+						var msg = '서버 오류가 발생하였습니다.';
+						if(xhr.responseJSON && xhr.responseJSON.excpMsg) {
+							msg = xhr.responseJSON.excpMsg;
+						}
+						swal({title: msg, type: 'error'});
+					}
+				});
+			});
+		});
+	</script>
+
+</div>
+</body>
+</html>

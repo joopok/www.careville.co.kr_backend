@@ -87,10 +87,20 @@
 					</div>
 					<div class="cv-detail-item">
 						<div class="cv-detail-label">상태</div>
-						<div class="cv-detail-value">
-							<span th:if="${view.mngrSttus == 'Y'}" class="cv-status-badge active">활성</span>
-							<span th:unless="${view.mngrSttus == 'Y'}" class="cv-status-badge inactive">비활성</span>
-						</div>
+						<!-- 슈퍼관리자이고 대상이 슈퍼관리자가 아닌 경우에만 콤보박스 표시 -->
+						<th:block th:if="${ssa == 'Y' && view.mngrSeq != '1'}">
+							<select class="cv-form-input" name="mngrSttus" id="mngrSttusSelect" style="width: auto; min-width: 120px;">
+								<option value="A" th:selected="${view.mngrSttus == 'A'}">활성</option>
+								<option value="I" th:selected="${view.mngrSttus == 'I'}">비활성</option>
+							</select>
+						</th:block>
+						<!-- 그 외의 경우는 읽기 전용 배지 표시 -->
+						<th:block th:unless="${ssa == 'Y' && view.mngrSeq != '1'}">
+							<div class="cv-detail-value">
+								<span th:if="${view.mngrSttus == 'A'}" class="cv-status-badge active">활성</span>
+								<span th:unless="${view.mngrSttus == 'A'}" class="cv-status-badge inactive">비활성</span>
+							</div>
+						</th:block>
 					</div>
 				</div>
 
@@ -101,9 +111,13 @@
 						<div class="cv-detail-value" th:text="${view.rgsDt} ?: '-'"></div>
 					</div>
 					<div class="cv-detail-item">
-						<div class="cv-detail-label">비밀번호 (변경 시에만 입력)</div>
-						<input type="password" class="cv-form-input" name="mngrPw" data-name="비밀번호"
-							   placeholder="변경할 비밀번호 입력 (8자리 이상)">
+						<div class="cv-detail-label">
+							현재 비밀번호
+							<span th:if="${ssa != 'Y'}" style="color: #e74c3c; font-size: 0.85em;">(수정 시 필수)</span>
+							<span th:if="${ssa == 'Y'}" style="color: #3498db; font-size: 0.85em;">(슈퍼관리자는 생략 가능)</span>
+						</div>
+						<input type="password" class="cv-form-input" name="mngrPw" data-name="현재 비밀번호"
+							   placeholder="본인 확인을 위한 현재 비밀번호 입력">
 					</div>
 				</div>
 
@@ -157,16 +171,26 @@
 					data: $('#form_validation').serialize(),
 					dataType: 'json',
 					success: function(data) {
-						if(data.result === 'SUCCESS') {
+						// 에러 응답 체크 (isError가 true 또는 "true" 문자열인 경우)
+						if(data.isError === true || data.isError === 'true') {
+							swal({title: data.excpMsg || '수정에 실패하였습니다.', type: 'error'});
+							return;
+						}
+						// 성공 응답 체크
+						if(data.isUpd == 'Y' || data.isUpd === true) {
 							swal({title: '수정되었습니다.', type: 'success'}, function() {
 								location.reload();
 							});
 						} else {
-							swal({title: data.msg || '수정에 실패하였습니다.', type: 'error'});
+							swal({title: '수정에 실패하였습니다.', type: 'error'});
 						}
 					},
-					error: function() {
-						swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+					error: function(xhr) {
+						var msg = '서버 오류가 발생하였습니다.';
+						if(xhr.responseJSON && xhr.responseJSON.excpMsg) {
+							msg = xhr.responseJSON.excpMsg;
+						}
+						swal({title: msg, type: 'error'});
 					}
 				});
 			});
@@ -195,16 +219,26 @@
 						data: { mngrSeq: mngrSeq },
 						dataType: 'json',
 						success: function(data) {
-							if(data.result === 'SUCCESS') {
+							// 에러 응답 체크 (isError가 true 또는 "true" 문자열인 경우)
+							if(data.isError === true || data.isError === 'true') {
+								swal({title: data.excpMsg || '삭제에 실패하였습니다.', type: 'error'});
+								return;
+							}
+							// 성공 응답 체크
+							if(data.isDel == 'Y' || data.isDel === true) {
 								swal({title: '삭제되었습니다.', type: 'success'}, function() {
 									location.href = '/apage/mnger010.do';
 								});
 							} else {
-								swal({title: data.msg || '삭제에 실패하였습니다.', type: 'error'});
+								swal({title: '삭제에 실패하였습니다.', type: 'error'});
 							}
 						},
-						error: function() {
-							swal({title: '서버 오류가 발생하였습니다.', type: 'error'});
+						error: function(xhr) {
+							var msg = '서버 오류가 발생하였습니다.';
+							if(xhr.responseJSON && xhr.responseJSON.excpMsg) {
+								msg = xhr.responseJSON.excpMsg;
+							}
+							swal({title: msg, type: 'error'});
 						}
 					});
 				});

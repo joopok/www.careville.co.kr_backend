@@ -81,6 +81,7 @@ public class CorsConfig {
         // 파일 조회
         source.registerCorsConfiguration("/fileView.do", config);
         source.registerCorsConfiguration("/fileThumbView.do", config);
+        source.registerCorsConfiguration("/heroFileView.do", config);
 
         // FAQ 관련
         source.registerCorsConfiguration("/faqList.do", config);

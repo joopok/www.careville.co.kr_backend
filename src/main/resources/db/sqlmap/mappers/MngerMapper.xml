@@ -73,6 +73,9 @@
 		SET		MNGR_NM		= #{mngrNm}
 				,MNGR_NCNM	= #{mngrNcnm}
 				,MNGR_TEL 	= #{mngrTel}
+			<if test='sessionMngrSeq != null and sessionMngrSeq == "1" and mngrSttus != null and mngrSttus != ""'>
+				,MNGR_STTUS	= #{mngrSttus}
+			</if>
 		WHERE	1 = 1
 				AND MNGR_SEQ 	= #{mngrSeq}
 			<if test='sessionMngrSeq != null and sessionMngrSeq != "1"'>

@@ -15,7 +15,7 @@ public class JsonView extends MappingJackson2JsonView{
 
 		Map map = (Map) result;
 
-		if(!map.containsKey("isError")) map.put("isError", "false");
+		if(!map.containsKey("isError")) map.put("isError", false);
 		if(map.containsKey("user")) map.remove("user");
 		if(map.containsKey("user_info")) map.remove("user_info");
 

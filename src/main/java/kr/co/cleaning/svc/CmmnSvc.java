@@ -482,5 +482,30 @@ public class CmmnSvc{
         return returnMap;
     }
 
+    /**
+     * 히어로 이미지 파일 뷰
+     * @param paramMap a: yyyyMM (폴더), b: 파일명
+     */
+    public HashMap<String,Object> getHeroFileView(HashMap<String,Object> paramMap) throws Exception {
+        HashMap<String,Object> returnMap = new HashMap<String, Object>();
+        String a = SUtils.nvl(paramMap.get("a"));
+        String b = SUtils.nvl(paramMap.get("b"));
+
+        // 안전 검증: a는 yyyyMM(숫자 6자리), b는 안전한 파일명만 허용
+        if (!a.matches("^\\d{6}$")) {
+            throw new KFException("잘못된 파일 경로 요청입니다.");
+        }
+        if (!b.matches("^[A-Za-z0-9][A-Za-z0-9._-]*$")) {
+            throw new KFException("잘못된 파일명 요청입니다.");
+        }
+
+        String base = fileUtil.getFilePath();
+        String path = SUtils.normalizePath(base + "/" + a + "/" + b);
+
+        returnMap.put("filePath", path);
+        returnMap.put("fileName", b);
+
+        return returnMap;
+    }
 
 }

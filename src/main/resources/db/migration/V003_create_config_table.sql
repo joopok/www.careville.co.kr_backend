@@ -37,5 +37,17 @@ INSERT INTO TB_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_DESC, CONFIG_GROUP, CONF
 ('INSTAGRAM', '', '인스타그램', 'SNS', 'URL', 31),
 ('YOUTUBE', '', '유튜브', 'SNS', 'URL', 32),
 ('FACEBOOK', '', '페이스북', 'SNS', 'URL', 33),
-('KAKAO_CHANNEL', '', '카카오톡 채널', 'SNS', 'URL', 34)
+('KAKAO_CHANNEL', '', '카카오톡 채널', 'SNS', 'URL', 34),
+
+-- 히어로 이미지 (HERO)
+('HERO_IMG_01', '', '히어로 이미지 1', 'HERO', 'FILE', 40),
+('HERO_IMG_02', '', '히어로 이미지 2', 'HERO', 'FILE', 41),
+('HERO_IMG_03', '', '히어로 이미지 3', 'HERO', 'FILE', 42),
+('HERO_IMG_04', '', '히어로 이미지 4', 'HERO', 'FILE', 43),
+('HERO_IMG_05', '', '히어로 이미지 5', 'HERO', 'FILE', 44),
+('HERO_IMG_06', '', '히어로 이미지 6', 'HERO', 'FILE', 45),
+('HERO_IMG_07', '', '히어로 이미지 7', 'HERO', 'FILE', 46),
+('HERO_IMG_08', '', '히어로 이미지 8', 'HERO', 'FILE', 47),
+('HERO_IMG_09', '', '히어로 이미지 9', 'HERO', 'FILE', 48),
+('HERO_IMG_10', '', '히어로 이미지 10', 'HERO', 'FILE', 49)
 ON DUPLICATE KEY UPDATE CONFIG_KEY=CONFIG_KEY;

@@ -82,7 +82,13 @@
       "Bash(done)",
       "Bash(JAVA_HOME=\"/usr/local/opt/openjdk@17\" PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" ./mvnw clean package:*)",
       "Bash(grep:*)",
-      "Bash(sort:*)"
+      "Bash(sort:*)",
+      "Bash(find:*)",
+      "Bash(sudo ln:*)",
+      "Bash(export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home:*)",
+      "Bash(/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin/java:*)",
+      "Bash(JAVA_HOME=/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home ./mvnw clean package:*)",
+      "Bash(export JAVA_HOME:*)"
     ],
     "deny": [],
     "ask": []

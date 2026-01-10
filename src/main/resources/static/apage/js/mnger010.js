@@ -102,7 +102,7 @@ $(document).ready(function(){
 			url			: '/apage/mnger042.do'
 			,data		: {
 				'mngrSeq' 	: _val,
-				'mngrSttus'	: $input.is(':checked') ? 'Y' : 'N'
+				'mngrSttus'	: $input.is(':checked') ? 'A' : 'I'
 			}
 			,dataType	: 'json'
 			,success	: function(data){
@@ -315,7 +315,7 @@ function listCall(data){
 				totalCount = data.pagination ? data.pagination.totalCnt : data.list.length;
 				data.list.forEach(function(item) {
 					if(item.mngrSeq == '1') superCount++;
-					if(item.mngrSttus == 'Y') activeCount++;
+					if(item.mngrSttus == 'A') activeCount++;
 					else inactiveCount++;
 				});
 			}
@@ -368,7 +368,7 @@ function listCall(data){
 						}
 					},
 					{col	: 'mngrSttus'	,addClass : '' ,render : function(data){
-						var checked		= (data.mngrSttus == 'Y');
+						var checked		= (data.mngrSttus == 'A');
 						var isSuper		= (data.mngrSeq == '1');
 						var author		= (data.sesionMgnrSeq === '1');
 

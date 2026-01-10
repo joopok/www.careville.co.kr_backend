@@ -91,6 +91,29 @@
 
   </form>
 
+  <!-- 히어로 섹션 배경 이미지 -->
+  <div class="cv-data-card" style="margin-bottom: 20px;">
+    <div class="cv-card-header">
+      <div class="cv-card-header-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.7;">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <h3 class="cv-card-title">히어로 섹션 배경 이미지</h3>
+      </div>
+      <div class="cv-card-header-right">
+        <span class="cv-badge cv-badge-info">최대 10개 / 5MB 이하</span>
+      </div>
+    </div>
+    <div class="cv-card-body">
+      <p class="cv-hero-desc">랜딩 페이지 상단에 표시되는 배경 이미지입니다. 여러 장 등록 시 슬라이더로 표시됩니다.</p>
+      <div class="cv-hero-grid" id="heroImageGrid">
+        <div class="cv-loading">로딩 중...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- 하단 고정 저장 버튼 -->
   <div class="cv-fixed-bottom">
     <button type="button" class="cv-btn cv-btn-primary cv-btn-lg" id="btnSaveAllBottom">
@@ -194,9 +217,135 @@
         padding-top: 0;
       }
     }
+
+    /* 히어로 이미지 스타일 */
+    .cv-hero-desc {
+      color: var(--cv-silver-400, #888);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .cv-hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .cv-hero-item {
+      position: relative;
+      background: var(--cv-graphite, #141414);
+      border: 2px dashed var(--cv-border-light, rgba(255,255,255,0.1));
+      border-radius: 12px;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+    .cv-hero-item:hover {
+      border-color: var(--cv-accent, #10b981);
+      background: var(--cv-charcoal, #1a1a1a);
+    }
+    .cv-hero-item.has-image {
+      border-style: solid;
+      border-color: var(--cv-accent, #10b981);
+    }
+    .cv-hero-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cv-hero-item .cv-hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .cv-hero-item:hover .cv-hero-overlay {
+      opacity: 1;
+    }
+    .cv-hero-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--cv-silver-500, #555);
+    }
+    .cv-hero-placeholder svg {
+      opacity: 0.5;
+    }
+    .cv-hero-placeholder span {
+      font-size: 12px;
+    }
+    .cv-hero-number {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .cv-hero-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .cv-hero-btn-upload {
+      background: var(--cv-accent, #10b981);
+      color: #fff;
+    }
+    .cv-hero-btn-upload:hover {
+      background: var(--cv-accent-hover, #059669);
+    }
+    .cv-hero-btn-delete {
+      background: var(--cv-error, #ef4444);
+      color: #fff;
+    }
+    .cv-hero-btn-delete:hover {
+      background: #dc2626;
+    }
+    .cv-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    .cv-badge-info {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+    }
+    .cv-hero-file-input {
+      display: none;
+    }
   </style>
 
   <script th:inline="javascript">
+    // 개발 모드 체크 (localhost에서만 로그 출력)
+    var isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    function devLog() {
+      if (isDev && console && console.log) {
+        console.log.apply(console, arguments);
+      }
+    }
+
     var configData = {};
 
     function loadConfigs() {
@@ -299,8 +448,198 @@
       });
     }
 
+    // ===================== 히어로 이미지 관리 =====================
+    var heroImageKeys = [
+      'HERO_IMG_01', 'HERO_IMG_02', 'HERO_IMG_03', 'HERO_IMG_04', 'HERO_IMG_05',
+      'HERO_IMG_06', 'HERO_IMG_07', 'HERO_IMG_08', 'HERO_IMG_09', 'HERO_IMG_10'
+    ];
+
+    function loadHeroImages() {
+      devLog('[loadHeroImages] 호출됨');
+      $.ajax({
+        url: '/configByGroup.do',
+        type: 'POST',
+        data: { configGroup: 'HERO' },
+        dataType: 'json',
+        success: function(rs) {
+          devLog('[loadHeroImages] API 응답:', rs);
+          // list 또는 data 키 모두 지원
+          var list = rs.list || rs.data || rs.HERO || [];
+          devLog('[loadHeroImages] list:', list);
+          renderHeroImages(list);
+        },
+        error: function(xhr, status, error) {
+          devLog('[loadHeroImages] 에러:', status, error);
+          $('#heroImageGrid').html('<div class="cv-empty">히어로 이미지를 불러오는데 실패했습니다.</div>');
+        }
+      });
+    }
+
+    function renderHeroImages(list) {
+      devLog('[renderHeroImages] list 개수:', list.length);
+      var $grid = $('#heroImageGrid');
+      $grid.empty();
+
+      // HERO 그룹만 필터링
+      var heroList = list.filter(function(item) {
+        return item.configGroup === 'HERO' || item.configKey.startsWith('HERO_IMG_');
+      });
+      devLog('[renderHeroImages] heroList 개수:', heroList.length);
+
+      // 이미지 데이터를 키로 매핑
+      var imageMap = {};
+      heroList.forEach(function(item) {
+        devLog('[renderHeroImages] item:', item.configKey, '=', item.configValue);
+        imageMap[item.configKey] = item.configValue;
+      });
+
+      // 10개 슬롯 렌더링
+      heroImageKeys.forEach(function(key, index) {
+        var value = imageMap[key] || '';
+        var hasImage = value && value.trim() !== '';
+        var num = index + 1;
+
+        var html = '<div class="cv-hero-item' + (hasImage ? ' has-image' : '') + '" data-key="' + key + '">';
+        html += '<span class="cv-hero-number">' + num + '</span>';
+
+        if (hasImage) {
+          html += '<img src="/fileDown.do?path=' + encodeURIComponent(value) + '" alt="히어로 이미지 ' + num + '">';
+          html += '<div class="cv-hero-overlay">';
+          html += '<button type="button" class="cv-hero-btn cv-hero-btn-upload" onclick="triggerUpload(\'' + key + '\')">';
+          html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>';
+          html += '변경</button>';
+          html += '<button type="button" class="cv-hero-btn cv-hero-btn-delete" onclick="deleteHeroImage(\'' + key + '\')">';
+          html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+          html += '삭제</button>';
+          html += '</div>';
+        } else {
+          html += '<div class="cv-hero-placeholder" onclick="triggerUpload(\'' + key + '\')">';
+          html += '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">';
+          html += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>';
+          html += '<circle cx="8.5" cy="8.5" r="1.5"></circle>';
+          html += '<polyline points="21 15 16 10 5 21"></polyline>';
+          html += '</svg>';
+          html += '<span>이미지 업로드</span>';
+          html += '</div>';
+        }
+
+        html += '<input type="file" class="cv-hero-file-input" id="heroFile_' + key + '" accept="image/*" onchange="uploadHeroImage(\'' + key + '\', this)">';
+        html += '</div>';
+
+        $grid.append(html);
+      });
+    }
+
+    function triggerUpload(configKey) {
+      $('#heroFile_' + configKey).click();
+    }
+
+    function uploadHeroImage(configKey, input) {
+      if (!input.files || !input.files[0]) return;
+
+      var file = input.files[0];
+
+      // 파일 크기 체크 (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        swal('오류', '파일 크기는 5MB 이하만 가능합니다.', 'error');
+        input.value = '';
+        return;
+      }
+
+      // 이미지 파일 체크
+      if (!file.type.startsWith('image/')) {
+        swal('오류', '이미지 파일만 업로드 가능합니다.', 'error');
+        input.value = '';
+        return;
+      }
+
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('configKey', configKey);
+
+      // 업로드 중 표시
+      var $item = $('.cv-hero-item[data-key="' + configKey + '"]');
+      $item.addClass('uploading');
+      $item.find('.cv-hero-placeholder, .cv-hero-overlay').html('<div style="color:#10b981;">업로드 중...</div>');
+
+      $.ajax({
+        url: '/heroImageUpload.do',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(rs) {
+          devLog('[uploadHeroImage] 응답:', rs);
+          if (rs.success) {
+            swal({
+              title: '완료',
+              text: '이미지가 업로드되었습니다.',
+              type: 'success'
+            }, function() {
+              loadHeroImages();
+            });
+          } else {
+            swal({
+              title: '실패',
+              text: rs.message || '업로드에 실패했습니다.',
+              type: 'error'
+            }, function() {
+              loadHeroImages();
+            });
+          }
+        },
+        error: function(xhr, status, error) {
+          devLog('[uploadHeroImage] 에러:', status, error);
+          swal({
+            title: '오류',
+            text: '업로드 중 오류가 발생했습니다.',
+            type: 'error'
+          }, function() {
+            loadHeroImages();
+          });
+        },
+        complete: function() {
+          input.value = '';
+        }
+      });
+    }
+
+    function deleteHeroImage(configKey) {
+      swal({
+        title: '이미지 삭제',
+        text: '이 히어로 이미지를 삭제하시겠습니까?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소'
+      }, function(isConfirm) {
+        if (isConfirm) {
+          $.ajax({
+            url: '/heroImageDelete.do',
+            type: 'POST',
+            data: { configKey: configKey },
+            dataType: 'json',
+            success: function(rs) {
+              if (rs.success) {
+                swal('완료', '이미지가 삭제되었습니다.', 'success');
+                loadHeroImages();
+              } else {
+                swal('실패', rs.message || '삭제에 실패했습니다.', 'error');
+              }
+            },
+            error: function() {
+              swal('오류', '삭제 중 오류가 발생했습니다.', 'error');
+            }
+          });
+        }
+      });
+    }
+
     $(function() {
       loadConfigs();
+      loadHeroImages();
 
       $('#btnSaveAll, #btnSaveAllBottom').on('click', function() {
         saveAll();

@@ -104,6 +104,16 @@ public class CmmnCtrl {
 		return "downloadView";
 	}
 
+	/**
+	 * 히어로 이미지 파일 뷰 (공개 API)
+	 * GET /heroFileView.do?a=yyyyMM&b=파일명
+	 */
+	@GetMapping("/heroFileView.do")
+	public String heroFileView(HttpServletRequest req, HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
+		modelMap.addAllAttributes(svc.getHeroFileView(paramMap));
+		return "downloadView";
+	}
+
 	@PostMapping("/serviceCdList.do")
 	public String serviceCdList(HttpServletRequest req ,HttpServletResponse res, @RequestParam HashMap<String,Object> paramMap, ModelMap modelMap) throws Exception {
 		modelMap.addAttribute("svcCdList", svc.getServiceCdList());

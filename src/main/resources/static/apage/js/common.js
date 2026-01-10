@@ -76,25 +76,30 @@ function jsonDomDrowStr(obj,space){
 	return JSON.stringify(obj,null,space).replace(/\n/gi,"<br>").replace(/ /gi, "&nbsp;");
 }
 
-// 비밀번호 체크
+// 비밀번호 체크 (너무 단순한 비밀번호만 차단)
 function isCommonPassword(pw) {
-	// 많이 쓰이는 비밀번호 리스트
+	// 많이 쓰이는 비밀번호 리스트 (정확히 일치하는 경우만 차단)
 	const commonList = [
-		"123456", "123456789", "111111", "000000", "qwerty", "abc123",
-		"password", "admin", "welcome", "iloveyou", "letmein", "monkey",
-		"dragon", "sunshine"
+		"123456", "12345678", "123456789", "1234567890",
+		"111111", "000000", "qwerty", "qwerty123",
+		"password", "password1", "password123",
+		"admin", "admin123", "welcome", "letmein"
 	];
 
-	// 소문자 비교
+	// 소문자로 변환 후 정확히 일치하는지 확인
 	if (commonList.includes(pw.toLowerCase())) {
 		return true;
 	}
 
-	// 단순 키보드/숫자 패턴 정규식
+	// 8자 이상이면 패턴 체크 생략 (충분히 복잡한 것으로 간주)
+	if (pw.length >= 8) {
+		return false;
+	}
+
+	// 8자 미만인 경우에만 약한 패턴 체크
 	const weakPatterns = [
-		/(.)\1{2,}/,       // 같은 문자 반복 (111, aaa)
-		/1234|2345|3456/,  // 연속된 숫자
-		/qwer|asdf|zxcv/i, // 키보드 패턴
+		/^(.)\1+$/,        // 전체가 같은 문자 반복 (예: "aaaa", "1111")
+		/^(12345|123456|1234567)$/, // 단순 연속 숫자
 	];
 
 	return weakPatterns.some((regex) => regex.test(pw));

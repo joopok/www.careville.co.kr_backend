@@ -49,8 +49,8 @@ public class ConfigSvc {
 
         // 그룹별로 분류
         Map<String, List<Map<String, Object>>> grouped = new LinkedHashMap<>();
-        String[] groups = {"BASIC", "CONTACT", "BUSINESS", "SNS"};
-        String[] groupNames = {"기본 정보", "연락처 정보", "운영 정보", "SNS 정보"};
+        String[] groups = {"BASIC", "CONTACT", "BUSINESS", "SNS", "HERO"};
+        String[] groupNames = {"기본 정보", "연락처 정보", "운영 정보", "SNS 정보", "히어로 이미지"};
 
         for (int i = 0; i < groups.length; i++) {
             String group = groups[i];
@@ -146,5 +146,22 @@ public class ConfigSvc {
         int cnt = configMapper.deleteConfig(param);
         rs.put("isDel", cnt > 0 ? "Y" : "N");
         return rs;
+    }
+
+    /**
+     * 히어로 이미지 목록 조회 (값이 있는 것만)
+     */
+    public List<Map<String, Object>> getHeroImages() {
+        Map<String, Object> param = new HashMap<>();
+        param.put("configGroup", "HERO");
+        List<Map<String, Object>> list = configMapper.selectConfigByGroup(param);
+
+        // 값이 있는 이미지만 필터링
+        list.removeIf(item -> {
+            Object value = item.get("configValue");
+            return value == null || value.toString().trim().isEmpty();
+        });
+
+        return list;
     }
 }
