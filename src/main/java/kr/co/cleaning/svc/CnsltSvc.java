@@ -34,6 +34,9 @@ public class CnsltSvc{
 	@Autowired
 	PageUtil pageUtil;
 
+	@Autowired
+	EmailSvc emailSvc;
+
 	public HashMap<String,Object> getCnsltList(HttpServletRequest req,HashMap<String,Object> paramMap) throws Exception {
 
 		HashMap<String,Object> returnMap	= new HashMap<String, Object>();
@@ -127,6 +130,16 @@ public class CnsltSvc{
 		paramMap.put("fileTrgetSeq", SUtils.strToInt(paramMap.get("CNSLT_SEQ")));
 
 		int isnertCnt	= cmmnSvc.setFileRelationInsert(paramMap);
+
+		// 이메일 알림 발송 (비동기 - 응답 지연 없음)
+		if (cnsltCnt > 0) {
+			try {
+				emailSvc.sendConsultationNotification(paramMap);
+			} catch (Exception e) {
+				log.error("이메일 발송 실패", e);
+				// 이메일 실패해도 상담 등록은 정상 처리
+			}
+		}
 
 		returnMap.put("isReg", "Y");
 

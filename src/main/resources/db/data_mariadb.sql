@@ -51,9 +51,9 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 INSERT INTO `TB_MANAGER`
     (`MNGR_ID`, `MNGR_PW`, `MNGR_NM`, `MNGR_NCNM`, `MNGR_TEL`, `MNGR_STTUS`, `RGS_DT`)
 VALUES
-    ('superadmin', '$2a$10$slYQmyNdGzin7olVZeVaeuK1kHLiQuZ7q11UxGEgI7EL7DlH6cUFm', '이순신', '슈퍼 관리자', '0212341234', 'A', NOW()),
-    ('admin', '$2a$10$slYQmyNdGzin7olVZeVaeuK1kHLiQuZ7q11UxGEgI7EL7DlH6cUFm', '홍길동', '일반 관리자', '0212345678', 'A', NOW()),
-    ('manager', '$2a$10$slYQmyNdGzin7olVZeVaeuK1kHLiQuZ7q11UxGEgI7EL7DlH6cUFm', '김철수', '운영 매니저', '0219876543', 'A', NOW());
+    ('superadmin', '$2a$10$D5OVyqB9ywBIQfjg6AT0j.5Dol7r0jZJOo11U46Qsy0eY.uPrBDsW', '이순신', '슈퍼 관리자', '0212341234', 'A', NOW()),
+    ('admin', '$2a$10$D5OVyqB9ywBIQfjg6AT0j.5Dol7r0jZJOo11U46Qsy0eY.uPrBDsW', '홍길동', '일반 관리자', '0212345678', 'A', NOW()),
+    ('manager', '$2a$10$D5OVyqB9ywBIQfjg6AT0j.5Dol7r0jZJOo11U46Qsy0eY.uPrBDsW', '김철수', '운영 매니저', '0219876543', 'A', NOW());
 
 -- -----------------------------------------------------------------------------
 -- 2. TB_CMMN_CODE - 공통 코드 데이터

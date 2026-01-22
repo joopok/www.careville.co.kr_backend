@@ -12,6 +12,13 @@
       <p class="cv-page-desc">사이트 기본 정보 및 운영 설정을 관리합니다</p>
     </div>
     <div class="cv-page-header-right">
+      <button type="button" class="cv-btn cv-btn-outline" id="btnAddConfig">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        신규 등록
+      </button>
       <button type="button" class="cv-btn cv-btn-primary" id="btnSaveAll">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -90,6 +97,58 @@
     </div>
 
   </form>
+
+  <!-- 신규 등록 모달 -->
+  <div class="cv-modal-overlay" id="addConfigModal" style="display: none;">
+    <div class="cv-modal">
+      <div class="cv-modal-header">
+        <h3 class="cv-modal-title">새 설정 추가</h3>
+        <button type="button" class="cv-modal-close" onclick="closeAddModal()">&times;</button>
+      </div>
+      <div class="cv-modal-body">
+        <div class="cv-form-group">
+          <label class="cv-form-label">설정 키 (영문 대문자)</label>
+          <input type="text" class="cv-config-input" id="newConfigKey" placeholder="예: PHONE_DESCRIPTION" style="text-transform: uppercase;">
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">설명</label>
+          <input type="text" class="cv-config-input" id="newConfigDesc" placeholder="예: 전화번호 설명">
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">그룹</label>
+          <select class="cv-config-input" id="newConfigGroup">
+            <option value="BASIC">기본 정보</option>
+            <option value="CONTACT">연락처 정보</option>
+            <option value="BUSINESS">운영 정보</option>
+            <option value="SNS">SNS 정보</option>
+          </select>
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">타입</label>
+          <select class="cv-config-input" id="newConfigType">
+            <option value="TEXT">TEXT (텍스트)</option>
+            <option value="TEXTAREA">TEXTAREA (여러줄)</option>
+            <option value="EMAIL">EMAIL (이메일)</option>
+            <option value="TEL">TEL (전화번호)</option>
+            <option value="URL">URL (링크)</option>
+            <option value="NUMBER">NUMBER (숫자)</option>
+          </select>
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">값</label>
+          <input type="text" class="cv-config-input" id="newConfigValue" placeholder="설정 값 입력">
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">표시 순서</label>
+          <input type="number" class="cv-config-input" id="newConfigOrder" value="999" placeholder="숫자가 작을수록 먼저 표시">
+        </div>
+      </div>
+      <div class="cv-modal-footer">
+        <button type="button" class="cv-btn cv-btn-outline" onclick="closeAddModal()">취소</button>
+        <button type="button" class="cv-btn cv-btn-primary" onclick="submitAddConfig()">등록</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 히어로 섹션 배경 이미지 -->
   <div class="cv-data-card" style="margin-bottom: 20px;">
@@ -335,6 +394,107 @@
     .cv-hero-file-input {
       display: none;
     }
+
+    /* 모달 스타일 */
+    .cv-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .cv-modal {
+      background: var(--cv-charcoal, #1a1a1a);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .cv-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--cv-border, rgba(255,255,255,0.06));
+    }
+    .cv-modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cv-silver-100, #e5e5e5);
+    }
+    .cv-modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--cv-silver-400, #888);
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .cv-modal-close:hover {
+      color: var(--cv-silver-100, #e5e5e5);
+    }
+    .cv-modal-body {
+      padding: 24px;
+    }
+    .cv-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--cv-border, rgba(255,255,255,0.06));
+    }
+    .cv-form-group {
+      margin-bottom: 16px;
+    }
+    .cv-form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cv-silver-300, #aaa);
+      margin-bottom: 8px;
+    }
+    .cv-btn-outline {
+      background: transparent;
+      border: 1px solid var(--cv-border-light, rgba(255,255,255,0.2));
+      color: var(--cv-silver-200, #ccc);
+    }
+    .cv-btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--cv-silver-400, #888);
+    }
+
+    /* 삭제 버튼 스타일 */
+    .cv-config-item {
+      position: relative;
+    }
+    .cv-config-delete {
+      position: absolute;
+      top: 12px;
+      right: 0;
+      background: none;
+      border: none;
+      color: var(--cv-silver-500, #555);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .cv-config-delete:hover {
+      color: var(--cv-error, #ef4444);
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .cv-config-input-wrap {
+      padding-right: 40px;
+    }
   </style>
 
   <script th:inline="javascript">
@@ -402,8 +562,11 @@
         }
 
         html += '<div class="cv-config-item">' +
-                '<div class="cv-config-label">' + item.configDesc + '</div>' +
+                '<div class="cv-config-label">' + item.configDesc + '<br><small style="color:#666;font-weight:normal;">' + item.configKey + '</small></div>' +
                 '<div class="cv-config-input-wrap">' + inputHtml + '</div>' +
+                '<button type="button" class="cv-config-delete" onclick="deleteConfig(\'' + item.configKey + '\', \'' + item.configDesc + '\')" title="삭제">' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+                '</button>' +
                 '</div>';
       });
       html += '</div>';
@@ -637,12 +800,126 @@
       });
     }
 
+    // ===================== 신규 등록 =====================
+    function openAddModal() {
+      $('#newConfigKey').val('');
+      $('#newConfigDesc').val('');
+      $('#newConfigValue').val('');
+      $('#newConfigGroup').val('BASIC');
+      $('#newConfigType').val('TEXT');
+      $('#newConfigOrder').val('999');
+      $('#addConfigModal').fadeIn(200);
+    }
+
+    function closeAddModal() {
+      $('#addConfigModal').fadeOut(200);
+    }
+
+    function submitAddConfig() {
+      var configKey = $('#newConfigKey').val().trim().toUpperCase();
+      var configDesc = $('#newConfigDesc').val().trim();
+      var configValue = $('#newConfigValue').val();
+      var configGroup = $('#newConfigGroup').val();
+      var configType = $('#newConfigType').val();
+      var displayOrder = $('#newConfigOrder').val() || '999';
+
+      if (!configKey) {
+        swal('알림', '설정 키를 입력하세요.', 'warning');
+        return;
+      }
+      if (!configDesc) {
+        swal('알림', '설명을 입력하세요.', 'warning');
+        return;
+      }
+      if (!/^[A-Z0-9_]+$/.test(configKey)) {
+        swal('알림', '설정 키는 영문 대문자, 숫자, 언더스코어(_)만 사용 가능합니다.', 'warning');
+        return;
+      }
+
+      $.ajax({
+        url: '/configReg.do',
+        type: 'POST',
+        data: {
+          configKey: configKey,
+          configValue: configValue,
+          configDesc: configDesc,
+          configGroup: configGroup,
+          configType: configType,
+          displayOrder: displayOrder
+        },
+        dataType: 'json',
+        success: function(rs) {
+          if (rs.isReg === 'Y') {
+            swal('완료', '설정이 등록되었습니다.', 'success');
+            closeAddModal();
+            loadConfigs();
+          } else {
+            swal('실패', rs.message || '이미 존재하는 키이거나 등록에 실패했습니다.', 'error');
+          }
+        },
+        error: function() {
+          swal('오류', '등록 중 오류가 발생했습니다.', 'error');
+        }
+      });
+    }
+
+    // ===================== 삭제 =====================
+    function deleteConfig(configKey, configDesc) {
+      swal({
+        title: '설정 삭제',
+        text: '"' + configDesc + '" (' + configKey + ') 설정을 삭제하시겠습니까?\n\n삭제된 설정은 복구할 수 없습니다.',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소'
+      }, function(isConfirm) {
+        if (isConfirm) {
+          $.ajax({
+            url: '/configDel.do',
+            type: 'POST',
+            data: { configKey: configKey },
+            dataType: 'json',
+            success: function(rs) {
+              if (rs.isDel === 'Y') {
+                swal('완료', '설정이 삭제되었습니다.', 'success');
+                loadConfigs();
+              } else {
+                swal('실패', rs.message || '삭제에 실패했습니다.', 'error');
+              }
+            },
+            error: function() {
+              swal('오류', '삭제 중 오류가 발생했습니다.', 'error');
+            }
+          });
+        }
+      });
+    }
+
     $(function() {
       loadConfigs();
       loadHeroImages();
 
       $('#btnSaveAll, #btnSaveAllBottom').on('click', function() {
         saveAll();
+      });
+
+      $('#btnAddConfig').on('click', function() {
+        openAddModal();
+      });
+
+      // ESC 키로 모달 닫기
+      $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeAddModal();
+        }
+      });
+
+      // 모달 외부 클릭 시 닫기
+      $('#addConfigModal').on('click', function(e) {
+        if (e.target === this) {
+          closeAddModal();
+        }
       });
     });
   </script>

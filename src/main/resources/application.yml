@@ -25,6 +25,19 @@ spring:
     multipart:
       maxFileSize: 10MB # 파일 하나의 최대 크기
       maxRequestSize: 30MB # 한 번에 최대 업로드 가능 용량
+  # 이메일 발송 설정 (네이버 SMTP)
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${MAIL_USERNAME:careville0424@naver.com}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+    default-encoding: UTF-8
 
 mybatis:
   mapper-locations: classpath:db/sqlmap/mappers/*.xml
@@ -75,6 +88,8 @@ kframe:
     key: my-secret-cleaning-12345
     algorithm: AES
   filePath: ${FILE_PATH:/home/ksm1779/files}
+  # 관리자 페이지 URL (운영)
+  adminBaseUrl: http://ksm1779.cafe24.com/apage
 
 # SpringDoc OpenAPI (Swagger) 설정
 springdoc:

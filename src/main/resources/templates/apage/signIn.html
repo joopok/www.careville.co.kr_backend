@@ -316,6 +316,61 @@
 			box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.15);
 		}
 
+		/* ========== Password Input Wrapper ========== */
+		.password-wrapper {
+			position: relative;
+			display: flex;
+			align-items: center;
+		}
+
+		.password-wrapper .form-input {
+			padding-right: 50px;
+		}
+
+		.password-toggle {
+			position: absolute;
+			right: 16px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 24px;
+			height: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			padding: 0;
+			color: var(--text-muted);
+			transition: color 0.2s ease;
+		}
+
+		.password-toggle:hover {
+			color: var(--text-secondary);
+		}
+
+		.password-toggle:focus {
+			outline: none;
+			color: var(--cv-gold);
+		}
+
+		.password-toggle svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		.password-toggle .eye-off {
+			display: none;
+		}
+
+		.password-toggle.visible .eye-on {
+			display: none;
+		}
+
+		.password-toggle.visible .eye-off {
+			display: block;
+		}
+
 		/* ========== Checkbox ========== */
 		.form-options {
 			display: flex;
@@ -663,15 +718,29 @@
 
 					<div class="form-group">
 						<label class="form-label" for="mngrPw">비밀번호</label>
-						<input
-							type="password"
-							id="mngrPw"
-							name="mngrPw"
-							class="form-input"
-							placeholder="비밀번호를 입력하세요"
-							required
-							autocomplete="current-password"
-						>
+						<div class="password-wrapper">
+							<input
+								type="password"
+								id="mngrPw"
+								name="mngrPw"
+								class="form-input"
+								placeholder="비밀번호를 입력하세요"
+								required
+								autocomplete="current-password"
+							>
+							<button type="button" class="password-toggle" id="passwordToggle" aria-label="비밀번호 표시">
+								<!-- Eye Open Icon -->
+								<svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+									<circle cx="12" cy="12" r="3"></circle>
+								</svg>
+								<!-- Eye Off Icon -->
+								<svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+									<line x1="1" y1="1" x2="23" y2="23"></line>
+								</svg>
+							</button>
+						</div>
 					</div>
 
 					<div class="form-options">
@@ -710,6 +779,22 @@
 
 	<script>
 		$(document).ready(function() {
+			// 비밀번호 표시/숨김 토글
+			$('#passwordToggle').on('click', function() {
+				const $input = $('#mngrPw');
+				const $toggle = $(this);
+
+				if ($input.attr('type') === 'password') {
+					$input.attr('type', 'text');
+					$toggle.addClass('visible');
+					$toggle.attr('aria-label', '비밀번호 숨김');
+				} else {
+					$input.attr('type', 'password');
+					$toggle.removeClass('visible');
+					$toggle.attr('aria-label', '비밀번호 표시');
+				}
+			});
+
 			$('#loginForm').on('submit', function(e) {
 				e.preventDefault();
 

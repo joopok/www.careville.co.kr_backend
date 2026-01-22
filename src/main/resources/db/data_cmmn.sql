@@ -1,5 +1,5 @@
 INSERT INTO TB_MANAGER(MNGR_ID,MNGR_PW,MNGR_NM,MNGR_NCNM,MNGR_TEL,MNGR_STTUS,RGS_DT)VALUES
-('superadmin'	,'$2a$10$Cxbc10SduAdyoE6ogl8cpeCdfwzjQlv2hNc03/oGcl09kvpIER3D6'	,'홍길동'	,'슈퍼관리자'	,'01000000000','A',NOW()),
+('superadmin'	,'$2a$10$D5OVyqB9ywBIQfjg6AT0j.5Dol7r0jZJOo11U46Qsy0eY.uPrBDsW'	,'홍길동'	,'슈퍼관리자'	,'01000000000','A',NOW()),
 ('managera'		,'$2a$10$WiqMkVQG5I7qhnpguY/LKuX0yz5bnIaIDBa7xG0Sub3HELTN6h362'	,'이순신'	,'케어빌1'		,'01000000000','A',NOW()),
 ('managerb'		,'$2a$10$WiqMkVQG5I7qhnpguY/LKuX0yz5bnIaIDBa7xG0Sub3HELTN6h362'	,'김유신'	,'케어빌2'		,'01000000000','A',NOW()),
 ('managerc'		,'$2a$10$WiqMkVQG5I7qhnpguY/LKuX0yz5bnIaIDBa7xG0Sub3HELTN6h362'	,'계백'	,'케어빌3'		,'01000000000','A',NOW()),
